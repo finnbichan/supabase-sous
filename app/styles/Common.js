@@ -18,6 +18,7 @@ export const styles = StyleSheet.create({
     input: {
       backgroundColor: '#ffffff',
       borderWidth: 1,
+      width:100,
       marginTop: 8,
       marginHorizontal: 8,
       borderRadius: 4,

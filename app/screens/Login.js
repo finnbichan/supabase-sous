@@ -3,73 +3,46 @@ import React, { useState } from 'react';
 import { styles } from '../styles/Common';
 import { supabase } from '../../supabase';
 
-const Login = () => {
+const Login = ( { navigation }) => {
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const signUp = async () => {
-    setLoading(true);
-    const {
-      data: { session },
-      error
-    } = await supabase.auth.signUp({
-      email: email, 
-      password: password
-  })
-
-    if (error) {console.log(error)}
-    setLoading(false);
-  } 
   const signIn = async () => {
     setLoading(true);
-    const {
-      data: { session },
-      error
-    } = await supabase.auth.signInWithPassword({
-      email: email, 
-      password: password
-    })
-
-    if (error) {console.log(error)}
+    await supabase.auth.signInWithOtp({
+      email: email,
+      options: {
+        shouldCreateUser: false
+      }
+  })
+  .then((data) => {console.log(data);console.log("here")})
+  .catch((error) => {console.log(error);})
+  .finally(() => {
     setLoading(false);
-    }
+    navigation.navigate('Confirm OTP', {
+      email: email
+    });
+  })
+}
+
 
     return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
-        <Text style={styles.title}>Welcome to sous!</Text>
-        <Text> Sign up or login to get started</Text>
+        <Text style={styles.title}>Good to see you again</Text>
+        <Text>Enter your email below to log in. We'll send a one time password to your email address to check it's really you.</Text>
         <TextInput
         style={styles.input}
-        placeholder="Username"
+        placeholder="Email"
         placeholderTextColor="#a9a9a9"
         onChangeText={(text) => setEmail(text)}
         />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        placeholderTextColor="#a9a9a9"
-        secureTextEntry={true}
-        onChangeText={(text) => setPassword(text)}
-        />
         { loading ? <ActivityIndicator size="medium"/>
-        : 
-        <View style={styles.buttonsParent} >
-            <View style={styles.buttonParent}>
-              <Text style={styles.helperText}>First time?</Text>
-              <Pressable onPress={signUp} style={styles.button}>
-                  <Text style={styles.buttonText}>Sign up</Text>
-              </Pressable>
-            </View>
-            <View style={styles.buttonParent}>
-              <Text style={styles.helperText}>Been here before?</Text>
+        : (
               <Pressable onPress={signIn} style={styles.button}>
                 <Text style={styles.buttonText}>Sign in</Text>
               </Pressable>
-            </ View>
-          </ View>
-        }
+        )}
   </View>
 </SafeAreaView>
 )

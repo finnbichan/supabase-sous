@@ -8,7 +8,9 @@ import Home from './app/screens/Home';
 import UserRecipes from './app/screens/UserRecipes';
 import Settings from './app/screens/Settings';
 import AddUserRecipe from './app/screens/AddUserRecipe';
+import NewUser from './app/screens/NewUser';
 import { useState, useEffect } from 'react';
+import ConfirmOTP from './app/screens/ConfirmOTP';
 
 
 const Stack = createNativeStackNavigator();
@@ -18,6 +20,8 @@ const LoggedInDrawer = createDrawerNavigator();
 const MainAppTabs = createBottomTabNavigator();
 
 const RecipePages = createNativeStackNavigator();
+
+const LoggedOutStack = createNativeStackNavigator();
 
 global.cuisineList = [
   {"id":"0", "label":"Asian"},
@@ -64,6 +68,16 @@ function LoggedInStack() {
   )
 };
 
+function AnonStack() {
+  return (
+    <LoggedOutStack.Navigator initialRouteName='NewUser'>
+      <LoggedOutStack.Screen name="Sign up" component={NewUser} options={{headerShown: false}}/>
+      <LoggedOutStack.Screen name="Login" component={Login} options={{headerShown: false}}/>
+      <LoggedOutStack.Screen name="Confirm OTP" component={ConfirmOTP} options={{headerShown: false}} />
+    </LoggedOutStack.Navigator>
+  )
+};
+
 export default function App() {
   const [session, setSession] = useState(null);
 
@@ -77,15 +91,16 @@ export default function App() {
     })
   }, [])
 
+  console.log(session)
+
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName='Login'>
+      <Stack.Navigator initialRouteName='AnonUser'>
         {session ? (
           <Stack.Screen name="LoggedIn" component={LoggedInStack} options={{headerShown: false}} />
         ) : (
-          <Stack.Screen name='Login' component={Login} options={{headerShown: false}}/>
+          <Stack.Screen name='AnonUser' component={AnonStack} options={{headerShown: false}}/>
         )}
-        
       </Stack.Navigator>
     </NavigationContainer>
   );
