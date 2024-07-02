@@ -26,10 +26,10 @@ const Recipe = ({name, cuisine, ease, diet}) => {
             <Text>{name}</Text>
             <View style={recipeStyles.descriptorsParent}>
             <View style={recipeStyles.descriptors}>
-                <Text style={recipeStyles.descriptorText}>{easeList[ease].label}</Text> 
+                <Text style={recipeStyles.descriptorText}>{easeList[ease].label}</Text>
                 </View>
                 <View style={recipeStyles.descriptors}>
-                    <Text style={recipeStyles.descriptorText}>{cuisineList[cuisine].label}</Text> 
+                    <Text style={recipeStyles.descriptorText}>{cuisineList[cuisine].label}</Text>
                 </View> 
                 {diet == 0 ? (<></>):(
                 <View style={recipeStyles.descriptors}>

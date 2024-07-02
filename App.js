@@ -82,11 +82,13 @@ export default function App() {
   const [session, setSession] = useState(null);
 
   useEffect(() => {
-    supabase.auth.onAuthStateChange((event, session) => {
-      if (event == 'SIGNED_IN') {
-      setSession(session)
-      } else {
+     supabase.auth.onAuthStateChange((event, session) => {
+      if (event == 'SIGNED_OUT') {
+        console.log(event)
         setSession(null)
+      } else {
+        console.log(event)
+        setSession(session)
       }
     })
   }, [])

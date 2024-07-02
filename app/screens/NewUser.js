@@ -44,20 +44,17 @@ const NewUser = ( {navigation} ) => {
       options: {
         data: {
           display_name: name,
-          region: country
+          region: country.code
         }
       }
-  })
-  .then((data) => {console.log(data)})
-  .catch((error) => {console.log(error);})
-  .finally(() => {
-    setLoading(false);
-    navigation.navigate('Confirm OTP', {
-      email: email
-    });
-  })
-
-    
+    })
+    .then(() => {
+      navigation.navigate('Confirm OTP', {
+        email: email
+      });
+    })
+    .catch((error) => {console.log(error);})
+    .finally(() => {setLoading(false)}) 
   }
     return (
     <SafeAreaView style={styles.container}>

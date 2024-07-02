@@ -2,6 +2,7 @@ import { Text, SafeAreaView, TouchableOpacity, TextInput, ActivityIndicator } fr
 import React, { useState } from 'react';
 import { styles } from '../styles/Common';
 import Dropdown from '../components/Dropdown';
+import { supabase } from '../../supabase';
 
 const AddUserRecipe = ( {navigation} ) => {
     const [name, setName] = useState(undefined);
@@ -10,9 +11,6 @@ const AddUserRecipe = ( {navigation} ) => {
     const [ease, setEase] = useState(undefined);
     const [validationFailed, setValidationFailed] = useState(false);
     const [submitting, setSubmitting] = useState(false);
-
-    const auth = getAuth();
-    const user = auth.currentUser;
 
     const onSubmit = () => {
         if (!(name && cuisine && diet && ease)) {
@@ -25,23 +23,17 @@ const AddUserRecipe = ( {navigation} ) => {
 
     const submit = async () => {
         setSubmitting(true);
-        addDoc(collection(firebase_db, "recipes"), {
-            name: name,
-            cuisine: cuisine.id,
-            diet: diet.id,
+        const data = await supabase
+        .from('recipes')
+        .insert([{
+            recipe_name: name,
             ease: ease.id,
-            user: user.uid
-        })
-        .then(doc => {
-            console.log(doc);
-        })
-        .catch(err => {
-            console.log(err);  
-        })
-        .finally(() => {
-            setSubmitting(false);
-            navigation.navigate("Your recipes", {added: "true"})
-        })
+            cuisine: cuisine.id,
+            diet: diet.id
+            }])
+        console.log(data)
+        setSubmitting(false)
+        navigation.navigate('Your recipes', {added: "true"})
         }
     
 

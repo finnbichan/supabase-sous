@@ -2,46 +2,62 @@ import { View, Text, Pressable, SafeAreaView, TouchableOpacity,ActivityIndicator
 import React, { useEffect, useState } from 'react';
 import { styles } from '../styles/Common';
 import Recipe from '../components/Recipe';
+import { supabase } from '../../supabase';
+import { useIsFocused } from '@react-navigation/native';
 
 const UserRecipes = ({route, navigation}) => {
     const [loading, setLoading] = useState(true);
     const [recipes, setRecipes] = useState(undefined);
+    const [recipeAdded, setRecipeAdded] = useState(null);
+    const [showAddedNotif, setShowAddedNotif] = useState(null);
+    
+    const isFocused = useIsFocused();
 
-    const recipeAdded = route.params?.added;
-
-    const auth = getAuth();
-    const user = auth.currentUser;
-
-    const queryUserRecipes = query(collection(firebase_db, "recipes"), where("user", "==", user.uid))
-
-    firebaseRecipes = [];
-
-    async function getAllUserRecipes() {
-        const userRecipes = await getDocs(queryUserRecipes);
-        userRecipes.forEach(doc => {
-            firebaseRecipes.push({"id": doc.id, "recipe":doc.data()});
-        })
-        setRecipes(firebaseRecipes);
+    function removeAddedNotif() {
+        setShowAddedNotif(null);
     }
 
     useEffect(() => {
-        getAllUserRecipes()
-        .then(() => {
-        })
-        .finally(() => {
-            setLoading(false);
-        })
+        if(route.params?.added){
+            setRecipeAdded(true)
+            setShowAddedNotif(true)
+            setTimeout(removeAddedNotif, 2000);
+            }
+    }, [isFocused])
+    
+    useEffect(() => {
+        getRecipes = async () => {
+        console.log("fetching")
+        const userData = await supabase.auth.getUser()
+        const recipesData = await supabase
+        .from('recipes')
+        .select()
+        .eq('user_id', userData.data.user.id)
+        const recipes = recipesData.data.map((item) => {
+            return {
+              id: item.id,
+              name: item.recipe_name,
+              ease: item.ease,
+              cuisine: item.cuisine,
+              diet: item.diet
+            }})
+        setRecipes(recipes)
+        setLoading(false)
+        }
+        getRecipes()
     }, [recipeAdded])
 
     const renderRecipe = ({item}) => {
         return (
             <View>
+
                 <Recipe
-                name={item.recipe.name}
-                cuisine={item.recipe.cuisine}
-                ease={item.recipe.ease}
-                diet={item.recipe.diet}
+                name={item.name}
+                ease={item.ease}
+                cuisine={item.cuisine}
+                diet={item.diet}
                 />
+                
             </View>
         )
     }
@@ -49,7 +65,7 @@ const UserRecipes = ({route, navigation}) => {
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.content}>
-                {recipeAdded ? (
+                {showAddedNotif ? (
                     <Text>Recipe added successfully!</Text>
                 ) : (
                     <></>
