@@ -3,14 +3,15 @@ import React, { useState, useRef } from 'react';
 
 dropdownStyles = StyleSheet.create({
     input: {
-        backgroundColor: '#ffffff',
+        borderColor: '#ffffff',
         borderWidth: 1,
         marginTop: 8,
         marginHorizontal: 8,
         borderRadius: 4,
         padding: 2,
         flexDirection: "row",
-        alignItems: "center"
+        alignItems: "center",
+        color: '#fff'
       },
       overlay: {
         height: '100%',
@@ -18,18 +19,21 @@ dropdownStyles = StyleSheet.create({
       },
       dropdown: {
         position: 'absolute',
-        backgroundColor: '#fff',
+        borderColor: '#fff',
         width: '100%',
         shadowColor: '#000000',
         shadowRadius: 4,
         shadowOffset: { height: 4, width: 0 },
         shadowOpacity: 0.5,
-        marginHorizontal: 8
+        marginHorizontal: 8,
+        color: '#fff',
+        backgroundColor: '#222222'
       },
       item: {
         paddingHorizontal: 5,
         paddingVertical: 5,
         borderBottomWidth: 1,
+        color: '#fff'
       },
       icons: {
         maxWidth: 37.5,
@@ -37,7 +41,11 @@ dropdownStyles = StyleSheet.create({
         marginLeft: "auto"
       },
       labelText: {
-        marginLeft:4
+        marginLeft:4,
+        color: '#fff'
+      },
+      text: {
+        color: '#fff'
       }
 });
 
@@ -70,7 +78,7 @@ const Dropdown = ({ label, data, onSelect }) => {
     const renderItem = ({item}) => {
         return (
             <TouchableOpacity style={dropdownStyles.item} onPress={() => onItemPress(item)}>
-                <Text>{item.label}</Text>
+                <Text style={dropdownStyles.text}>{item.label}</Text>
             </TouchableOpacity>
         )
     }

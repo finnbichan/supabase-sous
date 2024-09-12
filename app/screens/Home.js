@@ -36,9 +36,9 @@ const Home = () => {
       }, [])
     
     return (
-        <SafeAreaView>
-            <View>
-                <Text>You're in</Text>
+        <SafeAreaView style={styles.container}> 
+            <View style={styles.content}>
+                <Text style={styles.text}> You're in</Text>
             </View>
         </SafeAreaView>
     )

@@ -60,7 +60,7 @@ const NewUser = ( {navigation} ) => {
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
         <Text style={styles.title}>Welcome to sous!</Text>
-        <Text>We need a few details from you to get started.</Text>
+        <Text style={styles.text}>We need a few details from you to get started.</Text>
         <TouchableOpacity 
         onPress={() => {navigation.navigate("Login")}}
         style={styles.button}
@@ -93,7 +93,7 @@ const NewUser = ( {navigation} ) => {
           />
         )
         }
-        <Text>We don't use passwords here - when you click sign up, we'll send a one time password to your email address.</Text>
+        <Text style={styles.text}>We don't use passwords here - when you click sign up, we'll send a one time password to your email address.</Text>
         {loading ? <ActivityIndicator /> : (
         <TouchableOpacity 
         onPress={signUp}

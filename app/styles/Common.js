@@ -4,7 +4,7 @@ export const styles = StyleSheet.create({
     container: {
       flex: 1,
       padding: 24,
-      backgroundColor: '#eaeaea'
+      backgroundColor: '#121212',
     },
     content: {
       alignItems: "center",
@@ -14,15 +14,21 @@ export const styles = StyleSheet.create({
       fontSize: 30,
       marginTop:16,
       fontWeight: "bold",
+      color: '#fff'
+    },
+    text: {
+      color: '#fff'
     },
     input: {
-      backgroundColor: '#ffffff',
+      overlayColor: '#ffffff',
+      borderColor: '#ffffff',
       borderWidth: 1,
       width:100,
       marginTop: 8,
       marginHorizontal: 8,
       borderRadius: 4,
-      padding: 2
+      padding: 2,
+      color: '#fff'
     },
     buttonsParent: {
       flexDirection: "row"
@@ -31,7 +37,8 @@ export const styles = StyleSheet.create({
       alignItems: "center",
     },
     button: {
-      backgroundColor: "#000000",
+      borderColor: "#fff",
+      backgroundColor: '#222222',
       marginHorizontal: 8,
       borderWidth: 1,
       borderRadius: 4,

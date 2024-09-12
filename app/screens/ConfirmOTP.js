@@ -23,7 +23,7 @@ const ConfirmOTP = ({ route }) => {
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
         <Text style={styles.title}>Confirm your one time password</Text>
-        <Text>We've sent a one time password to {email}. Type it in below to get cooking.</Text>
+        <Text style={styles.text}>We've sent a one time password to {email}. Type it in below to get cooking.</Text>
         <TextInput
         style={styles.input}
         placeholder="Password"

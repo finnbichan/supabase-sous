@@ -30,7 +30,7 @@ const Login = ( { navigation }) => {
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
         <Text style={styles.title}>Good to see you again</Text>
-        <Text>Enter your email below to log in. We'll send a one time password to your email address to check it's really you.</Text>
+        <Text style={styles.text}>Enter your email below to log in. We'll send a one time password to your email address to check it's really you.</Text>
         <TextInput
         style={styles.input}
         placeholder="Email"

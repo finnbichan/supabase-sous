@@ -3,6 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createDrawerNavigator} from '@react-navigation/drawer';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { Image } from 'react-native';
 import Login from './app/screens/Login';
 import Home from './app/screens/Home';
 import UserRecipes from './app/screens/UserRecipes';
@@ -51,7 +52,13 @@ function Recipes() {
 
 function TabsStack() {
   return (
-    <MainAppTabs.Navigator>
+    <MainAppTabs.Navigator
+    screenOptions={{
+      tabBarStyle: {backgroundColor:'#181818', borderTopWidth:0},
+      tabBarActiveTintColor: '#fff',
+      tabBarInactiveTintColor: '#B3B3B3'
+    }}
+    >
       <MainAppTabs.Screen name="Home" component={Home} options={{headerShown: false}}/>
       <MainAppTabs.Screen name="Recipes" component={Recipes} options={{headerShown: false}} />
     </MainAppTabs.Navigator>
@@ -61,7 +68,18 @@ function TabsStack() {
 function LoggedInStack() {
 
   return (
-      <LoggedInDrawer.Navigator>
+      <LoggedInDrawer.Navigator
+      screenOptions={{ 
+        headerTitle: () => <LogoTitle />,
+        headerTitleAlign: 'left',
+        headerStyle: {backgroundColor: '#181818'},
+        headerShadowVisible: false,
+        headerTintColor: '#fff',
+        drawerStyle: {backgroundColor: '#181818'},
+        drawerLabelStyle: {color: '#fff'},
+        drawerActiveBackgroundColor: '#404040'
+      }}
+      >
         <LoggedInDrawer.Screen name="sous" component={TabsStack} />
         <LoggedInDrawer.Screen name="Settings" component={Settings} />
       </LoggedInDrawer.Navigator>
@@ -70,13 +88,31 @@ function LoggedInStack() {
 
 function AnonStack() {
   return (
-    <LoggedOutStack.Navigator initialRouteName='NewUser'>
-      <LoggedOutStack.Screen name="Sign up" component={NewUser} options={{headerShown: false}}/>
-      <LoggedOutStack.Screen name="Login" component={Login} options={{headerShown: false}}/>
-      <LoggedOutStack.Screen name="Confirm OTP" component={ConfirmOTP} options={{headerShown: false}} />
+    <LoggedOutStack.Navigator 
+      initialRouteName='NewUser'
+      screenOptions={{
+        headerTitle: () => <LogoTitle />,
+        headerTitleAlign: 'center',
+        headerStyle: {backgroundColor: '#222222'},
+        headerShadowVisible: false,
+        headerTintColor: '#fff' 
+      }}
+      >
+      <LoggedOutStack.Screen name="Sign up" component={NewUser}/>
+      <LoggedOutStack.Screen name="Login" component={Login}/>
+      <LoggedOutStack.Screen name="Confirm OTP" component={ConfirmOTP} />
     </LoggedOutStack.Navigator>
   )
 };
+//TODO: fix different positions
+function LogoTitle() {
+  return (
+    <Image
+      style={{ width: 300, height: 55, marginTop: 20}}
+      source={require('./assets/sous_transparent.png')}
+    />
+  );
+}
 
 export default function App() {
   const [session, setSession] = useState(null);
@@ -97,11 +133,18 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName='AnonUser'>
+      <Stack.Navigator 
+      initialRouteName='AnonUser'
+      options={{headerShown: false}}
+      >
         {session ? (
-          <Stack.Screen name="LoggedIn" component={LoggedInStack} options={{headerShown: false}} />
+          <Stack.Screen name="LoggedIn" component={LoggedInStack} options={{headerShown: false}}/>
         ) : (
-          <Stack.Screen name='AnonUser' component={AnonStack} options={{headerShown: false}}/>
+          <Stack.Screen 
+            name='AnonUser'
+            component={AnonStack}
+            options={{headerShown: false}}
+            />
         )}
       </Stack.Navigator>
     </NavigationContainer>
