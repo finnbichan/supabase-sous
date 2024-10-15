@@ -23,7 +23,7 @@ export const styles = StyleSheet.create({
       overlayColor: '#ffffff',
       borderColor: '#ffffff',
       borderWidth: 1,
-      width:100,
+      width: '90%',
       marginTop: 8,
       marginHorizontal: 8,
       borderRadius: 4,
@@ -100,8 +100,21 @@ export const styles = StyleSheet.create({
       maxWidth: 37.5,
       maxHeight: 37.5
     },
-    calendarParent: {
-      
-    }
+    recipeList: {
+      minWidth: "90%"
+    },
+    descriptorsParent: {
+        flexDirection: "row",
+    },
+    descriptors: {
+      backgroundColor: "#535353",
+      borderRadius: 8,
+      marginEnd: 2,
+      marginVertical: 2,
+      padding: 2
+  },
+  descriptorText : {
+      color: "#FFF"
+  }
     }
   );

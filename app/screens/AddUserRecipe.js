@@ -6,6 +6,7 @@ import { supabase } from '../../supabase';
 
 const AddUserRecipe = ( {navigation} ) => {
     const [name, setName] = useState(undefined);
+    const [desc, setDesc] = useState(undefined);
     const [cuisine, setCuisine] = useState(undefined);
     const [diet, setDiet] = useState(undefined);
     const [ease, setEase] = useState(undefined);
@@ -46,25 +47,33 @@ const AddUserRecipe = ( {navigation} ) => {
             }}>
                 <Text style={styles.buttonText}>Back</Text>
             </TouchableOpacity>
-            <Text>Add a new recipe</Text>
+            <Text style={styles.text}>Add a new recipe</Text>
             <TextInput
             style={styles.input}
             onChangeText={setName}
             placeholder='Recipe name...'
+            placeholderTextColor={'#fff'}
             />
-            <Text>Cuisine</Text>
+            <Text style={styles.text}>Description (optional)</Text>
+            <TextInput
+            style={styles.input}
+            onChangeText={setDesc}
+            placeholder='Add a short description for this recipe'
+            placeholderTextColor={'#fff'}
+            />
+            <Text style={styles.text}>Cuisine</Text>
             <Dropdown
             data={cuisineList}
             label="Select an option..."
             onSelect={setCuisine}
             />
-            <Text>Veggie or vegan?</Text>
+            <Text style={styles.text}>Veggie or vegan?</Text>
             <Dropdown
             data={dietList}
             label="Select an option..."
             onSelect={setDiet}
             />
-            <Text>How long does it take?</Text>
+            <Text style={styles.text}>How long does it take?</Text>
             <Dropdown
             data={easeList}
             label="Select an option..."
@@ -80,7 +89,7 @@ const AddUserRecipe = ( {navigation} ) => {
                 <Text style={styles.buttonText}>Add recipe</Text>
             </TouchableOpacity>
             )}
-            {validationFailed ? (<Text>Please make sure you have filled in all the fields above</Text>) : (<></>)}
+            {validationFailed ? (<Text style={styles.text}>Please make sure you have filled in all the fields above</Text>) : (<></>)}
         </SafeAreaView>
     )
 }

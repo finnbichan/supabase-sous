@@ -1,7 +1,7 @@
-import { View, Text, Pressable, SafeAreaView, TouchableOpacity,ActivityIndicator, FlatList } from 'react-native';
+import { View, Text, Pressable, SafeAreaView, TouchableOpacity,ActivityIndicator, FlatList, TouchableWithoutFeedback } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { styles } from '../styles/Common';
-import Recipe from '../components/Recipe';
+import Recipe from '../components/RecipeOverview';
 import { supabase } from '../../supabase';
 import { useIsFocused } from '@react-navigation/native';
 
@@ -52,10 +52,8 @@ const UserRecipes = ({route, navigation}) => {
             <View>
 
                 <Recipe
-                name={item.name}
-                ease={item.ease}
-                cuisine={item.cuisine}
-                diet={item.diet}
+                recipe={item}
+                navigation={navigation}
                 />
                 
             </View>
@@ -66,11 +64,11 @@ const UserRecipes = ({route, navigation}) => {
         <SafeAreaView style={styles.container}>
             <View style={styles.content}>
                 {showAddedNotif ? (
-                    <Text>Recipe added successfully!</Text>
+                    <Text style={styles.text}>Recipe added successfully!</Text>
                 ) : (
                     <></>
                 )}
-                <Text>Here are your recipes</Text>
+                <Text style={styles.text}>Here are your recipes</Text>
                 <TouchableOpacity
                 style={styles.button}
                 onPress={()=>{
@@ -81,14 +79,14 @@ const UserRecipes = ({route, navigation}) => {
                 {loading ? (
                     <ActivityIndicator size="large" />
                 ) : (
-                    <>
                     <FlatList
                     data={recipes}
                     renderItem={renderRecipe}
                     keyExtractor={item => item.id}
                     extraData={loading}
+                    style={styles.recipeList}
+                    showsVerticalScrollIndicator={false}
                     />
-                    </>
                 )}
             </View>
         </SafeAreaView>

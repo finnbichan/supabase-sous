@@ -20,7 +20,7 @@ dropdownStyles = StyleSheet.create({
       dropdown: {
         position: 'absolute',
         borderColor: '#fff',
-        width: '100%',
+        width: '90%',
         shadowColor: '#000000',
         shadowRadius: 4,
         shadowOffset: { height: 4, width: 0 },

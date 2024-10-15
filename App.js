@@ -7,6 +7,7 @@ import { Image } from 'react-native';
 import Login from './app/screens/Login';
 import Home from './app/screens/Home';
 import UserRecipes from './app/screens/UserRecipes';
+import Recipe from './app/screens/Recipe';
 import Settings from './app/screens/Settings';
 import AddUserRecipe from './app/screens/AddUserRecipe';
 import NewUser from './app/screens/NewUser';
@@ -46,6 +47,7 @@ function Recipes() {
     <RecipePages.Navigator>
       <RecipePages.Screen name="Your recipes" component={UserRecipes} options={{headerShown: false}} />
       <RecipePages.Screen name="Add a recipe" component={AddUserRecipe} options={{headerShown: false}} />
+      <RecipePages.Screen name="Recipe" component={Recipe} options={{headerShown: false}} />
     </RecipePages.Navigator>
   )
 }
