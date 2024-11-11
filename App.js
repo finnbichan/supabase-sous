@@ -4,16 +4,15 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createDrawerNavigator} from '@react-navigation/drawer';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Image } from 'react-native';
+import { useState, useEffect } from 'react';
 import Login from './app/screens/Login';
 import Home from './app/screens/Home';
 import UserRecipes from './app/screens/UserRecipes';
 import Recipe from './app/screens/Recipe';
 import Settings from './app/screens/Settings';
-import AddUserRecipe from './app/screens/AddUserRecipe';
+import AddOrEditUserRecipe from './app/screens/AddOrEditUserRecipe';
 import NewUser from './app/screens/NewUser';
-import { useState, useEffect } from 'react';
 import ConfirmOTP from './app/screens/ConfirmOTP';
-
 
 const Stack = createNativeStackNavigator();
 
@@ -46,7 +45,7 @@ function Recipes() {
   return (
     <RecipePages.Navigator>
       <RecipePages.Screen name="Your recipes" component={UserRecipes} options={{headerShown: false}} />
-      <RecipePages.Screen name="Add a recipe" component={AddUserRecipe} options={{headerShown: false}} />
+      <RecipePages.Screen name="Add a recipe" component={AddOrEditUserRecipe} options={{headerShown: false}} />
       <RecipePages.Screen name="Recipe" component={Recipe} options={{headerShown: false}} />
     </RecipePages.Navigator>
   )
@@ -62,7 +61,7 @@ function TabsStack() {
     }}
     >
       <MainAppTabs.Screen name="Home" component={Home} options={{headerShown: false}}/>
-      <MainAppTabs.Screen name="Recipes" component={Recipes} options={{headerShown: false}} />
+      <MainAppTabs.Screen name="Recipes" component={Recipes} options={{headerShown: false}}/>
     </MainAppTabs.Navigator>
   );
 }

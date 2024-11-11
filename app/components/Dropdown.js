@@ -49,7 +49,7 @@ dropdownStyles = StyleSheet.create({
       }
 });
 
-const Dropdown = ({ label, data, onSelect }) => {
+const Dropdown = ({ value, label, data, onSelect }) => {
 
     const [visible, setVisible] = useState(false);
 
@@ -67,7 +67,7 @@ const Dropdown = ({ label, data, onSelect }) => {
         visible ? setVisible(!visible) : openDropdown();
     };
 
-    const [selected, setSelected] = useState(undefined);
+    const [selected, setSelected] = useState(data[value]);
 
     const onItemPress = (item) => {
         setSelected(item);

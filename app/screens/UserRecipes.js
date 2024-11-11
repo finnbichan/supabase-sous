@@ -1,4 +1,4 @@
-import { View, Text, Pressable, SafeAreaView, TouchableOpacity,ActivityIndicator, FlatList, TouchableWithoutFeedback } from 'react-native';
+import { View, Text, Pressable, SafeAreaView, TouchableOpacity,ActivityIndicator, FlatList, Image } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { styles } from '../styles/Common';
 import Recipe from '../components/RecipeOverview';
@@ -33,6 +33,7 @@ const UserRecipes = ({route, navigation}) => {
         .from('recipes')
         .select()
         .eq('user_id', userData.data.user.id)
+        .order('recipe_name')
         const recipes = recipesData.data.map((item) => {
             return {
               id: item.id,
@@ -41,6 +42,7 @@ const UserRecipes = ({route, navigation}) => {
               cuisine: item.cuisine,
               diet: item.diet
             }})
+        console.log(recipes)
         setRecipes(recipes)
         setLoading(false)
         }
@@ -68,14 +70,19 @@ const UserRecipes = ({route, navigation}) => {
                 ) : (
                     <></>
                 )}
-                <Text style={styles.text}>Here are your recipes</Text>
-                <TouchableOpacity
-                style={styles.button}
-                onPress={()=>{
-                    navigation.navigate("Add a recipe");
-                }}
-                ><Text style={styles.buttonText}>Add another one</Text>
-                </TouchableOpacity>
+                <View style={styles.userRecipesTitleBox}>
+                    <Text style={styles.title}>Recipes</Text>
+                    <TouchableOpacity
+                    onPress={()=>{
+                        navigation.navigate("Add a recipe");
+                    }}
+                    >
+                        <Image 
+                        style={styles.addButton}
+                        source={require('../../assets/add_box.png')}
+                        />
+                    </TouchableOpacity>
+                </View>
                 {loading ? (
                     <ActivityIndicator size="large" />
                 ) : (

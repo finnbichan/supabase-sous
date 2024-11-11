@@ -34,7 +34,7 @@ recipeStyles = StyleSheet.create({
 
 const Recipe = ({recipe, navigation}) => {
     return (
-        <TouchableOpacity 
+        <TouchableOpacity
         style={recipeStyles.recipe}
         onPress={()=>{
             navigation.navigate("Recipe", {recipe: recipe});

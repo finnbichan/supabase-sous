@@ -1,10 +1,12 @@
+import { cloneElement } from 'react';
 import { StyleSheet } from 'react-native';
+import BackButton from '../components/BackButton';
 
 export const styles = StyleSheet.create({
     container: {
-      flex: 1,
-      padding: 24,
-      backgroundColor: '#121212',
+      flexGrow: 1,
+      padding: 5,
+      backgroundColor: '#121212'
     },
     content: {
       alignItems: "center",
@@ -12,9 +14,11 @@ export const styles = StyleSheet.create({
     },
     title: {
       fontSize: 30,
-      marginTop:16,
+      marginTop: 10,
       fontWeight: "bold",
-      color: '#fff'
+      color: '#fff',
+      maxWidth: 300,
+      textAlign: 'center'
     },
     text: {
       color: '#fff'
@@ -101,20 +105,64 @@ export const styles = StyleSheet.create({
       maxHeight: 37.5
     },
     recipeList: {
-      minWidth: "90%"
+      minWidth: "90%",
+      marginBottom: 64
     },
     descriptorsParent: {
-        flexDirection: "row",
+      flexDirection: "row",
     },
     descriptors: {
       backgroundColor: "#535353",
       borderRadius: 8,
-      marginEnd: 2,
+      marginHorizontal: 2,
       marginVertical: 2,
-      padding: 2
+      paddingHorizontal: 4,
+      paddingVertical: 2 
   },
   descriptorText : {
       color: "#FFF"
+  },
+  overlay: {
+    height: '100%',
+    width: "100%",
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  modal: {
+    backgroundColor: '#000',
+    borderColor: '#FFF',
+    borderRadius: 4,
+    borderWidth: 1,
+    width: '70%',
+    height: '10%',
+    justifyContent: 'space-evenly',
+    alignItems: 'center'
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    padding: 4
+  },
+  userRecipesTitleBox: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '90%',
+    maxHeight: 70,
+  },
+  recipeTitleBox: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%'
+  },
+  addButton: {
+    maxHeight: 50,
+    maxWidth: 50,
+    marginTop: 5
+  },
+  editButton: {
+    maxHeight: 40,
+    maxWidth: 40,
+    marginTop: 10
   }
     }
   );
