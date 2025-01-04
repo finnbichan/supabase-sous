@@ -1,9 +1,30 @@
-import { View, Text, FlatList, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, ActivityIndicator, StyleSheet } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { styles } from '../styles/Common';
 import Recipe from './RecipeOverview';
 import { supabase } from '../../supabase';
 import NoPlan from './NoPlan';
+import CollapsibleSection from './CollapsibleSection';
+
+
+const calendarStyles = StyleSheet.create({
+    calendarList: {
+        flexGrow: 1
+    },
+    parentDateContainer: {
+        borderWidth: 1,
+        borderColor: '#f0f0f0',
+        borderRadius: 4,
+        padding: 4,
+        margin: 4,
+        width: '95%'
+    },
+    titleBox: {
+        backgroundColor: '#A9A9A9',
+        margin: '-4',
+        borderRadius: 2
+    }
+})
 
 
 const Calendar = ({navigation}) => {
@@ -68,13 +89,17 @@ const Calendar = ({navigation}) => {
 
     const renderDate = (date) => {
         return (
-            <View>
-                {date === todaysDate.toISOString().slice(0,10) ? (
-                    <Text style={styles.text}>Tonight's meal</Text>
-                ) : (
-                    <Text style={styles.text}>{date}</Text>
-                )}
-                {plannedRecipes[0][date] === undefined ? (
+            <View style={calendarStyles.parentDateContainer}>
+                <View style={calendarStyles.titleBox}>
+                    {date === todaysDate.toISOString().slice(0,10) ? (
+                        <Text style={styles.text}>Tonight's meal</Text>
+                    ) : (
+                        <Text style={styles.text}>{date}</Text>
+                    )}
+                </View>
+                <CollapsibleSection
+                title='Breakfast'
+                children={plannedRecipes[0][date] === undefined ? (
                     <NoPlan />
                 ) : (
                 <>
@@ -84,6 +109,7 @@ const Calendar = ({navigation}) => {
                     />
                 </>
                 )}
+                />
             </View>
         )
     }
@@ -94,6 +120,7 @@ const Calendar = ({navigation}) => {
            <FlatList
             data={dateArray}
             renderItem={({item}) => renderDate(item)}
+            style={styles.calendarList}
             /> 
             )}
         </View>

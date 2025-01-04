@@ -26,7 +26,8 @@ const Home = ({navigation}) => {
             <View style={styles.content}>
                 <Text style={styles.title}>Hey {name}</Text>
                 <Calendar 
-                navigation={navigation}/>
+                navigation={navigation}
+                />
             </View>
         </SafeAreaView>
     )
