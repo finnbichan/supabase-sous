@@ -3,29 +3,13 @@ import React, { useEffect, useState } from 'react';
 import { styles } from '../styles/Common';
 import Recipe from '../components/RecipeOverview';
 import { supabase } from '../../supabase';
-import { useIsFocused } from '@react-navigation/native';
 
 const UserRecipes = ({route, navigation}) => {
     const [loading, setLoading] = useState(true);
     const [recipes, setRecipes] = useState(undefined);
-    const [recipeAdded, setRecipeAdded] = useState(null);
-    const [showAddedNotif, setShowAddedNotif] = useState(null);
-    
-    const isFocused = useIsFocused();
-
-    function removeAddedNotif() {
-        setShowAddedNotif(null);
-    }
 
     useEffect(() => {
-        if(route.params?.added){
-            setRecipeAdded(true)
-            setShowAddedNotif(true)
-            setTimeout(removeAddedNotif, 2000);
-            }
-    }, [isFocused])
-    
-    useEffect(() => {
+        setLoading(true)
         getRecipes = async () => {
         console.log("fetching")
         const userData = await supabase.auth.getUser()
@@ -47,7 +31,7 @@ const UserRecipes = ({route, navigation}) => {
         setLoading(false)
         }
         getRecipes()
-    }, [recipeAdded])
+    }, [route.params?.action])
 
     const renderRecipe = ({item}) => {
         return (
@@ -65,11 +49,6 @@ const UserRecipes = ({route, navigation}) => {
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.content}>
-                {showAddedNotif ? (
-                    <Text style={styles.text}>Recipe added successfully!</Text>
-                ) : (
-                    <></>
-                )}
                 <View style={styles.userRecipesTitleBox}>
                     <Text style={styles.title}>Recipes</Text>
                     <TouchableOpacity

@@ -84,7 +84,7 @@ const AddOrEditUserRecipe = ( {route, navigation} ) => {
             steps: stepsJSON
             })
         setSubmitting(false)
-        navigation.navigate('Your recipes', {added: "true"})
+        navigation.navigate('Recipe', {action: "add", recipe: recipe})
         }
 
     const update = async () => {
@@ -104,7 +104,7 @@ const AddOrEditUserRecipe = ( {route, navigation} ) => {
         .eq('id', recipe.id)
         console.log(data)
         setSubmitting(false)
-        navigation.navigate('Recipe', {updated: "true", recipe: recipe})
+        navigation.navigate('Recipe', {action: "update", recipe: recipe})
         }
     
 

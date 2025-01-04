@@ -2,9 +2,10 @@ import React from 'react';
 import { TouchableOpacity } from 'react-native';
 import { View, Text, StyleSheet, Image } from 'react-native';
 import { styles } from '../styles/Common';
+import RecipeBase from './RecipeBase';
 
 
-recipeStyles = StyleSheet.create({
+const recipeStyles = StyleSheet.create({
     recipe: {
         backgroundColor: "#222222",
         borderRadius: 4,
@@ -37,25 +38,12 @@ const Recipe = ({recipe, navigation}) => {
         <TouchableOpacity
         style={recipeStyles.recipe}
         onPress={()=>{
-            navigation.navigate("Recipe", {recipe: recipe});
+            navigation.navigate("Recipes", {screen: 'Recipe', params: {recipe: recipe}});
         }}
         >
-            <View style={recipeStyles.nameSection}>
-                <Text style={recipeStyles.name}>{recipe.name}</Text>
-                <View style={styles.descriptorsParent}>
-                    <View style={styles.descriptors}>
-                        <Text style={styles.descriptorText}>{easeList[recipe.ease].label}</Text>
-                    </View>
-                    <View style={styles.descriptors}>
-                        <Text style={styles.descriptorText}>{cuisineList[recipe.cuisine].label}</Text>
-                    </View> 
-                    {recipe.diet == 0 ? (<></>):(
-                    <View style={styles.descriptors}>
-                        <Text style={styles.descriptorText}>{dietList[recipe.diet].label}</Text>
-                    </View> ) 
-                    }
-                </View>
-            </View>
+            <RecipeBase
+            recipe={recipe}
+            />
             <View style={recipeStyles.buttonSection}> 
                 <Image 
                 style={recipeStyles.chevron}

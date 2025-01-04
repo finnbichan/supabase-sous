@@ -129,7 +129,7 @@ export const styles = StyleSheet.create({
     alignItems: 'center'
   },
   modal: {
-    backgroundColor: '#000',
+    backgroundColor: '#181818',
     borderColor: '#FFF',
     borderRadius: 4,
     borderWidth: 1,

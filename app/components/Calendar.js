@@ -1,65 +1,101 @@
-import { View, Text, TextInput, FlatList, Pressable, Image, TouchableOpacity, Icon } from 'react-native';
-import React from 'react';
+import { View, Text, FlatList, ActivityIndicator } from 'react-native';
+import React, { useEffect, useState } from 'react';
 import { styles } from '../styles/Common';
+import Recipe from './RecipeOverview';
+import { supabase } from '../../supabase';
+import NoPlan from './NoPlan';
 
-const days = [{"date":"2024-05-09", "recipe":"True"}, {"date":"2024-05-10", "recipe":"false"}, {"date":"2024-05-11", "recipe":"true"},  {"date":"2024-05-12", "recipe":"true"},  {"date":"2024-05-13", "recipe":"true"},  {"date":"2024-05-14", "recipe":"true"},  {"date":"2024-05-15", "recipe":"true"}];
 
-const renderDay = ( {item} ) => {
-    return (
-        <>
-        {item.recipe == "true" ? (
-            <View style={styles.calendarCard}>
-                <Text>{item.date}</Text>
-                <View style={styles.recipeCard}>
-                    <Text>Pesto Pasta</Text>
-                    <View style={styles.recipeButtons}>
-                        <TouchableOpacity style={styles.circularButton}>
-                            <Image
-                            style={styles.icons}
-                            source={require('../../assets/refresh.png')}
-                            />
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.circularButton}>
-                            <Image
-                            style={styles.icons}
-                            source={require('../../assets/delete.png')}
-                            />
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </View>
-        ) : (
-            <View style={styles.calendarCard}>
-                <Text>{item.date}</Text>
-                <View style={styles.recipeCard}>
-                    <TextInput
-                    placeholder="Search for a recipe..."
+const Calendar = ({navigation}) => {
+    const [loading, setLoading] = useState(true);
+    const [plannedRecipes, setPlannedRecipes] = useState(undefined);
+    const todaysDate = new Date();
+
+    const createDateArray = () => {
+        let dateArray = [];
+        for(let i = 0; i < 14; i++){
+            let date = new Date()
+            date.setDate(todaysDate.getDate() + i)
+            dateArray.push(date.toISOString().slice(0,10))
+        }
+        return dateArray
+    }
+
+    const dateArray = createDateArray();
+    
+
+    useEffect(() => {
+        setLoading(true);
+        const getPlannedRecipes = async () => {
+            console.log("fetchingabc")
+            const userData = await supabase.auth.getUser()
+            const plannedRecipesData = await supabase
+            .from('plannedrecipes')
+            .select()
+            .eq('user_id', userData.data.user.id)
+            .gte('date', dateArray[0])
+            .lte('date', dateArray[dateArray.length - 1])
+            .order('date')
+            const recipesArray = plannedRecipesData.data.map((item) => item.recipe_id)
+            const plannedRecipeIds = plannedRecipesData.data.map((item) => {
+                return {
+                    date: item.date,
+                    recipe: item.recipe_id
+                }}
+            )
+            const recipeFullData = await supabase
+            .from('recipes')
+            .select()
+            .in('id', recipesArray)
+            const plannedRecipesFull = recipeFullData.data.map((item) => {
+                return {
+                  id: item.id,
+                  name: item.recipe_name,
+                  ease: item.ease,
+                  cuisine: item.cuisine,
+                  diet: item.diet 
+                }})
+            const plannedRecipesComplete = plannedRecipeIds.map((item) => {
+                return {
+                    [item.date] : plannedRecipesFull.find((recipe) => recipe.id === item.recipe)
+                }
+            })
+            setPlannedRecipes(plannedRecipesComplete)
+            setLoading(false)
+        }
+        getPlannedRecipes()
+    }, [])
+
+    const renderDate = (date) => {
+        return (
+            <View>
+                {date === todaysDate.toISOString().slice(0,10) ? (
+                    <Text style={styles.text}>Tonight's meal</Text>
+                ) : (
+                    <Text style={styles.text}>{date}</Text>
+                )}
+                {plannedRecipes[0][date] === undefined ? (
+                    <NoPlan />
+                ) : (
+                <>
+                    <Recipe
+                    recipe={plannedRecipes[0][date]}
+                    navigation={navigation}
                     />
-                    <View style={styles.recipeButtons}>
-                        <TouchableOpacity style={styles.circularButton}>
-                            <Image
-                            style={styles.icons}
-                            source={require('../../assets/generate.png')}
-                            />
-                        </TouchableOpacity>
-                    </View>
-                </View>
+                </>
+                )}
             </View>
         )
-        }
-        </>
-    );
-}
-
-const Calendar = () => {
+    }
+    
     return (
         <View style={styles.calendarParent}>
-            <FlatList
-                data={days}
-                renderItem={renderDay}
-                windowSize="5"
-                style={styles.calendar}
-            />
+            {loading ? <ActivityIndicator/> : (
+           <FlatList
+            data={dateArray}
+            renderItem={({item}) => renderDate(item)}
+            /> 
+            )}
         </View>
     );
 }

@@ -4,41 +4,29 @@ import { supabase } from '../../supabase';
 import Calendar from '../components/Calendar';
 import { styles } from '../styles/Common';
 
-const Home = () => {
+const Home = ({navigation}) => {
+    const [name, setName] = useState('');
     const [dataLoading, setDataLoading] = useState(true)
-    const [cuisines, setCuisines] = useState('');
 
-    useEffect(() => {
-        const getCuisines = async () => {
-          await (supabase.from('cuisines').select('id, desc')).eq('status', true)
-          .then((data) => {
-            if(data.error){
-                throw new Error(data.error);
-            }
-            const parsedForDropdown = data.data.map((item) => {
-              return {
-                id: item.id,
-                label: item.desc
-              }
-            });
-            console.log(parsedForDropdown)
-            setCuisines(parsedForDropdown);
-            console.log(cuisines);
-          })
-          .catch((error) => {
-            console.log(error);
-          })
-          .finally(() => {
-            setDataLoading(false);
-          })
-        }
-        getCuisines();
-      }, [])
+    useEffect(()=> {
+      getUserName = async () => {
+        const userData = await supabase.auth.getUser();
+        const nameData = await supabase
+        .from('profiles')
+        .select('display_name')
+        .eq('id', userData.data.user.id);
+        setName(nameData.data[0].display_name);
+        console.log(name);
+      }
+      getUserName();
+    })
     
     return (
-        <SafeAreaView style={styles.container}> 
+        <SafeAreaView style={styles.container}>
             <View style={styles.content}>
-                <Text style={styles.text}> You're in</Text>
+                <Text style={styles.title}>Hey {name}</Text>
+                <Calendar 
+                navigation={navigation}/>
             </View>
         </SafeAreaView>
     )

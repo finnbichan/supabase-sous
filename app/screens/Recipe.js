@@ -24,6 +24,7 @@ const Recipe = ({route, navigation}) => {
     const [recipe, setRecipe] = useState(route.params.recipe);
     const [updated, setUpdated] = useState(route.params?.updated);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [deleting, setDeleting] = useState(false);
 
     console.log(typeof(recipe))
     
@@ -58,18 +59,22 @@ const Recipe = ({route, navigation}) => {
                     <View style={styles.modal}>
                         <Text style={styles.text}>Are you sure you want to delete this recipe?</Text>
                         <View style={styles.modalButtons}>
-                            <Pressable
-                            style={styles.button}
-                            onPress={deleteRecipe}
-                            >
-                                <Text style={styles.buttonText}>Yes</Text>
-                            </Pressable>
-                            <Pressable
-                            style={styles.button}
-                            onPress={() => {setDeleteModalOpen(false)}}
-                            >
-                                <Text style={styles.buttonText}>Cancel</Text>
-                            </Pressable>
+                            {deleting ? <ActivityIndicator /> : (
+                            <>
+                                <Pressable
+                                style={styles.button}
+                                onPress={deleteRecipe}
+                                >
+                                    <Text style={styles.buttonText}>Yes</Text>
+                                </Pressable>
+                                <Pressable
+                                style={styles.button}
+                                onPress={() => {setDeleteModalOpen(false)}}
+                                >
+                                    <Text style={styles.buttonText}>Cancel</Text>
+                                </Pressable>
+                            </>
+                            )}
                         </View>
                     </View>
                     </Pressable>
@@ -79,7 +84,14 @@ const Recipe = ({route, navigation}) => {
     }
 
     const deleteRecipe = async () => {
-        console.log("deleting")
+        setDeleting(true);
+        const data = await supabase
+        .from('recipes')
+        .delete()
+        .eq('id', recipe.id)
+        console.log(data)
+        setDeleting(false)
+        navigation.navigate('Your recipes', {action: "delete" + recipe.id})
     }
 
     return (
@@ -90,7 +102,6 @@ const Recipe = ({route, navigation}) => {
                 <Text style={styles.title}>{recipe.name}</Text>
                 {loading ? <ActivityIndicator /> : <EditButton nav={navigation} recipe={recipe}/>}
             </View>
-            
             <View style={styles.descriptorsParent}>
                     <View style={styles.descriptors}>
                         <Text style={styles.descriptorText}>{easeList[recipe.ease].label}</Text>
