@@ -1,4 +1,4 @@
-import { View, Text, Pressable, SafeAreaView } from 'react-native';
+import { View, Text, Pressable, SafeAreaView, StyleSheet } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../supabase';
 import Calendar from '../components/Calendar';
@@ -24,7 +24,6 @@ const Home = ({navigation}) => {
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.content}>
-                <Text style={styles.title}>Hey {name}</Text>
                 <Calendar 
                 navigation={navigation}
                 />

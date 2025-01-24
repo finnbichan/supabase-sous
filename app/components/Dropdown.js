@@ -51,6 +51,8 @@ dropdownStyles = StyleSheet.create({
 
 const Dropdown = ({ value, label, data, onSelect }) => {
 
+    console.log("data", data)
+
     const [visible, setVisible] = useState(false);
 
     const DropdownButton = useRef();

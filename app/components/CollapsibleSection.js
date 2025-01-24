@@ -27,12 +27,12 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
     },
     header: {
-        backgroundColor: '#f0f0f0',
+        backgroundColor: '#222222',
         padding: 10,
     },
     title: {
         fontSize: 16,
-        fontWeight: 'bold',
+        color: '#fff',
     },
     content: {
         padding: 10,

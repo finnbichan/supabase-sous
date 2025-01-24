@@ -18,8 +18,8 @@ export const styles = StyleSheet.create({
       fontWeight: "bold",
       color: '#fff',
       maxWidth: 300,
-      textAlign: 'center'
-    },
+      textAlign: 'left'
+     },
     text: {
       color: '#fff'
     },
