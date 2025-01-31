@@ -1,11 +1,13 @@
 import { View, Text, FlatList, ActivityIndicator, StyleSheet, TouchableOpacity, Image } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { styles } from '../styles/Common';
 import Recipe from './RecipeOverview';
 import { supabase } from '../../supabase';
 import NoPlan from './NoPlan';
 import CollapsibleSection from './CollapsibleSection';
 import CalendarHeader from './CalendarHeader';
+import { AuthContext } from '../../Contexts';
+import MealPlan from './MealPlan';
 
 
 const calendarStyles = StyleSheet.create({
@@ -37,12 +39,6 @@ const calendarStyles = StyleSheet.create({
         fontWeight: 'heavy',
         fontFamily: ''
     },
-    mealsContainer: {
-        backgroundColor: '#222222',
-        borderRadius: 8,
-        paddingHorizontal: 10,
-        marginTop: 4
-    },
     flashIcon: {   
         marginLeft: 'auto'
     }
@@ -64,6 +60,19 @@ const Calendar = ({navigation}) => {
         return dateArray
     }
 
+    const addPlannedRecipe = (newRecipe) => {
+        console.log(newRecipe)
+        setPlannedRecipes([...plannedRecipes, newRecipe]);
+        console.log(plannedRecipes)
+    }
+
+    const deletePlannedRecipe = (id) => {
+        const copy = plannedRecipes.filter(item => !(item.plannedrecipe_id === id));
+        console.log("wah", copy);
+        setPlannedRecipes([...copy]);
+        console.log("deleting", plannedRecipes)
+    }
+
     const createDateArrayForDropdown = (array) => {
         let i = 0;
         let dropdownDateArray = array.map((item) => {
@@ -73,7 +82,6 @@ const Calendar = ({navigation}) => {
                 "id": i
             }
         })
-        console.log("pay attention", dropdownDateArray);
         return dropdownDateArray;
     }
 
@@ -85,18 +93,19 @@ const Calendar = ({navigation}) => {
     useEffect(() => {
         setLoading(true);
         const getPlannedRecipes = async () => {
-            console.log("fetchingabc")
             const userData = await supabase.auth.getUser()
             const plannedRecipesData = await supabase
             .from('plannedrecipes')
             .select()
             .eq('user_id', userData.data.user.id)
+            .eq('active', 1)
             .gte('date', dateArray[0])
             .lte('date', dateArray[dateArray.length - 1])
             .order('date')
             const recipesArray = plannedRecipesData.data.map((item) => item.recipe_id)
             const plannedRecipeIds = plannedRecipesData.data.map((item) => {
                 return {
+                    plannedrecipe_id: item.id,
                     date: item.date,
                     recipe: item.recipe_id,
                     meal_type: item.meal_type
@@ -108,7 +117,7 @@ const Calendar = ({navigation}) => {
             .in('id', recipesArray)
             const plannedRecipesFull = recipeFullData.data.map((item) => {
                 return {
-                  id: item.id,
+                  recipe_id: item.id,
                   name: item.recipe_name,
                   ease: item.ease,
                   cuisine: item.cuisine,
@@ -116,14 +125,14 @@ const Calendar = ({navigation}) => {
                 }})
             const plannedRecipesComplete = plannedRecipeIds.map((item) => {
                 return {
+                    plannedrecipe_id: item.plannedrecipe_id,
                     date: item.date,
                     meal_type: item.meal_type,
-                    recipe: plannedRecipesFull.find((recipe) => recipe.id === item.recipe)
+                    recipe: plannedRecipesFull.find((recipe) => recipe.recipe_id === item.recipe)
                 }
             })
-            console.log(plannedRecipesComplete)
             setPlannedRecipes(plannedRecipesComplete)
-            console.log("here", plannedRecipes)
+            console.log(plannedRecipes)
             setLoading(false)
         }
         getPlannedRecipes()
@@ -143,59 +152,35 @@ const Calendar = ({navigation}) => {
                     ) : (
                         <Text style={calendarStyles.largeText}>{dateString}</Text>
                     )}
-                    <TouchableOpacity style={calendarStyles.flashIcon}>
-                        <Image
-                        style={styles.icons}
-                        source={require('../../assets/bolt.png')}
-                        />
-                    </TouchableOpacity>
                 </View>
                 <View style={calendarStyles.mealsContainer}>
-                {breakfast === undefined ? (
-                    <CollapsibleSection
-                    title='Breakfast - Nothing planned'
-                    children={<NoPlan />}
-                    />
-                ) : (
-                    <CollapsibleSection
-                    title={"Breakfast - " + breakfast.recipe.name}
-                    children={
-                        <Recipe
-                        recipe={breakfast.recipe}
-                        navigation={navigation}
-                        />}
-                    />
-                )}
-                {lunch === undefined ? (
-                    <CollapsibleSection
-                    title='Lunch - Nothing planned'
-                    children={<NoPlan />}
-                    />
-                ) : (
-                    <CollapsibleSection
-                    title={"Lunch - " + lunch.recipe.name}
-                    children={
-                        <Recipe
-                        recipe={lunch.recipe}
-                        navigation={navigation}
-                        />}
-                    />
-                )}
-                {dinner === undefined ? (
-                    <CollapsibleSection
-                    title='Dinner - Nothing planned'
-                    children={<NoPlan />}
-                    />
-                ) : (
-                    <CollapsibleSection
-                    title={"Dinner - " + dinner.recipe.name}
-                    children={
-                        <Recipe
-                        recipe={dinner.recipe}
-                        navigation={navigation}
-                        />}
-                    />
-                )}
+                <MealPlan
+                navigation={navigation}
+                meal_type={1}
+                date={mealdate}
+                recipe={breakfast?.recipe || null}
+                plannedrecipe_id={breakfast?.plannedrecipe_id}
+                addPlannedRecipe={addPlannedRecipe}
+                deletePlannedRecipe={deletePlannedRecipe}
+                />
+                <MealPlan
+                navigation={navigation}
+                meal_type={2}
+                date={mealdate}
+                recipe={lunch?.recipe || null}
+                plannedrecipe_id={lunch?.plannedrecipe_id}
+                addPlannedRecipe={addPlannedRecipe}
+                deletePlannedRecipe={deletePlannedRecipe}
+                />
+                <MealPlan
+                navigation={navigation}
+                meal_type={3}
+                date={mealdate}
+                recipe={dinner?.recipe || null}
+                plannedrecipe_id={dinner?.plannedrecipe_id}
+                addPlannedRecipe={addPlannedRecipe}
+                deletePlannedRecipe={deletePlannedRecipe}
+                />
                 </View>
             </View>
         )

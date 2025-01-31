@@ -1,45 +1,34 @@
-import React, {useState} from 'react';
+import React, { useState, useContext } from 'react';
 import { View, Text, Button, StyleSheet, TouchableOpacity } from 'react-native';
 import Dropdown from './Dropdown';
 import { styles } from '../styles/Common';
+import { AuthContext } from '../../Contexts';
 
 const CalendarHeader = ( { dateArray } ) => {
     const [startDate, setStartDate] = useState();
     const [endDate, setEndDate] = useState();
+    const session = useContext(AuthContext);
+    const time = Number((new Date).getHours());
+    var greeting = "Hey";
+    if (0 <= time < 12) {greeting = "Morning"}
+    else if (12 <= time < 18) {greeting = "Afternoon"}
+    else {greeting = "Evening"};
     
-    console.log("inside", dateArray); 
     return (
-        <View style={styles.container}>
-            <View>
-                <Text style={styles.title}>Hello, User!</Text> 
+            <View style={headerStyles.container}>
+                <Text style={styles.title}>{greeting} {session.user.user_metadata.display_name}!</Text>
                 <TouchableOpacity style={headerStyles.shoppingButton}>
                     <Text style={headerStyles.shoppingButtonText}>Shopping Lists</Text>
                 </TouchableOpacity>
             </View>
-            <Text style={styles.text}>Generate a meal plan from</Text>
-                <Dropdown
-                    data={dateArray}
-                    label="Select an option..."
-                    onSelect={(selected) => {setStartDate(selected)}}
-                    value={startDate}
-                />
-                <Text style={styles.text}>to</Text>
-                <Dropdown
-                    data={dateArray}
-                    label="Select an option..."
-                    onSelect={(selected) => {setEndDate(selected)}}
-                    value={endDate}
-                />
-
-            <TouchableOpacity styles={styles.button} onPress={() => { /* Handle Go button press */ }}>
-                <Text style={styles.buttonText}>Go</Text>
-            </TouchableOpacity>
-
-        </View>
     );
 };
 
 const headerStyles = StyleSheet.create({
+    container: {
+        flexDirection: 'row',
+        justifyContent: 'space-between'
+    },
     greeting: {
         fontSize: 20,
         marginBottom: 10,

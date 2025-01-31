@@ -4,7 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createDrawerNavigator} from '@react-navigation/drawer';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Image } from 'react-native';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, createContext } from 'react';
 import Login from './app/screens/Login';
 import Home from './app/screens/Home';
 import UserRecipes from './app/screens/UserRecipes';
@@ -14,6 +14,7 @@ import AddOrEditUserRecipe from './app/screens/AddOrEditUserRecipe';
 import NewUser from './app/screens/NewUser';
 import ConfirmOTP from './app/screens/ConfirmOTP';
 import './globals';
+import { AuthContext } from './Contexts';
 
 const Stack = createNativeStackNavigator();
 
@@ -101,15 +102,16 @@ function LogoTitle() {
 
 export default function App() {
   const [session, setSession] = useState(null);
-
+  
   useEffect(() => {
      supabase.auth.onAuthStateChange((event, session) => {
       if (event == 'SIGNED_OUT') {
         console.log(event)
         setSession(null)
       } else {
-        console.log(event)
+        console.log(event) 
         setSession(session)
+
       }
     })
   }, [])
@@ -117,22 +119,24 @@ export default function App() {
   console.log(session)
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator 
-      initialRouteName='AnonUser'
-      options={{headerShown: false}}
-      >
-        {session ? (
-          <Stack.Screen name="LoggedIn" component={LoggedInStack} options={{headerShown: false}}/>
-        ) : (
-          <Stack.Screen 
-            name='AnonUser'
-            component={AnonStack}
-            options={{headerShown: false}}
-            />
-        )}
-      </Stack.Navigator>
-    </NavigationContainer>
+    <AuthContext.Provider value={session}>
+      <NavigationContainer>
+        <Stack.Navigator 
+        initialRouteName='AnonUser'
+        options={{headerShown: false}}
+        >
+          {session ? (
+            <Stack.Screen name="LoggedIn" component={LoggedInStack} options={{headerShown: false}}/>
+          ) : (
+            <Stack.Screen 
+              name='AnonUser'
+              component={AnonStack}
+              options={{headerShown: false}}
+              />
+          )}
+        </Stack.Navigator>
+      </NavigationContainer>
+    </AuthContext.Provider>
   );
 }
 
