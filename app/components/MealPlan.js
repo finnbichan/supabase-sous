@@ -1,9 +1,8 @@
 import React, { useState, useContext } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Image, Modal, Pressable } from 'react-native';
 import { styles } from '../styles/Common';
 import { supabase } from '../../supabase';
 import { AuthContext } from '../../Contexts';
-import Recipe from './RecipeOverview';
 import RecipeBase from './RecipeBase';
 
 const mealPlanStyles = StyleSheet.create({
@@ -61,6 +60,7 @@ const mealPlanStyles = StyleSheet.create({
 
 const NoPlan = ({ meal_name, date, meal_type, user_id, addPlannedRecipe }) => {
     const [newMealLoading, setNewMealLoading] = useState(false);
+    const [searchModalOpen, setSearchModalOpen] = useState(false);
 
     const suggestRecipe = async (meal_type, date, user_id) => {
         setNewMealLoading(true);
@@ -90,8 +90,26 @@ const NoPlan = ({ meal_name, date, meal_type, user_id, addPlannedRecipe }) => {
         }
     }
 
+    const SearchModal = () => {
+        if (searchModalOpen) {
+            return (
+                <Modal visible={searchModalOpen} transparent animationType='none'>
+                    <Pressable
+                    style={styles.overlay}
+                    onPress={() => setSearchModalOpen(false)}
+                    >
+                    <View style={styles.modal}>
+                        <Text style={styles.text}>Howdy</Text>
+                    </View>
+                    </Pressable>
+                </Modal>
+            )
+        }
+    }
+
     return (
         <View>
+            {SearchModal()}
             {newMealLoading ? (
                 <>
                     <Text style={mealPlanStyles.lowImpactText}>{meal_name}</Text>
@@ -104,7 +122,8 @@ const NoPlan = ({ meal_name, date, meal_type, user_id, addPlannedRecipe }) => {
                     <Text style={mealPlanStyles.noPlanText}>Nothing planned</Text>
                 </View>
                 <View style={mealPlanStyles.noPlanButtons}>
-                    <TouchableOpacity>
+                    <TouchableOpacity
+                    onPress={() => setSearchModalOpen(true)}>
                         <Image
                         style={mealPlanStyles.image}
                         source={require('../../assets/search.png')}
@@ -125,7 +144,7 @@ const NoPlan = ({ meal_name, date, meal_type, user_id, addPlannedRecipe }) => {
     )
 }
 
-const YesPlan = ({navigation, user_id, meal_name, meal_type, recipe, date, plannedrecipe_id, addPlannedRecipe, deletePlannedRecipe}) => {
+const YesPlan = ({navigation, user_id, meal_name, meal_type, recipe, date, plannedrecipe_id, addPlannedRecipe, deletePlannedRecipe, rerollPlannedRecipe}) => {
     const [loading, setLoading] = useState(false)
     const deactivatePlannedRecipe = async () => {
         console.log(plannedrecipe_id)
@@ -143,7 +162,7 @@ const YesPlan = ({navigation, user_id, meal_name, meal_type, recipe, date, plann
         setLoading(false);
     }
     //TODO reduce repetition in functions
-    const rerollRecipe = async (meal_type, date, user_id) => {
+    const rerollRecipe = async (meal_type, date, user_id, plannedrecipe_id) => {
         setLoading(true)
         //deactivate existing recipe
         const {data: delete_data, error: delete_error} = await supabase
@@ -153,34 +172,29 @@ const YesPlan = ({navigation, user_id, meal_name, meal_type, recipe, date, plann
         if (delete_error) {
             console.log("error", delete_error);
         } else {
-            console.log("data", delete_data, plannedrecipe_id)
-            deletePlannedRecipe(plannedrecipe_id);
-        }
-        //generate new recipe
-        console.log("hello", meal_type, date, user_id)
-        const { data: suggest_data, error: suggest_error } = await supabase.rpc('suggest_recipe', {mealtype_input: meal_type, date_input:date, userid_input: user_id})
-        console.log(suggest_data)
-        if (suggest_error) {
-            console.log(suggest_error);
-        } else {
-            console.log("data here", suggest_data)
-            const createNewPlannedRecipe = (item) => {
-                return {
-                    "plannedrecipe_id": item.id || null,
-                    "date": item.date || null,
-                    "meal_type": item.meal_type || null,
-                    "recipe": {
-                        "id": item.recipe_id || "",
-                        "name": item.recipe_name || "",
-                        "ease": item.ease || 0,
-                        "cuisine": item.cuisine || 0,
-                        "diet": item.diet || 0
-                    }
-                } 
+            //generate new recipe
+            const { data: suggest_data, error: suggest_error } = await supabase.rpc('suggest_recipe', {mealtype_input: meal_type, date_input:date, userid_input: user_id})
+            if (suggest_error) {
+                console.log(suggest_error);
+            } else {
+                const createNewPlannedRecipe = (item) => {
+                    return {
+                        "plannedrecipe_id": item.id || null,
+                        "date": item.date || null,
+                        "meal_type": item.meal_type || null,
+                        "recipe": {
+                            "id": item.recipe_id || "",
+                            "name": item.recipe_name || "",
+                            "ease": item.ease || 0,
+                            "cuisine": item.cuisine || 0,
+                            "diet": item.diet || 0
+                        }
+                    } 
+                }
+                const newPlannedRecipe = createNewPlannedRecipe(suggest_data)
+                rerollPlannedRecipe(newPlannedRecipe, plannedrecipe_id);
             }
-            const newPlannedRecipe = createNewPlannedRecipe(suggest_data)
-            addPlannedRecipe(newPlannedRecipe);
-        }
+        }       
         setLoading(false)
     }
     return (
@@ -205,7 +219,7 @@ const YesPlan = ({navigation, user_id, meal_name, meal_type, recipe, date, plann
                 </TouchableOpacity>
                 <View style={mealPlanStyles.noPlanButtons}>
                     <TouchableOpacity
-                    onPress={() => rerollRecipe(meal_type, date, user_id)}
+                    onPress={() => rerollRecipe(meal_type, date, user_id, plannedrecipe_id)}
                     >
                         <Image
                         style={mealPlanStyles.image}
@@ -227,7 +241,7 @@ const YesPlan = ({navigation, user_id, meal_name, meal_type, recipe, date, plann
     )
 }
 
-const MealPlan = ({ navigation, meal_type, date, recipe, plannedrecipe_id, addPlannedRecipe, deletePlannedRecipe }) => {
+const MealPlan = ({ navigation, meal_type, date, recipe, plannedrecipe_id, addPlannedRecipe, deletePlannedRecipe, rerollPlannedRecipe }) => {
     const session = useContext(AuthContext)
     var meal_name = null;
     console
@@ -258,6 +272,7 @@ const MealPlan = ({ navigation, meal_type, date, recipe, plannedrecipe_id, addPl
                 plannedrecipe_id={plannedrecipe_id}
                 addPlannedRecipe={addPlannedRecipe}
                 deletePlannedRecipe={deletePlannedRecipe}
+                rerollPlannedRecipe={rerollPlannedRecipe}
                 />
             )}
         </View>

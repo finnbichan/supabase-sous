@@ -48,6 +48,7 @@ const calendarStyles = StyleSheet.create({
 const Calendar = ({navigation}) => {
     const [loading, setLoading] = useState(true);
     const [plannedRecipes, setPlannedRecipes] = useState([]);
+    const [action, setAction] = useState();
     const todaysDate = new Date();
 
     const createDateArray = () => {
@@ -61,16 +62,22 @@ const Calendar = ({navigation}) => {
     }
 
     const addPlannedRecipe = (newRecipe) => {
-        console.log(newRecipe)
-        setPlannedRecipes([...plannedRecipes, newRecipe]);
-        console.log(plannedRecipes)
+        setPlannedRecipes(prevState => {
+            const newState = [...prevState, newRecipe];
+            return newState;
+        });
     }
 
     const deletePlannedRecipe = (id) => {
-        const copy = plannedRecipes.filter(item => !(item.plannedrecipe_id === id));
-        console.log("wah", copy);
-        setPlannedRecipes([...copy]);
-        console.log("deleting", plannedRecipes)
+        setPlannedRecipes(prevState => {
+            const filteredCopy = prevState.filter(item => !(item.plannedrecipe_id === id));
+            return filteredCopy;
+        });
+    }
+
+    const removeAndAddPlannedRecipe = (newRecipe, idToRemove) => {
+        deletePlannedRecipe(idToRemove);
+        addPlannedRecipe(newRecipe);
     }
 
     const createDateArrayForDropdown = (array) => {
@@ -136,7 +143,7 @@ const Calendar = ({navigation}) => {
             setLoading(false)
         }
         getPlannedRecipes()
-    }, [])
+    }, [action])
 
     const renderDate = (mealdate) => {
         const dateString = new Date(mealdate).toDateString().slice(0,10);
@@ -162,6 +169,7 @@ const Calendar = ({navigation}) => {
                 plannedrecipe_id={breakfast?.plannedrecipe_id}
                 addPlannedRecipe={addPlannedRecipe}
                 deletePlannedRecipe={deletePlannedRecipe}
+                rerollPlannedRecipe={removeAndAddPlannedRecipe}
                 />
                 <MealPlan
                 navigation={navigation}
@@ -171,6 +179,7 @@ const Calendar = ({navigation}) => {
                 plannedrecipe_id={lunch?.plannedrecipe_id}
                 addPlannedRecipe={addPlannedRecipe}
                 deletePlannedRecipe={deletePlannedRecipe}
+                rerollPlannedRecipe={removeAndAddPlannedRecipe}
                 />
                 <MealPlan
                 navigation={navigation}
@@ -180,6 +189,7 @@ const Calendar = ({navigation}) => {
                 plannedrecipe_id={dinner?.plannedrecipe_id}
                 addPlannedRecipe={addPlannedRecipe}
                 deletePlannedRecipe={deletePlannedRecipe}
+                rerollPlannedRecipe={removeAndAddPlannedRecipe}
                 />
                 </View>
             </View>
