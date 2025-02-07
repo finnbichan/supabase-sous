@@ -58,7 +58,7 @@ const UserRecipes = ({route, navigation}) => {
                     >
                         <Image 
                         style={styles.addButton}
-                        source={require('../../assets/add_box.png')}
+                        source={require('../../assets/add.png')}
                         />
                     </TouchableOpacity>
                 </View>

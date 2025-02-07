@@ -1,6 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { View, Text, Button, StyleSheet, TouchableOpacity } from 'react-native';
-import Dropdown from './Dropdown';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { styles } from '../styles/Common';
 import { AuthContext } from '../../Contexts';
 
@@ -10,13 +9,13 @@ const CalendarHeader = ( { dateArray } ) => {
     const session = useContext(AuthContext);
     const time = Number((new Date).getHours());
     var greeting = "Hey";
-    if (0 <= time < 12) {greeting = "Morning"}
-    else if (12 <= time < 18) {greeting = "Afternoon"}
-    else {greeting = "Evening"};
+    if (time < 12) {greeting = "Morning"}
+    else if (time >= 18) {greeting = "Evening"}
+    else {greeting = "Afternoon"};
     
     return (
             <View style={headerStyles.container}>
-                <Text style={styles.title}>{greeting} {session.user.user_metadata.display_name}!</Text>
+                <Text style={styles.title}>{greeting}, {session.user.user_metadata.display_name}</Text>
                 <TouchableOpacity style={headerStyles.shoppingButton}>
                     <Text style={headerStyles.shoppingButtonText}>Shopping Lists</Text>
                 </TouchableOpacity>
@@ -27,11 +26,12 @@ const CalendarHeader = ( { dateArray } ) => {
 const headerStyles = StyleSheet.create({
     container: {
         flexDirection: 'row',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
+        marginBottom: 10
     },
     greeting: {
         fontSize: 20,
-        marginBottom: 10,
+        marginBottom: 10
     },
     shoppingButton: {
         alignSelf: 'flex-end',

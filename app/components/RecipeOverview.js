@@ -12,19 +12,22 @@ const recipeStyles = StyleSheet.create({
         padding: 4,
         margin: 1,
         flexDirection: 'row',
-        flexGrow: 1
+        flexGrow: 1,
+        maxWidth: '99%',
+        marginBottom: 2,
+        justifyContent: 'space-between',
+        alignItems: 'center'
     },
     name: {
         color: "#fff",
         fontSize: 18
     },
     nameSection: {
-        flexDirection: 'column'
+        flexDirection: 'column',
+        maxWidth: '90%'
     },
     buttonSection: {
         flexDirection: 'row',
-        marginLeft: 'auto',
-        alignItems: 'center',
         justifyContent: 'flex-end'
     },
     chevron: {

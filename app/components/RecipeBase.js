@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { styles } from '../styles/Common';
 
 const recipeStyles = StyleSheet.create({
@@ -16,7 +16,8 @@ const recipeStyles = StyleSheet.create({
         fontSize: 18
     },
     nameSection: {
-        flexDirection: 'column'
+        flexDirection: 'column',
+        maxWidth: '95%'
     },
     buttonSection: {
         flexDirection: 'row',

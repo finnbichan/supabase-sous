@@ -146,8 +146,9 @@ export const styles = StyleSheet.create({
   userRecipesTitleBox: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: '90%',
+    width: '95%',
     maxHeight: 70,
+    alignItems: 'center'
   },
   recipeTitleBox: {
     flexDirection: 'row',
@@ -155,9 +156,9 @@ export const styles = StyleSheet.create({
     width: '100%'
   },
   addButton: {
-    maxHeight: 50,
-    maxWidth: 50,
-    marginTop: 5
+    maxHeight: 32,
+    maxWidth: 32,
+    //marginTop: 5
   },
   editButton: {
     maxHeight: 40,

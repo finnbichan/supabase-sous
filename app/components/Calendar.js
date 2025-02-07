@@ -1,13 +1,11 @@
-import { View, Text, FlatList, ActivityIndicator, StyleSheet, TouchableOpacity, Image } from 'react-native';
-import React, { useContext, useEffect, useState } from 'react';
+import { View, FlatList, ActivityIndicator, StyleSheet } from 'react-native';
+import React, { useEffect, useState } from 'react';
 import { styles } from '../styles/Common';
-import Recipe from './RecipeOverview';
 import { supabase } from '../../supabase';
-import NoPlan from './NoPlan';
 import CollapsibleSection from './CollapsibleSection';
 import CalendarHeader from './CalendarHeader';
-import { AuthContext } from '../../Contexts';
 import MealPlan from './MealPlan';
+import MealPlanSummary from './MealPlanSummary';
 
 
 const calendarStyles = StyleSheet.create({
@@ -17,8 +15,10 @@ const calendarStyles = StyleSheet.create({
     parentDateContainer: {
         borderRadius: 4,
         padding: 4,
-        margin: 4,
-        width: '95%'
+        marginBottom: 4
+    },
+    planContainer:{
+        marginLeft: '-10'
     },
     titleBox: {
         margin: '-4',
@@ -41,6 +41,9 @@ const calendarStyles = StyleSheet.create({
     },
     flashIcon: {   
         marginLeft: 'auto'
+    },
+    lowImpactText: {
+        color: '#b3b3b3'
     }
 })
 
@@ -147,51 +150,59 @@ const Calendar = ({navigation}) => {
 
     const renderDate = (mealdate) => {
         const dateString = new Date(mealdate).toDateString().slice(0,10);
+        const isTodaysMeal = mealdate === todaysDate.toISOString().slice(0,10)
+        console.log(dateString, isTodaysMeal);
 
         const breakfast = plannedRecipes.find(({date, meal_type}) => date === mealdate && meal_type === 1)
         const lunch = plannedRecipes.find(({date, meal_type}) => date === mealdate & meal_type === 2)
         const dinner = plannedRecipes.find(({date, meal_type}) => date === mealdate && meal_type === 3)
         return (
             <View style={calendarStyles.parentDateContainer}>
-                <View style={calendarStyles.titleBox}>
-                    {mealdate === todaysDate.toISOString().slice(0,10) ? (
-                        <Text style={calendarStyles.largerText}>Today's menu</Text>
-                    ) : (
-                        <Text style={calendarStyles.largeText}>{dateString}</Text>
-                    )}
-                </View>
-                <View style={calendarStyles.mealsContainer}>
-                <MealPlan
-                navigation={navigation}
-                meal_type={1}
-                date={mealdate}
-                recipe={breakfast?.recipe || null}
-                plannedrecipe_id={breakfast?.plannedrecipe_id}
-                addPlannedRecipe={addPlannedRecipe}
-                deletePlannedRecipe={deletePlannedRecipe}
-                rerollPlannedRecipe={removeAndAddPlannedRecipe}
+                <CollapsibleSection
+                title={isTodaysMeal ? "Today's menu" : dateString}
+                open={!isTodaysMeal}
+                childrenIfOpen={
+                    <View style={calendarStyles.planContainer}>
+                        <MealPlan
+                        navigation={navigation}
+                        meal_type={1}
+                        date={mealdate}
+                        recipe={breakfast?.recipe || null}
+                        plannedrecipe_id={breakfast?.plannedrecipe_id}
+                        addPlannedRecipe={addPlannedRecipe}
+                        deletePlannedRecipe={deletePlannedRecipe}
+                        rerollPlannedRecipe={removeAndAddPlannedRecipe}
+                        />
+                        <MealPlan
+                        navigation={navigation}
+                        meal_type={2}
+                        date={mealdate}
+                        recipe={lunch?.recipe || null}
+                        plannedrecipe_id={lunch?.plannedrecipe_id}
+                        addPlannedRecipe={addPlannedRecipe}
+                        deletePlannedRecipe={deletePlannedRecipe}
+                        rerollPlannedRecipe={removeAndAddPlannedRecipe}
+                        />
+                        <MealPlan
+                        navigation={navigation}
+                        meal_type={3}
+                        date={mealdate}
+                        recipe={dinner?.recipe || null}
+                        plannedrecipe_id={dinner?.plannedrecipe_id}
+                        addPlannedRecipe={addPlannedRecipe}
+                        deletePlannedRecipe={deletePlannedRecipe}
+                        rerollPlannedRecipe={removeAndAddPlannedRecipe}
+                        />
+                    </View>
+                }
+                childrenIfClosed={
+                    <MealPlanSummary
+                    breakfast={breakfast?.recipe || null}
+                    lunch={lunch?.recipe || null}
+                    dinner={dinner?.recipe || null}
+                    />
+                }
                 />
-                <MealPlan
-                navigation={navigation}
-                meal_type={2}
-                date={mealdate}
-                recipe={lunch?.recipe || null}
-                plannedrecipe_id={lunch?.plannedrecipe_id}
-                addPlannedRecipe={addPlannedRecipe}
-                deletePlannedRecipe={deletePlannedRecipe}
-                rerollPlannedRecipe={removeAndAddPlannedRecipe}
-                />
-                <MealPlan
-                navigation={navigation}
-                meal_type={3}
-                date={mealdate}
-                recipe={dinner?.recipe || null}
-                plannedrecipe_id={dinner?.plannedrecipe_id}
-                addPlannedRecipe={addPlannedRecipe}
-                deletePlannedRecipe={deletePlannedRecipe}
-                rerollPlannedRecipe={removeAndAddPlannedRecipe}
-                />
-                </View>
             </View>
         )
     }
