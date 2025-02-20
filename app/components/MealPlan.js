@@ -244,7 +244,6 @@ const YesPlan = ({navigation, user_id, meal_name, meal_type, recipe, date, plann
 const MealPlan = ({ navigation, meal_type, date, recipe, plannedrecipe_id, addPlannedRecipe, deletePlannedRecipe, rerollPlannedRecipe }) => {
     const session = useContext(AuthContext)
     var meal_name = null;
-    console
     switch(meal_type) {
         case(1) : {meal_name="Breakfast"; break;}
         case(2) : {meal_name="Lunch"; break;}

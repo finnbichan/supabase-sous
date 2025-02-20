@@ -9,20 +9,19 @@ const Login = ( { navigation }) => {
 
   const signIn = async () => {
     setLoading(true);
-    await supabase.auth.signInWithOtp({
-      email: email,
-      options: {
-        shouldCreateUser: false
-      }
+    const {data, error} = await supabase.auth.signInWithOtp({
+      email: email
   })
-  .then((data) => {console.log(data);console.log("here")})
-  .catch((error) => {console.log(error);})
-  .finally(() => {
+  if (error) {
+    console.log(error);
+    setLoading(false);
+  } else {
+    console.log(data)
     setLoading(false);
     navigation.navigate('Confirm OTP', {
       email: email
     });
-  })
+  }
 }
 
 

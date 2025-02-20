@@ -13,6 +13,7 @@ import Settings from './app/screens/Settings';
 import AddOrEditUserRecipe from './app/screens/AddOrEditUserRecipe';
 import NewUser from './app/screens/NewUser';
 import ConfirmOTP from './app/screens/ConfirmOTP';
+import Explore from './app/screens/Explore';
 import './globals';
 import { AuthContext } from './Contexts';
 
@@ -47,6 +48,7 @@ function TabsStack() {
     >
       <MainAppTabs.Screen name="Home" component={Home} options={{headerShown: false}}/>
       <MainAppTabs.Screen name="Recipes" component={Recipes} options={{headerShown: false}}/>
+      <MainAppTabs.Screen name="Explore" component={Explore} options={{headerShown: false}}/>
     </MainAppTabs.Navigator>
   );
 }

@@ -1,24 +1,32 @@
-import { View, Text, Pressable, SafeAreaView, TouchableOpacity,ActivityIndicator, FlatList, Image } from 'react-native';
-import React, { useEffect, useState, useContext } from 'react';
+import { View, Text, SafeAreaView, TouchableOpacity,ActivityIndicator, FlatList, Image, StyleSheet } from 'react-native';
+import React, { useEffect, useState } from 'react';
 import { styles } from '../styles/Common';
-import Recipe from '../components/RecipeOverview';
+import Recipe from '../components/RecipeBase';
 import { supabase } from '../../supabase';
-import { AuthContext } from '../../Contexts';
 
-const UserRecipes = ({route, navigation}) => {
+const exploreStyles = StyleSheet.create({
+    container: {
+        backgroundColor: '#222222',
+        borderRadius: 8,
+        paddingHorizontal: 10,
+        marginTop: 4,
+        flexDirection: 'row',
+        justifyContent: 'space-between'
+    }
+})
+
+const Explore = ({route, navigation}) => {
     const [loading, setLoading] = useState(true);
     const [recipes, setRecipes] = useState(undefined);
-    const session = useContext(AuthContext)
 
     useEffect(() => {
         setLoading(true)
-        getRecipes = async () => {
+        const getRecipes = async () => {
         console.log("fetching")
         const recipesData = await supabase
         .from('recipes')
         .select()
-        .eq('user_id', session.user.id)
-        .order('recipe_name')
+        .limit(10)
         const recipes = recipesData.data.map((item) => {
             return {
               id: item.id,
@@ -36,13 +44,15 @@ const UserRecipes = ({route, navigation}) => {
 
     const renderRecipe = ({item}) => {
         return (
-            <View>
-
-                <Recipe
-                recipe={item}
-                navigation={navigation}
-                />
-                
+            <View style={exploreStyles.container}>
+                    <Recipe
+                    recipe={item}
+                    />
+                    <TouchableOpacity
+                    onPress={()=>{console.log("hearted")}}
+                    >
+                        <Image source={require('../../assets/heart.png')} style={{width: 20, height: 20, margin: 10}} />
+                    </TouchableOpacity>
             </View>
         )
     }
@@ -50,19 +60,6 @@ const UserRecipes = ({route, navigation}) => {
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.content}>
-                <View style={styles.userRecipesTitleBox}>
-                    <Text style={styles.title}>Recipes</Text>
-                    <TouchableOpacity
-                    onPress={()=>{
-                        navigation.navigate("Add a recipe");
-                    }}
-                    >
-                        <Image 
-                        style={styles.addButton}
-                        source={require('../../assets/add.png')}
-                        />
-                    </TouchableOpacity>
-                </View>
                 {loading ? (
                     <ActivityIndicator size="large" />
                 ) : (
@@ -80,4 +77,4 @@ const UserRecipes = ({route, navigation}) => {
     )
 }
 
-export default UserRecipes;
+export default Explore;

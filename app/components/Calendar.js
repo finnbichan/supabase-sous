@@ -151,7 +151,6 @@ const Calendar = ({navigation}) => {
     const renderDate = (mealdate) => {
         const dateString = new Date(mealdate).toDateString().slice(0,10);
         const isTodaysMeal = mealdate === todaysDate.toISOString().slice(0,10)
-        console.log(dateString, isTodaysMeal);
 
         const breakfast = plannedRecipes.find(({date, meal_type}) => date === mealdate && meal_type === 1)
         const lunch = plannedRecipes.find(({date, meal_type}) => date === mealdate & meal_type === 2)
