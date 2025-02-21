@@ -10,7 +10,10 @@ const Login = ( { navigation }) => {
   const signIn = async () => {
     setLoading(true);
     const {data, error} = await supabase.auth.signInWithOtp({
-      email: email
+      email: email,
+      options: {
+        shouldCreateUser: false
+      }
   })
   if (error) {
     console.log(error);
@@ -36,7 +39,7 @@ const Login = ( { navigation }) => {
         placeholderTextColor="#a9a9a9"
         onChangeText={(text) => setEmail(text)}
         />
-        { loading ? <ActivityIndicator size="medium"/>
+        { loading ? <ActivityIndicator/>
         : (
               <Pressable onPress={signIn} style={styles.button}>
                 <Text style={styles.buttonText}>Sign in</Text>
