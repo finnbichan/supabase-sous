@@ -24,8 +24,6 @@ const LoggedInDrawer = createDrawerNavigator();
 
 const MainAppTabs = createBottomTabNavigator();
 
-const RecipePages = createNativeStackNavigator();
-
 const LoggedOutStack = createNativeStackNavigator();
 
 function LeftButton() {
@@ -65,16 +63,19 @@ function TabsStack() {
       headerLeft: () => <LeftButton />,
       tabBarStyle: {backgroundColor:'#181818', borderTopWidth:0},
       tabBarActiveTintColor: '#fff',
-      tabBarInactiveTintColor: '#B3B3B3'
+      tabBarInactiveTintColor: '#B3B3B3',
+      tabBarHideOnKeyboard: true
     }}
     >
       <MainAppTabs.Screen name="Home" component={Home} />
       <MainAppTabs.Screen name="Your recipes" component={UserRecipes} />
       <MainAppTabs.Screen name="Add a recipe" component={AddOrEditUserRecipe} options={{
-        tabBarButton: () => null
+        tabBarButton: () => null,
+        unmountOnBlur: true
       }} />
       <MainAppTabs.Screen name="Recipe" component={Recipe} options={{
-        tabBarButton: () => null
+        tabBarButton: () => null,
+        unmountOnBlur: true
       }} />
       <MainAppTabs.Screen name="Explore" component={Explore}/>
     </MainAppTabs.Navigator>
