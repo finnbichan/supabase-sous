@@ -1,5 +1,5 @@
 import { supabase } from './supabase';
-import { getFocusedRouteNameFromRoute, NavigationContainer, useNavigation, useRoute } from '@react-navigation/native';
+import { NavigationContainer, useNavigation, useRoute, DarkTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createDrawerNavigator, DrawerToggleButton} from '@react-navigation/drawer';
 import { HeaderBackButton } from '@react-navigation/elements';
@@ -17,7 +17,6 @@ import ConfirmOTP from './app/screens/ConfirmOTP';
 import Explore from './app/screens/Explore';
 import './globals';
 import { AuthContext } from './Contexts';
-import BackButton from './app/components/BackButton';
 
 const Stack = createNativeStackNavigator();
 
@@ -152,7 +151,7 @@ export default function App() {
 
   return (
     <AuthContext.Provider value={session}>
-      <NavigationContainer>
+      <NavigationContainer theme={DarkTheme}>
         <Stack.Navigator 
         initialRouteName='AnonUser'
         options={{headerShown: false}}
