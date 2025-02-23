@@ -2,6 +2,7 @@ import { View, Text, Pressable, TextInput, ActivityIndicator, SafeAreaView, Touc
 import React, { useEffect, useState } from 'react';
 import { styles } from '../styles/Common';
 import { supabase } from '../../supabase';
+import '../../globals';
 import Dropdown from '../components/Dropdown';
 
 
@@ -9,34 +10,8 @@ const NewUser = ( {navigation} ) => {
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [country, setCountry] = useState('');
-  const [availableCountries, setAvailableCountries] = useState('');
-  const [countriesLoading, setCountriesLoading] = useState(true);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const getCountries = async () => {
-      await (supabase.from('countries').select('id,country_code,country_name'))
-      .then((data) => {
-        const parsedForDropdown = data.data.map((item) => {
-          return {
-            id: item.id,
-            label: item.country_name,
-            code: item.country_code
-          }
-        })
-        setAvailableCountries(parsedForDropdown)
-      })
-      .catch((error) => {
-        console.log(error);
-      })
-      .finally(() => {
-        setCountriesLoading(false);
-      })
-    }
-    getCountries()
-  }, [])
-
-  
   const signUp = async () => {
     setLoading(true);
     await supabase.auth.signInWithOtp({
@@ -44,7 +19,7 @@ const NewUser = ( {navigation} ) => {
       options: {
         data: {
           display_name: name,
-          region: country.code
+          region: country.id
         }
       }
     })
@@ -83,16 +58,11 @@ const NewUser = ( {navigation} ) => {
         placeholderTextColor="#a9a9a9"
         onChangeText={(text) => setName(text)}
         />
-        {countriesLoading ? (
-        <ActivityIndicator />
-        ) : (
         <Dropdown
-          data={availableCountries}
+          data={countries}
           label="Region"
           onSelect={setCountry}
-          />
-        )
-        }
+        />
         <Text style={styles.text}>We don't use passwords here - when you click sign up, we'll send a one time password to your email address.</Text>
         {loading ? <ActivityIndicator /> : (
         <TouchableOpacity 

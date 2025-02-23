@@ -208,7 +208,7 @@ const YesPlan = ({navigation, user_id, meal_name, meal_type, recipe, date, plann
             <View style={mealPlanStyles.yesPlanTopRow}>
                 <TouchableOpacity
                 onPress={()=>{
-                    navigation.navigate("Recipes", {screen: 'Recipe', params: {recipe: recipe}});
+                    navigation.navigate("Recipe", {prevScreen: 'Home', recipe: recipe});
                 }}
                 style={mealPlanStyles.yesPlanLeftSection}
                 >
@@ -231,7 +231,7 @@ const YesPlan = ({navigation, user_id, meal_name, meal_type, recipe, date, plann
                     >
                         <Image
                         style={mealPlanStyles.image}
-                        source={require('../../assets/delete.png')}
+                        source={require('../../assets/cross.png')}
                         />
                     </TouchableOpacity>
                 </View>

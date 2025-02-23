@@ -9,7 +9,7 @@ const EditButton = ({nav, recipe}) => {
     return (
         <TouchableOpacity
         onPress={() => {
-            nav.navigate("Add a recipe", {recipe: recipe});
+            nav.navigate("Add a recipe", {prevScreen: 'Recipe', recipe: recipe});
         }}>
             <Image 
             style={styles.editButton}
@@ -98,7 +98,6 @@ const Recipe = ({route, navigation}) => {
         <SafeAreaView style={styles.container}>
             {DeleteModal()}
             <View style={styles.recipeTitleBox}>
-                <BackButton nav={navigation} />
                 <Text style={styles.title}>{recipe.name}</Text>
                 {loading ? <ActivityIndicator /> : <EditButton nav={navigation} recipe={recipe}/>}
             </View>

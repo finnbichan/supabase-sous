@@ -1,7 +1,8 @@
 import { supabase } from './supabase';
-import { NavigationContainer } from '@react-navigation/native';
+import { getFocusedRouteNameFromRoute, NavigationContainer, useNavigation, useRoute } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { createDrawerNavigator} from '@react-navigation/drawer';
+import { createDrawerNavigator, DrawerToggleButton} from '@react-navigation/drawer';
+import { HeaderBackButton } from '@react-navigation/elements';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Image } from 'react-native';
 import { useState, useEffect, createContext } from 'react';
@@ -16,6 +17,7 @@ import ConfirmOTP from './app/screens/ConfirmOTP';
 import Explore from './app/screens/Explore';
 import './globals';
 import { AuthContext } from './Contexts';
+import BackButton from './app/components/BackButton';
 
 const Stack = createNativeStackNavigator();
 
@@ -27,28 +29,55 @@ const RecipePages = createNativeStackNavigator();
 
 const LoggedOutStack = createNativeStackNavigator();
 
-function Recipes() {
-  return (
-    <RecipePages.Navigator>
-      <RecipePages.Screen name="Your recipes" component={UserRecipes} options={{headerShown: false}} />
-      <RecipePages.Screen name="Add a recipe" component={AddOrEditUserRecipe} options={{headerShown: false}} />
-      <RecipePages.Screen name="Recipe" component={Recipe} options={{headerShown: false}} />
-    </RecipePages.Navigator>
-  )
+function LeftButton() {
+  const route = useRoute();
+  const navigation = useNavigation();
+  const screen = route.name;
+  const prevScreen = route.params?.prevScreen || 'Home';
+  const editing = screen === 'Add a recipe' && route.params?.recipe;
+  console.log("screen", route.name)
+  
+  switch (screen) {
+    case 'Add a recipe':
+      return editing ? 
+      <HeaderBackButton tintColor='#FFF' onPress={() => navigation.navigate(prevScreen, {recipe: route.params.recipe})} />
+      :
+      <HeaderBackButton tintColor='#FFF' onPress={() => navigation.navigate(prevScreen)} />
+    case 'Recipe':
+      return <HeaderBackButton tintColor='#FFF' onPress={() => navigation.navigate(prevScreen)} />
+    default:
+      return <DrawerToggleButton tintColor='#FFF'/>
+  }
+  
 }
 
+//react native navigation doesnt do well with back buttons for nested navigators, so we flatten the stack
+//and hide the buttons for add recipe/edit recipe/recipe view
+//Problem: tab button no longer highlighted on these screens
 function TabsStack() {
   return (
     <MainAppTabs.Navigator
     screenOptions={{
+      headerTitle: () => <LogoTitle />,
+      headerTitleAlign: 'left',
+      headerStyle: {backgroundColor: '#181818'},
+      headerShadowVisible: false,
+      headerTintColor: '#fff',
+      headerLeft: () => <LeftButton />,
       tabBarStyle: {backgroundColor:'#181818', borderTopWidth:0},
       tabBarActiveTintColor: '#fff',
       tabBarInactiveTintColor: '#B3B3B3'
     }}
     >
-      <MainAppTabs.Screen name="Home" component={Home} options={{headerShown: false}}/>
-      <MainAppTabs.Screen name="Recipes" component={Recipes} options={{headerShown: false}}/>
-      <MainAppTabs.Screen name="Explore" component={Explore} options={{headerShown: false}}/>
+      <MainAppTabs.Screen name="Home" component={Home} />
+      <MainAppTabs.Screen name="Your recipes" component={UserRecipes} />
+      <MainAppTabs.Screen name="Add a recipe" component={AddOrEditUserRecipe} options={{
+        tabBarButton: () => null
+      }} />
+      <MainAppTabs.Screen name="Recipe" component={Recipe} options={{
+        tabBarButton: () => null
+      }} />
+      <MainAppTabs.Screen name="Explore" component={Explore}/>
     </MainAppTabs.Navigator>
   );
 }
@@ -57,19 +86,20 @@ function LoggedInStack() {
 
   return (
       <LoggedInDrawer.Navigator
-      screenOptions={{ 
-        headerTitle: () => <LogoTitle />,
-        headerTitleAlign: 'left',
-        headerStyle: {backgroundColor: '#181818'},
-        headerShadowVisible: false,
-        headerTintColor: '#fff',
+      screenOptions={{
         drawerStyle: {backgroundColor: '#181818'},
-        drawerLabelStyle: {color: '#fff'},
-        drawerActiveBackgroundColor: '#404040'
-      }}
-      >
-        <LoggedInDrawer.Screen name="sous" component={TabsStack} />
-        <LoggedInDrawer.Screen name="Settings" component={Settings} />
+      drawerLabelStyle: {color: '#fff'},
+      drawerActiveBackgroundColor: '#404040'
+      }}>
+        <LoggedInDrawer.Screen name="sous" component={TabsStack} options={{headerShown: false}}/>
+        <LoggedInDrawer.Screen name="Settings" component={Settings} options={{
+      headerTitle: () => <LogoTitle />,
+      headerTitleAlign: 'left',
+      headerStyle: {backgroundColor: '#181818'},
+      headerShadowVisible: false,
+      headerTintColor: '#fff',
+      headerLeft: () => <LeftButton />
+    }}/>
       </LoggedInDrawer.Navigator>
   )
 };

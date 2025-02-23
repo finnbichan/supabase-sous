@@ -5,56 +5,13 @@ import Recipe from '../components/RecipeOverview';
 import { supabase } from '../../supabase';
 import { AuthContext } from '../../Contexts';
 
-const UserRecipes = ({route, navigation}) => {
-    const [loading, setLoading] = useState(true);
-    const [recipes, setRecipes] = useState(undefined);
-    const session = useContext(AuthContext)
-
-    useEffect(() => {
-        setLoading(true)
-        getRecipes = async () => {
-        console.log("fetching")
-        const recipesData = await supabase
-        .from('recipes')
-        .select()
-        .eq('user_id', session.user.id)
-        .order('recipe_name')
-        const recipes = recipesData.data.map((item) => {
-            return {
-              id: item.id,
-              name: item.recipe_name,
-              ease: item.ease,
-              cuisine: item.cuisine,
-              diet: item.diet
-            }})
-        console.log(recipes)
-        setRecipes(recipes)
-        setLoading(false)
-        }
-        getRecipes()
-    }, [route.params?.action])
-
-    const renderRecipe = ({item}) => {
-        return (
-            <View>
-
-                <Recipe
-                recipe={item}
-                navigation={navigation}
-                />
-                
-            </View>
-        )
-    }
-
-    return (
-        <SafeAreaView style={styles.container}>
-            <View style={styles.content}>
-                <View style={styles.userRecipesTitleBox}>
-                    <Text style={styles.title}>Recipes</Text>
+const RecipesHeader = ({navigation}) => {
+    return (   
+        <View style={styles.userRecipesTitleBox}>
+                    <Text style={styles.title}>Your recipes</Text>
                     <TouchableOpacity
                     onPress={()=>{
-                        navigation.navigate("Add a recipe");
+                        navigation.navigate("Add a recipe", {prevScreen: "Your recipes"});
                     }}
                     >
                         <Image 
@@ -63,8 +20,58 @@ const UserRecipes = ({route, navigation}) => {
                         />
                     </TouchableOpacity>
                 </View>
+    )
+}
+
+const ListEmpty = () => {  
+    return (
+        <View>
+            <Text style={styles.lowImpactText}>No recipes yet! Click + to add your own or head over the Explore page for inspiration!</Text>
+        </View>
+    )
+}
+
+const UserRecipes = ({route, navigation}) => {
+    const [loading, setLoading] = useState(true);
+    const [recipes, setRecipes] = useState(undefined);
+    const session = useContext(AuthContext)
+
+    const getRecipes = async () => {
+        console.log("fetching")
+        const {data, error} = await supabase
+        .rpc('get_user_recipes', {p_user_id: session.user.id})
+        if (error) {
+            console.log(error)
+            return
+        } else {
+            console.log(data)
+            setRecipes(data)
+        }
+    }
+
+    useEffect(() => {
+        setLoading(true)
+        getRecipes()
+        setLoading(false)
+    }, [route.params?.action])
+
+    const renderRecipe = ({item}) => {
+        return (
+            <View>
+                <Recipe
+                recipe={item}
+                navigation={navigation}
+                />
+            </View>
+        )
+    }
+
+    return (
+        <SafeAreaView style={styles.container}>
+            <View style={styles.content}>
+                
                 {loading ? (
-                    <ActivityIndicator size="large" />
+                    <ActivityIndicator/>
                 ) : (
                     <FlatList
                     data={recipes}
@@ -73,6 +80,8 @@ const UserRecipes = ({route, navigation}) => {
                     extraData={loading}
                     style={styles.recipeList}
                     showsVerticalScrollIndicator={false}
+                    ListHeaderComponent={<RecipesHeader navigation={navigation} />}
+                    ListEmptyComponent={<ListEmpty />}
                     />
                 )}
             </View>

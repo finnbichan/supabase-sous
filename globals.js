@@ -14,3 +14,13 @@ global.cuisineList = [
     {"id":"2", "label":"30-60 mins"},
     {"id":"3", "label":"> 1 hour"}
   ]
+  global.countries = [
+    {"id":"AU", "label":"Australia"},
+    {"id":"CA", "label":"Canada"},
+    {"id":"IE", "label":"Ireland"},
+    {"id":"NZ", "label":"New Zealand"},
+    {"id":"UK", "label":"United Kingdom"},
+    {"id":"US", "label":"United States"},
+    {"id":"UN", "label":"Other"}
+
+  ]

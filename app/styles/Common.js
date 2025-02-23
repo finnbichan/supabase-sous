@@ -106,7 +106,7 @@ export const styles = StyleSheet.create({
     },
     recipeList: {
       minWidth: "90%",
-      marginBottom: 64
+      marginBottom: -5
     },
     descriptorsParent: {
       flexDirection: "row",
@@ -164,6 +164,9 @@ export const styles = StyleSheet.create({
     maxHeight: 40,
     maxWidth: 40,
     marginTop: 10
+  },
+  lowImpactText: {
+    color: '#b3b3b3'
   }
     }
   );

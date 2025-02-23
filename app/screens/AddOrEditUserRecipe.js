@@ -23,7 +23,7 @@ const SubmitButton = ( {onPress} ) => {
 const AddOrEditUserRecipe = ( {route, navigation} ) => {
     const [recipe, setRecipe] = useState(route.params?.recipe ? route.params?.recipe : {});
     const [addSteps, setAddSteps] = useState(!route.params?.recipe || route.params?.recipe.steps ? true : false);
-    const [steps, setSteps] = useState(route.params?.recipe.steps ? route.params?.recipe.steps : Array(1).fill(null));
+    const [steps, setSteps] = useState(route.params?.recipe?.steps ? route.params?.recipe.steps : Array(1).fill(null));
     const [validationFailed, setValidationFailed] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const height = useHeaderHeight();
@@ -111,7 +111,6 @@ const AddOrEditUserRecipe = ( {route, navigation} ) => {
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.recipeTitleBox}>
-                <BackButton nav={navigation} />
                 <Text style={styles.title}>{newRecipe ? "New Recipe" : recipe.name}</Text>
                 {submitting ? (
                     <ActivityIndicator size="small"/>
