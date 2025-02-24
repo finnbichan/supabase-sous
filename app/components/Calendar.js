@@ -127,11 +127,12 @@ const Calendar = ({navigation}) => {
             .in('id', recipesArray)
             const plannedRecipesFull = recipeFullData.data.map((item) => {
                 return {
-                  recipe_id: item.id,
-                  name: item.recipe_name,
-                  ease: item.ease,
-                  cuisine: item.cuisine,
-                  diet: item.diet 
+                    recipe_id: item.id,
+                    name: item.recipe_name,
+                    ease: item.ease,
+                    cuisine: item.cuisine,
+                    diet: item.diet,
+                    user_id: item.user_id
                 }})
             const plannedRecipesComplete = plannedRecipeIds.map((item) => {
                 return {
@@ -215,6 +216,7 @@ const Calendar = ({navigation}) => {
                 style={styles.calendarList}
                 ListHeaderComponent={
                 <CalendarHeader 
+                navigation={navigation}
                 dateArray={createDateArrayForDropdown(dateArray)}
                 />
                 }

@@ -76,11 +76,12 @@ const NoPlan = ({ meal_name, date, meal_type, user_id, addPlannedRecipe }) => {
                     "date": item.date || null,
                     "meal_type": item.meal_type || null,
                     "recipe": {
-                        "id": item.recipe_id || "",
+                        "recipe_id": item.recipe_id || "",
                         "name": item.recipe_name || "",
                         "ease": item.ease || 0,
                         "cuisine": item.cuisine || 0,
-                        "diet": item.diet || 0
+                        "diet": item.diet || 0,
+                        "user_id": item.user_id || null
                     }
                 } 
             }
@@ -183,7 +184,7 @@ const YesPlan = ({navigation, user_id, meal_name, meal_type, recipe, date, plann
                         "date": item.date || null,
                         "meal_type": item.meal_type || null,
                         "recipe": {
-                            "id": item.recipe_id || "",
+                            "recipe_id": item.recipe_id || "",
                             "name": item.recipe_name || "",
                             "ease": item.ease || 0,
                             "cuisine": item.cuisine || 0,

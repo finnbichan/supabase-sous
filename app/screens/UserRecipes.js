@@ -46,13 +46,12 @@ const UserRecipes = ({route, navigation}) => {
         } else {
             console.log(data)
             setRecipes(data)
+            setLoading(false)
         }
     }
 
     useEffect(() => {
-        setLoading(true)
-        getRecipes()
-        setLoading(false)
+        getRecipes(setLoading)
     }, [route.params?.action])
 
     const renderRecipe = ({item}) => {
@@ -69,14 +68,13 @@ const UserRecipes = ({route, navigation}) => {
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.content}>
-                
                 {loading ? (
                     <ActivityIndicator/>
                 ) : (
                     <FlatList
                     data={recipes}
                     renderItem={renderRecipe}
-                    keyExtractor={item => item.id}
+                    keyExtractor={item => item.recipe_id}
                     extraData={loading}
                     style={styles.recipeList}
                     showsVerticalScrollIndicator={false}

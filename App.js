@@ -5,7 +5,7 @@ import { createDrawerNavigator, DrawerToggleButton} from '@react-navigation/draw
 import { HeaderBackButton } from '@react-navigation/elements';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Image } from 'react-native';
-import { useState, useEffect, createContext } from 'react';
+import { useState, useEffect, createContext, useContext } from 'react';
 import Login from './app/screens/Login';
 import Home from './app/screens/Home';
 import UserRecipes from './app/screens/UserRecipes';
@@ -15,8 +15,11 @@ import AddOrEditUserRecipe from './app/screens/AddOrEditUserRecipe';
 import NewUser from './app/screens/NewUser';
 import ConfirmOTP from './app/screens/ConfirmOTP';
 import Explore from './app/screens/Explore';
+import EditButton from './app/components/EditButton';
+import ShoppingLists from './app/screens/ShoppingLists';
 import './globals';
 import { AuthContext } from './Contexts';
+import List from './app/screens/List';
 
 const Stack = createNativeStackNavigator();
 
@@ -30,22 +33,35 @@ function LeftButton() {
   const route = useRoute();
   const navigation = useNavigation();
   const screen = route.name;
+  const renderBack = screen === 'Add a recipe' || screen === 'Recipe' || screen === 'Shopping Lists' || screen === 'List';
   const prevScreen = route.params?.prevScreen || 'Home';
   const editing = screen === 'Add a recipe' && route.params?.recipe;
-  console.log("screen", route.name)
   
-  switch (screen) {
-    case 'Add a recipe':
-      return editing ? 
-      <HeaderBackButton tintColor='#FFF' onPress={() => navigation.navigate(prevScreen, {recipe: route.params.recipe})} />
-      :
+  return (
+  renderBack ? (
+    editing ?
+      <HeaderBackButton tintColor='#FFF' onPress={() => navigation.navigate(prevScreen, {prevScreen: 'Your recipes', recipe: route.params.recipe})} />
+    :
       <HeaderBackButton tintColor='#FFF' onPress={() => navigation.navigate(prevScreen)} />
-    case 'Recipe':
-      return <HeaderBackButton tintColor='#FFF' onPress={() => navigation.navigate(prevScreen)} />
-    default:
-      return <DrawerToggleButton tintColor='#FFF'/>
+  ) : (
+    <DrawerToggleButton tintColor='#FFF'/>
+  )
+)
+}
+
+function RightButton() { 
+  const route = useRoute();
+  const navigation = useNavigation();
+  const screen = route.name;
+
+  const session = useContext(AuthContext);
+  const isOwnRecipe = route.params?.recipe?.user_id == session.user.id;
+
+  if (screen === 'Recipe' && isOwnRecipe) {
+    return <EditButton nav={navigation} target={"Add a recipe"} params={{prevScreen: "Recipe", recipe: route.params.recipe}}/>
+  } else {
+    return <></>
   }
-  
 }
 
 //react native navigation doesnt do well with back buttons for nested navigators, so we flatten the stack
@@ -64,10 +80,17 @@ function TabsStack() {
       tabBarStyle: {backgroundColor:'#181818', borderTopWidth:0},
       tabBarActiveTintColor: '#fff',
       tabBarInactiveTintColor: '#B3B3B3',
-      tabBarHideOnKeyboard: true
+      tabBarHideOnKeyboard: true,
+      headerRight: () => <RightButton />
     }}
     >
       <MainAppTabs.Screen name="Home" component={Home} />
+      <MainAppTabs.Screen name="Shopping Lists" component={ShoppingLists} options={{
+        tabBarButton: () => null
+      }}/>
+      <MainAppTabs.Screen name="List" component={List} options={{
+        tabBarButton: () => null
+      }}/>
       <MainAppTabs.Screen name="Your recipes" component={UserRecipes} />
       <MainAppTabs.Screen name="Add a recipe" component={AddOrEditUserRecipe} options={{
         tabBarButton: () => null,
@@ -138,17 +161,12 @@ export default function App() {
   useEffect(() => {
      supabase.auth.onAuthStateChange((event, session) => {
       if (event == 'SIGNED_OUT') {
-        console.log(event)
         setSession(null)
-      } else {
-        console.log(event) 
+      } else { 
         setSession(session)
-
       }
     })
   }, [])
-
-  console.log(session)
 
   return (
     <AuthContext.Provider value={session}>

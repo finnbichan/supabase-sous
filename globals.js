@@ -1,11 +1,11 @@
 global.cuisineList = [
-    {"id":"0", "label":"Asian"},
-    {"id":"1", "label":"European"},
-    {"id":"2", "label":"American"}
+    {"id":"0", "label":"\ud83c\uddef\ud83c\uddf5"},
+    {"id":"1", "label":"\ud83c\uddea\ud83c\uddfa"},
+    {"id":"2", "label":"\ud83c\uddfa\ud83c\uddf8"}
   ]
   global.dietList = [
     {"id":"0", "label":"None"},
-    {"id":"1", "label":"Vegetarian"},
+    {"id":"1", "label":"Veggie"},
     {"id":"2", "label":"Vegan"}
   ]
   global.easeList = [

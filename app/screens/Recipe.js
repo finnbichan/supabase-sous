@@ -1,23 +1,9 @@
 import { View, Text, Pressable, SafeAreaView, TouchableOpacity,ActivityIndicator, Image, TouchableWithoutFeedback, Modal } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { styles } from '../styles/Common';
 import { supabase } from '../../supabase';
 import Steps from '../components/Steps';
-import BackButton from '../components/BackButton';
-
-const EditButton = ({nav, recipe}) => {
-    return (
-        <TouchableOpacity
-        onPress={() => {
-            nav.navigate("Add a recipe", {prevScreen: 'Recipe', recipe: recipe});
-        }}>
-            <Image 
-            style={styles.editButton}
-            source={require('../../assets/edit.png')}
-            />
-        </TouchableOpacity>
-    )
-}
+import { AuthContext } from '../../Contexts';
 
 const Recipe = ({route, navigation}) => {
     const [loading, setLoading] = useState(true);
@@ -25,16 +11,18 @@ const Recipe = ({route, navigation}) => {
     const [updated, setUpdated] = useState(route.params?.updated);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [deleting, setDeleting] = useState(false);
+    const [creatorName, setCreatorName] = useState("");
+    const session = useContext(AuthContext);
+    const isOwnRecipe = recipe.user_id == session.user.id;
 
-    console.log(typeof(recipe))
+    console.log("yours", recipe)
     
-    useEffect(() => {
-        getRecipeDetails = async () => {
+    const getRecipeDetails = async () => {
         console.log("fetching additional info")
         const recipeAdditionalData = await supabase
         .from('recipes')
         .select('description, steps')
-        .eq('id', recipe.id)
+        .eq('id', recipe.recipe_id)
         const recipeExtra = {
             desc: recipeAdditionalData.data[0].description, 
             steps: JSON.parse(recipeAdditionalData.data[0].steps)
@@ -44,8 +32,28 @@ const Recipe = ({route, navigation}) => {
         console.log(recipe)
         setLoading(false)
         }
+    
+        const getCreatorName = async () => {
+            const {data, error} = await supabase
+            .from('profiles')
+            .select('display_name')
+            .eq('id', recipe.user_id)
+            if (error) {
+                console.log(error)
+            } else {
+                setCreatorName(data[0].display_name)
+            }
+        }
+
+    useEffect(() => {
         getRecipeDetails()
     }, [updated])
+
+    useEffect(() => {
+        if(!isOwnRecipe) {
+            getCreatorName()
+        }
+    }, [])
 
     const DeleteModal = () => {
         if (deleteModalOpen) {
@@ -88,10 +96,10 @@ const Recipe = ({route, navigation}) => {
         const data = await supabase
         .from('recipes')
         .delete()
-        .eq('id', recipe.id)
+        .eq('id', recipe.recipe_id)
         console.log(data)
         setDeleting(false)
-        navigation.navigate('Your recipes', {action: "delete" + recipe.id})
+        navigation.navigate('Your recipes', {action: "delete" + recipe.recipe_id})
     }
 
     return (
@@ -99,7 +107,6 @@ const Recipe = ({route, navigation}) => {
             {DeleteModal()}
             <View style={styles.recipeTitleBox}>
                 <Text style={styles.title}>{recipe.name}</Text>
-                {loading ? <ActivityIndicator /> : <EditButton nav={navigation} recipe={recipe}/>}
             </View>
             <View style={styles.descriptorsParent}>
                     <View style={styles.descriptors}>
@@ -114,6 +121,7 @@ const Recipe = ({route, navigation}) => {
                     </View>
                 )}
             </View>
+            {isOwnRecipe ? <></> :  <Text style={styles.lowImpactText}>by {creatorName}</Text>}
             {loading ? (<ActivityIndicator size="large" />) : (
                 <>
                     <View>

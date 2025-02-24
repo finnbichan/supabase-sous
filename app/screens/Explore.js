@@ -44,29 +44,27 @@ const Explore = ({route, navigation}) => {
 
     const session = useContext(AuthContext);
 
-    const getExploreRecipes = async () => {
+    const getExploreRecipes = async (setState) => {
         console.log("fetching")
         const {data, error} = await supabase
         .rpc('explore_recipes', {p_user_id: session.user.id, already_on_page: [0]})
         if (error) {
             console.log(error)
-            return
         } else {
             console.log("the data", data)
-            setRecipes(data)
+            setRecipes(data)   
         }
+        setState(false)
     }
 
     useEffect(() => {
         setLoading(true)
-        getExploreRecipes();  
-        setLoading(false)      
+        getExploreRecipes(setLoading);       
     }, [])
 
     const onRefresh = () => {
-        setRefreshing(true)
-        getExploreRecipes();
-        setRefreshing(false);
+        setRefreshing(true);
+        getExploreRecipes(setRefreshing);
     }
 
     const likeRecipe = async (recipe_id) => {
