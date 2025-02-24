@@ -9,19 +9,15 @@ const checkboxStyles = StyleSheet.create({
     }
 })
 
-const Checkbox = ( {onPress} ) => {
-    const [checked, setChecked] = useState(false);
+const Checkbox = ( {onPress, isChecked} ) => {
+    console.log("inside", isChecked)
     const toggleChecked = () => {
-        setChecked(!checked);
-    }
-    const onCheckboxPress = () => {
         onPress();
-        toggleChecked();
     }
     return (
-        checked ? (
+        isChecked ? (
             <TouchableOpacity
-            onPress={onCheckboxPress}>
+            onPress={toggleChecked}>
                 <Image 
                 style={checkboxStyles.icon}
                 source={require('../../assets/check_box.png')}
@@ -29,7 +25,7 @@ const Checkbox = ( {onPress} ) => {
             </TouchableOpacity>
         ) : (
             <TouchableOpacity
-            onPress={onCheckboxPress}>
+            onPress={toggleChecked}>
                 <Image 
                 style={checkboxStyles.icon}
                 source={require('../../assets/check_box_outline.png')}

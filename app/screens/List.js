@@ -1,9 +1,9 @@
-import { View, Text, TextInput, SafeAreaView, TouchableOpacity, Image, FlatList, StyleSheet, KeyboardAvoidingView } from 'react-native';
+import { View, Text, TextInput, SafeAreaView, TouchableOpacity, Image, ScrollView, FlatList, StyleSheet, KeyboardAvoidingView } from 'react-native';
 import React, { useEffect, useState, useContext } from 'react';
 import { styles } from '../styles/Common';
 import { useRoute } from '@react-navigation/native';
 import Checkbox from '../components/Checkbox';
-
+import CollapsibleSection from '../components/CollapsibleSection';
 const listStyles = StyleSheet.create({
     textInput: {
         width: '80%',
@@ -76,9 +76,12 @@ const List = ({navigation}) => {
         }
         const onItemCheck = () => {
             const cpList = [...list]
+            console.log("before", cpList[item.id].checked, item.checked)
             cpList[item.id].checked = !cpList[item.id].checked
+            console.log("after", cpList[item.id].checked, item.checked)
             setList(cpList)
         }
+        console.log(item)
         return (
             <View style={item.checked ? {opacity: 0.5} : {opacity:1}}>
                 <View style={listStyles.itemContainer}>
@@ -96,6 +99,7 @@ const List = ({navigation}) => {
                     <View style={listStyles.checkboxContainer}>
                         <Checkbox
                         onPress={onItemCheck}
+                        isChecked={item.checked}
                         />
                     </View>
                 </View>
@@ -125,9 +129,15 @@ const List = ({navigation}) => {
                     </TextInput>
                 </View>
                 <FlatList
-                data={list}
+                data={list.filter(val => val.checked === false)}
                 renderItem={renderListItem}
                 ListEmptyComponent={ListEmpty}
+                keyExtractor={item => item.id}
+                style={listStyles.itemList}
+                />
+                <FlatList
+                data={list.filter(val => val.checked === true)}
+                renderItem={renderListItem}
                 keyExtractor={item => item.id}
                 style={listStyles.itemList}
                 />
