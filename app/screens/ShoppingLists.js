@@ -33,6 +33,7 @@ const ListHeader = ({navigation}) => {
 const ShoppingLists = ({navigation}) => {
     const [loading, setLoading] = useState(true);
     const [lists, setLists] = useState(undefined);
+
     const session = useContext(AuthContext)
 
     const getLists = async () => {
