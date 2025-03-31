@@ -144,11 +144,7 @@ export const styles = StyleSheet.create({
     padding: 4
   },
   userRecipesTitleBox: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '95%',
-    maxHeight: 70,
-    alignItems: 'center'
+    paddingBottom: 10
   },
   recipeTitleBox: {
     flexDirection: 'row',

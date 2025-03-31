@@ -10,7 +10,6 @@ const checkboxStyles = StyleSheet.create({
 })
 
 const Checkbox = ( {onPress, isChecked} ) => {
-    console.log("inside", isChecked)
     const toggleChecked = () => {
         onPress();
     }

@@ -20,6 +20,7 @@ import ShoppingLists from './app/screens/ShoppingLists';
 import './globals';
 import { AuthContext } from './Contexts';
 import List from './app/screens/List';
+import AddHeaderButton from './app/components/AddHeaderButton';
 
 const Stack = createNativeStackNavigator();
 
@@ -59,6 +60,10 @@ function RightButton() {
 
   if (screen === 'Recipe' && isOwnRecipe) {
     return <EditButton nav={navigation} target={"Add a recipe"} params={{prevScreen: "Recipe", recipe: route.params.recipe}}/>
+  } else if (screen === 'Shopping Lists') {
+    return <AddHeaderButton navigation={navigation} target="List" prevScreen="Shopping Lists"/>
+  } else if (screen === 'Your recipes') {
+    return <AddHeaderButton navigation={navigation} target="Add a recipe" prevScreen="Your recipes"/>
   } else {
     return <></>
   }
@@ -71,6 +76,7 @@ function TabsStack() {
   return (
     <MainAppTabs.Navigator
     screenOptions={{
+      animation: 'shift',
       headerTitle: () => <LogoTitle />,
       headerTitleAlign: 'left',
       headerStyle: {backgroundColor: '#181818'},
@@ -84,14 +90,51 @@ function TabsStack() {
       headerRight: () => <RightButton />
     }}
     >
-      <MainAppTabs.Screen name="Home" component={Home} />
+      <MainAppTabs.Screen name="Home" component={Home}
+      options={{
+        tabBarIcon: ({focused}) => {
+          return (
+            focused ? (
+            <Image 
+            style={{width: 25, height: 25}}
+            source={require('./assets/calendar.png')}
+            />
+          ) : (
+            <Image 
+            style={{width: 25, height: 25}}
+            source={require('./assets/calendar_inactive.png')}
+            />
+          )
+          )
+        }
+      }}
+      /> 
       <MainAppTabs.Screen name="Shopping Lists" component={ShoppingLists} options={{
         tabBarButton: () => null
       }}/>
       <MainAppTabs.Screen name="List" component={List} options={{
-        tabBarButton: () => null
+        tabBarButton: () => null,
+        unmountOnBlur: true
       }}/>
-      <MainAppTabs.Screen name="Your recipes" component={UserRecipes} />
+      <MainAppTabs.Screen name="Your recipes" component={UserRecipes} 
+      options={{
+        tabBarIcon: ({focused}) => {
+          return (
+            focused ? (
+            <Image 
+            style={{width: 25, height: 25}}
+            source={require('./assets/book.png')}
+            />
+          ) : (
+            <Image 
+            style={{width: 25, height: 25}}
+            source={require('./assets/book_inactive.png')}
+            />
+          )
+          )
+        }
+      }}
+      />
       <MainAppTabs.Screen name="Add a recipe" component={AddOrEditUserRecipe} options={{
         tabBarButton: () => null,
         unmountOnBlur: true
@@ -100,7 +143,25 @@ function TabsStack() {
         tabBarButton: () => null,
         unmountOnBlur: true
       }} />
-      <MainAppTabs.Screen name="Explore" component={Explore}/>
+      <MainAppTabs.Screen name="Explore" component={Explore}
+      options={{
+        tabBarIcon: ({focused}) => {
+          return (
+            focused ? (
+            <Image 
+            style={{width: 25, height: 25}}
+            source={require('./assets/chef_hat.png')}
+            />
+          ) : (
+            <Image 
+            style={{width: 25, height: 25}}
+            source={require('./assets/chef_hat_inactive.png')}
+            />
+          )
+          )
+        }
+      }}
+      />
     </MainAppTabs.Navigator>
   );
 }

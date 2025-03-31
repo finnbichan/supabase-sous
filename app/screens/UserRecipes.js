@@ -5,21 +5,11 @@ import Recipe from '../components/RecipeOverview';
 import { supabase } from '../../supabase';
 import { AuthContext } from '../../Contexts';
 
-const RecipesHeader = ({navigation}) => {
+const RecipesHeader = () => {
     return (   
         <View style={styles.userRecipesTitleBox}>
-                    <Text style={styles.title}>Your recipes</Text>
-                    <TouchableOpacity
-                    onPress={()=>{
-                        navigation.navigate("Add a recipe", {prevScreen: "Your recipes"});
-                    }}
-                    >
-                        <Image 
-                        style={styles.addButton}
-                        source={require('../../assets/add.png')}
-                        />
-                    </TouchableOpacity>
-                </View>
+            <Text style={styles.title}>Your recipes</Text>
+        </View>
     )
 }
 

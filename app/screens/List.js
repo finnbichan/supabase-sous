@@ -1,9 +1,11 @@
-import { View, Text, TextInput, SafeAreaView, TouchableOpacity, Image, ScrollView, FlatList, StyleSheet, KeyboardAvoidingView } from 'react-native';
+import { View, Text, TextInput, SafeAreaView, TouchableOpacity, Image, ActivityIndicator, FlatList, StyleSheet, KeyboardAvoidingView } from 'react-native';
 import React, { useEffect, useState, useContext } from 'react';
 import { styles } from '../styles/Common';
 import { useRoute } from '@react-navigation/native';
 import Checkbox from '../components/Checkbox';
-import CollapsibleSection from '../components/CollapsibleSection';
+import DoneButton from '../components/DoneButton';
+import { supabase } from '../../supabase';
+
 const listStyles = StyleSheet.create({
     textInput: {
         width: '80%',
@@ -57,31 +59,62 @@ const listStyles = StyleSheet.create({
     }
 })
 
-const ListEmpty = () => {  
-    return (<Text style={styles.lowImpactText}>Add some items!</Text>)
-}
-
-const List = ({navigation}) => {
-    const route = useRoute();
+const List = ({navigation, route}) => {
     const [list, setList] = useState(route.params?.list || []);
     const [newListItem, setNewListItem] = useState('');
     const [listName, setListName] = useState(route.params?.list_name);
+    const [submitting, setSubmitting] = useState(false);
 
+    console.log("list", list)
+
+    useEffect(() => {
+        navigation.setOptions({
+            headerRight: () => (
+                <DoneButton onSubmit={submitList} isSubmitting={submitting}/>
+            )
+            });
+      }, [navigation, submitting, list, listName]);
+
+    const onAddItem = () => {
+        if (newListItem) {
+            const newId = list.length;
+            setList([...list, {id: newId, label: newListItem, checked: false}])
+            setNewListItem('')
+        }
+    }
+
+    const submitList =  async() => {
+        setSubmitting(true)
+        console.log("data", list)
+        const {data, error} = await supabase
+        .from('lists')
+        .insert([{
+            list_name: listName || "Untitled List",
+            list: list
+            }])
+        if (error) {
+            console.log(error)
+        } else {
+            console.log(data)
+            navigation.navigate('Shopping Lists', {prevScreen: "Home", action: 'updated'})
+        }
+        setSubmitting(false)
+    }
 
     const renderListItem = ({item}) => {
+        
         const onItemTextChange = (text) => {
             const cpList = [...list]
             cpList[item.id].label = text
             setList(cpList)
         }
+    
         const onItemCheck = () => {
             const cpList = [...list]
-            console.log("before", cpList[item.id].checked, item.checked)
             cpList[item.id].checked = !cpList[item.id].checked
-            console.log("after", cpList[item.id].checked, item.checked)
             setList(cpList)
         }
-        console.log(item)
+
         return (
             <View style={item.checked ? {opacity: 0.5} : {opacity:1}}>
                 <View style={listStyles.itemContainer}>
@@ -107,14 +140,6 @@ const List = ({navigation}) => {
         )
     }
 
-    const onAddItem = () => {
-        if (newListItem) {
-            setList([...list, {id: list.length, label: newListItem, checked: false}])
-            setNewListItem('')
-            console.log(list)
-        }
-    }
-
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.content}>
@@ -128,19 +153,24 @@ const List = ({navigation}) => {
                     {listName}
                     </TextInput>
                 </View>
-                <FlatList
-                data={list.filter(val => val.checked === false)}
-                renderItem={renderListItem}
-                ListEmptyComponent={ListEmpty}
-                keyExtractor={item => item.id}
-                style={listStyles.itemList}
-                />
-                <FlatList
-                data={list.filter(val => val.checked === true)}
-                renderItem={renderListItem}
-                keyExtractor={item => item.id}
-                style={listStyles.itemList}
-                />
+            {list ? (
+                <>
+                    <FlatList
+                    data={list.filter(val => val.checked === false)}
+                    renderItem={renderListItem}
+                    keyExtractor={item => item.id}
+                    style={listStyles.itemList}
+                    />
+                    <FlatList
+                    data={list.filter(val => val.checked === true)}
+                    renderItem={renderListItem}
+                    keyExtractor={item => item.id}
+                    style={listStyles.itemList}
+                    />
+                </>
+            ) : (
+                <Text style={styles.lowImpactText}>Add some items!</Text>
+            )}
             </View>
             <KeyboardAvoidingView style={listStyles.inputContainer}>
                 <TextInput 

@@ -13,29 +13,22 @@ const ListEmpty = () => {
     )
 }
 
-const ListHeader = ({navigation}) => {
-
+const ListHeader = () => {
     return (
     <View style={styles.userRecipesTitleBox}>
         <Text style={styles.title}>Your shopping lists</Text>
-        <TouchableOpacity
-        onPress={()=>{navigation.navigate("List", {prevScreen: "Shopping Lists"})}}
-        >
-            <Image 
-            style={styles.addButton}
-            source={require('../../assets/add.png')}
-            />
-        </TouchableOpacity>
     </View>
     )
 }
 
-const ShoppingLists = ({navigation}) => {
+const ShoppingLists = ({navigation, route}) => {
     const [loading, setLoading] = useState(true);
     const [lists, setLists] = useState(undefined);
+    const [action, setAction] = useState(route.params?.action);
 
     const session = useContext(AuthContext)
 
+    console.log("action", route.params?.action)
     const getLists = async () => {
         console.log("fetching")
         const {data, error} = await supabase
@@ -53,15 +46,12 @@ const ShoppingLists = ({navigation}) => {
 
     useEffect(() => {
         getLists()
-    }, [])
+    }, [route.params?.action])
 
     const renderList = ({item}) => {
         return (
             <View>
-                <Recipe
-                recipe={item}
-                navigation={navigation}
-                />
+                <Text style={styles.text}>{item.list_name}</Text>
             </View>
         )
     }
@@ -76,7 +66,7 @@ const ShoppingLists = ({navigation}) => {
                     data={lists}
                     renderItem={renderList}
                     ListEmptyComponent={ListEmpty}
-                    ListHeaderComponent={<ListHeader navigation={navigation}/>}
+                    ListHeaderComponent={<ListHeader/>}
                     />
                 )}
             </View>
