@@ -3,9 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { styles } from '../styles/Common';
 import { AuthContext } from '../../Contexts';
 
-const CalendarHeader = ( { navigation, dateArray } ) => {
-    const [startDate, setStartDate] = useState();
-    const [endDate, setEndDate] = useState();
+const CalendarHeader = () => {
     const session = useContext(AuthContext);
     const time = Number((new Date).getHours());
     var greeting = "Hey";
@@ -16,12 +14,6 @@ const CalendarHeader = ( { navigation, dateArray } ) => {
     return (
             <View style={headerStyles.container}>
                 <Text style={styles.title}>{greeting}, {session.user.user_metadata.display_name}</Text>
-                <TouchableOpacity 
-                style={headerStyles.shoppingButton}
-                onPress={() => {navigation.navigate("Shopping Lists", {prevScreen: "Home"})}}
-                >
-                    <Text style={headerStyles.shoppingButtonText}>Shopping Lists</Text>
-                </TouchableOpacity>
             </View>
     );
 };

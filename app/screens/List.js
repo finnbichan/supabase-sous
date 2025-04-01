@@ -65,7 +65,9 @@ const List = ({navigation, route}) => {
     const [listName, setListName] = useState(route.params?.list_name);
     const [submitting, setSubmitting] = useState(false);
 
-    console.log("list", list)
+    const isNewList = true ? route.params?.list === undefined : false;
+
+    console.log("list", isNewList)
 
     useEffect(() => {
         navigation.setOptions({
@@ -83,8 +85,13 @@ const List = ({navigation, route}) => {
         }
     }
 
-    const submitList =  async() => {
+    const submitList = () => {
         setSubmitting(true)
+        isNewList ? insertList() : updateList()
+        setSubmitting(false)
+    }
+
+    const insertList =  async() => {
         console.log("data", list)
         const {data, error} = await supabase
         .from('lists')
@@ -96,9 +103,29 @@ const List = ({navigation, route}) => {
             console.log(error)
         } else {
             console.log(data)
-            navigation.navigate('Shopping Lists', {prevScreen: "Home", action: 'updated'})
+            const updateDate = Date.now()
+            navigation.navigate('Shopping Lists', {prevScreen: "Home", action: updateDate})
         }
-        setSubmitting(false)
+    }
+
+    const updateList = async() => {
+        console.log("data", list)
+        const {data, error} = await supabase
+        .from('lists')
+        .update({
+            list_name: listName || "Untitled List",
+            list: list,
+            last_updated_at: new Date()
+        })
+        .eq('id', route.params?.list_id)
+        if (error) {
+            console.log(error)
+        }
+        else {
+            console.log(data)
+            const updateDate = Date.now()
+            navigation.navigate('Shopping Lists', {prevScreen: "Home", action: updateDate})
+        }
     }
 
     const renderListItem = ({item}) => {

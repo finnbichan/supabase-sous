@@ -10,17 +10,28 @@ const styles = StyleSheet.create({
     }
 })
 
-const AddHeaderButton = ( { navigation, target, prevScreen} ) => {
+const RightHeaderButton = ( { navigation, icon, target, prevScreen} ) => {
+    var iconPath = null;
+    switch (icon) {
+        case 'add':
+            iconPath = require('../../assets/add.png');
+            break;
+        case 'list':
+            iconPath = require('../../assets/list.png');
+            break;
+        default:
+            iconPath = require('../../assets/add.png');
+    }
     return (
         <TouchableOpacity
         onPress={()=>{navigation.navigate(target, {prevScreen: prevScreen})}}
         >
             <Image 
             style={styles.editButton}
-            source={require('../../assets/add.png')}
+            source={iconPath}
             />
         </TouchableOpacity>
     )
 }
 
-export default AddHeaderButton;
+export default RightHeaderButton;

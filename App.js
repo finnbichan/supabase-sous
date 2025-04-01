@@ -20,7 +20,7 @@ import ShoppingLists from './app/screens/ShoppingLists';
 import './globals';
 import { AuthContext } from './Contexts';
 import List from './app/screens/List';
-import AddHeaderButton from './app/components/AddHeaderButton';
+import RightHeaderButton from './app/components/RightHeaderButton';
 
 const Stack = createNativeStackNavigator();
 
@@ -61,9 +61,11 @@ function RightButton() {
   if (screen === 'Recipe' && isOwnRecipe) {
     return <EditButton nav={navigation} target={"Add a recipe"} params={{prevScreen: "Recipe", recipe: route.params.recipe}}/>
   } else if (screen === 'Shopping Lists') {
-    return <AddHeaderButton navigation={navigation} target="List" prevScreen="Shopping Lists"/>
+    return <RightHeaderButton navigation={navigation} target="List" prevScreen="Shopping Lists"/>
   } else if (screen === 'Your recipes') {
-    return <AddHeaderButton navigation={navigation} target="Add a recipe" prevScreen="Your recipes"/>
+    return <RightHeaderButton navigation={navigation} target="Add a recipe" prevScreen="Your recipes"/>
+  } else if (screen === 'Home') {
+    return <RightHeaderButton navigation={navigation} icon='list' target="Shopping Lists" prevScreen="Home"/>
   } else {
     return <></>
   }

@@ -5,6 +5,37 @@ import Recipe from '../components/RecipeOverview';
 import { supabase } from '../../supabase';
 import { AuthContext } from '../../Contexts';
 
+const listViewStyles = {
+    list: {
+        minWidth: "95%",
+        marginBottom: -5
+    },
+    listItem: {
+        backgroundColor: "#222222",
+        borderRadius: 4,
+        padding: 4,
+        margin: 1,
+        flexDirection: 'row',
+        flexGrow: 1,
+        maxWidth: '99%',
+        marginBottom: 2,
+        justifyContent: 'space-between',
+        alignItems: 'center'
+    },
+    text: {
+        color: "#fff",
+        fontSize: 18
+    },
+    buttonSection: {
+        flexDirection: 'row',
+        justifyContent: 'flex-end'
+    },
+    chevron: {
+        maxHeight: 30,
+        maxWidth: 30
+    }
+}
+
 const ListEmpty = () => {  
     return (
         <View>
@@ -35,6 +66,7 @@ const ShoppingLists = ({navigation, route}) => {
         .from('lists')
         .select('*')
         .eq('user_id', session.user.id)
+        .order('last_updated_at', {ascending: false})
         if (error) {
             console.log(error)
         } else {
@@ -49,10 +81,24 @@ const ShoppingLists = ({navigation, route}) => {
     }, [route.params?.action])
 
     const renderList = ({item}) => {
+        const dateString = new Date(item.last_updated_at).toDateString().slice(0,10);
+        const timeString = new Date(item.last_updated_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
         return (
-            <View>
-                <Text style={styles.text}>{item.list_name}</Text>
-            </View>
+            <TouchableOpacity
+            style={listViewStyles.listItem}
+            onPress={() => navigation.navigate('List', {list_id: item.id, list: item.list, list_name: item.list_name, prevScreen: "Shopping Lists"})}
+            >
+                <View>
+                    <Text style={listViewStyles.text}>{item.list_name}</Text>
+                    <Text style={styles.lowImpactText}>Last updated {timeString}, {dateString}</Text>
+                </View>
+                <View style={listViewStyles.buttonSection}> 
+                    <Image 
+                    style={listViewStyles.chevron}
+                    source={require('../../assets/chevron_right.png')}
+                    />
+                </View>
+            </TouchableOpacity>
         )
     }
 
@@ -63,6 +109,7 @@ const ShoppingLists = ({navigation, route}) => {
                     <ActivityIndicator/>
                 ) : (
                     <FlatList
+                    style={listViewStyles.list}
                     data={lists}
                     renderItem={renderList}
                     ListEmptyComponent={ListEmpty}
