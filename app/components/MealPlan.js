@@ -4,6 +4,7 @@ import { styles } from '../styles/Common';
 import { supabase } from '../../supabase';
 import { AuthContext } from '../../Contexts';
 import RecipeBase from './RecipeBase';
+import SearchModal from './SearchModal';
 
 const mealPlanStyles = StyleSheet.create({
     container: {
@@ -91,26 +92,12 @@ const NoPlan = ({ meal_name, date, meal_type, user_id, addPlannedRecipe }) => {
         }
     }
 
-    const SearchModal = () => {
-        if (searchModalOpen) {
-            return (
-                <Modal visible={searchModalOpen} transparent animationType='none'>
-                    <Pressable
-                    style={styles.overlay}
-                    onPress={() => setSearchModalOpen(false)}
-                    >
-                    <View style={styles.modal}>
-                        <Text style={styles.text}>Howdy</Text>
-                    </View>
-                    </Pressable>
-                </Modal>
-            )
-        }
-    }
-
     return (
         <View>
-            {SearchModal()}
+            <SearchModal
+            searchModalOpen={searchModalOpen}
+            setSearchModalOpen={setSearchModalOpen}
+            />
             {newMealLoading ? (
                 <>
                     <Text style={mealPlanStyles.lowImpactText}>{meal_name}</Text>
