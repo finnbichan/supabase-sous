@@ -102,7 +102,7 @@ const NoPlan = ({ meal_name, date, meal_type, user_id, addPlannedRecipe }) => {
         .insert([
             {
                 user_id: session.user.id,
-                recipe_id: recipe.id,
+                recipe_id: recipe.recipe_id,
                 date: date,
                 meal_type: meal_type,
                 active: true

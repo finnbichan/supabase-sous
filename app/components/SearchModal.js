@@ -96,10 +96,7 @@ const SearchModal = ( {searchModalOpen, setSearchModalOpen, onSelectRecipe, meal
         setLoading(true);
         console.log("searching for", text)
         const { data, error } = await supabase
-            .from('recipes')
-            .select('*')
-            .eq('user_id', session.user.id)
-            .textSearch('name', text.replace(' ', '+'));
+            .rpc('search_recipes_by_name', {p_user_id: session.user.id, search_term: text})
         if (error) {
             console.error(error);
         } else {
@@ -154,17 +151,21 @@ const SearchModal = ( {searchModalOpen, setSearchModalOpen, onSelectRecipe, meal
                             style={modalStyles.searchBox}
                             onChangeText={(text) => {
                                 setSearchText(text);
-                                console.log("trigger")
-                                searchRecipes(text);}}
+                                if (text.length > 2) {
+                                    console.log("searching")
+                                    searchRecipes(text);
+                                } else {
+                                    setSearchResults([]);
+                                }}}
                             />
-                            {searchText ?
+                            {searchText && searchText.length > 2 ?
                                 <FlatList
                                 data={searchResults}
                                 renderItem={renderSearchResults}
-                                keyExtractor={(item) => item.id.toString()}
+                                keyExtractor={(item) => item.recipe_id.toString()}
                                 ListEmptyComponent={NoResults}
                                 />
-                            : <Text style={styles.lowImpactText}>Search for a recipe</Text>}
+                            : <Text style={styles.lowImpactText}>Type at least 3 characters to search</Text>}
                        </KeyboardAvoidingView>
                    </Modal>
                )
