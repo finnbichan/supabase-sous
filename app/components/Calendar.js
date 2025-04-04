@@ -128,7 +128,7 @@ const Calendar = ({navigation}) => {
             const plannedRecipesFull = recipeFullData.data.map((item) => {
                 return {
                     recipe_id: item.id,
-                    name: item.recipe_name,
+                    name: item.name,
                     ease: item.ease,
                     cuisine: item.cuisine,
                     diet: item.diet,

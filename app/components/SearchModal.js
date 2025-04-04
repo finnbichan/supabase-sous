@@ -1,46 +1,81 @@
-import { Modal, Pressable, View, TextInput, Text, StyleSheet, KeyboardAvoidingView } from 'react-native';
+import { Modal, Pressable, View, TextInput, Text, StyleSheet, KeyboardAvoidingView, FlatList, TouchableOpacity, Image } from 'react-native';
 import React, { useState, useContext, useRef } from 'react';
 import { AuthContext } from '../../Contexts';
 import { supabase } from '../../supabase';
 import { styles } from '../styles/Common';
+import RecipeBase from './RecipeBase';
+import { ScrollView } from 'react-native-web';
 
 const modalStyles = StyleSheet.create({
     overlay: {
         height: '100%',
         width: "100%",
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
         alignItems: 'center',
         backgroundColor: 'rgba(0, 0, 0, 0.7)'
     },
     modal: {
-        backgroundColor: '#222222',
+        backgroundColor: '#181818',
         padding: 20,
         width: '90%',
         justifyContent: 'space-evenly',
         alignItems: 'center',
         alignSelf: 'center',
-        marginTop: '300',
+        marginTop: '200',
         position: 'absolute',
         borderRadius: 8,
         flexGrow: 0
       },
       searchBox: {
-        backgroundColor: '#181818',
+        backgroundColor: '#222222',
         borderRadius: 4,
-        padding:2,
+        padding: 2,
         width: '100%',
-        height: '100%',
+        height: '64',
         color: '#fff',
         margin: 10,
+        paddingHorizontal: 10
       },
       modalTitle: {
         color: '#fff',
         fontSize: 18,
         marginBottom: 4,
         textAlign: 'left',
-        
+      },
+      itemContainer: {
+        backgroundColor: '#222222',
+        borderRadius: 4,
+        padding: 4,
+        margin: 1,
+        flexDirection: 'row',
+        flexGrow: 1,
+        maxWidth: '99%',
+        marginBottom: 2,
+        justifyContent: 'space-between',
+        alignItems: 'center'
+      },
+      addIcon: {
+        height: 32,
+        width: 32,
+        marginHorizontal: 8
+      },
+      recipeContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        width: '100%',
+        backgroundColor: '#222222',
+        borderRadius: 4,
+        marginVertical: 2,
+        padding: 4,
+        alignItems: 'center'
       }
 })
+
+const NoResults = () => {
+    return (
+            <Text style={styles.lowImpactText}>No results found</Text>
+    )
+}
 
 const SearchModal = ( {searchModalOpen, setSearchModalOpen} ) => {
     const [searchText, setSearchText] = useState('');
@@ -64,7 +99,7 @@ const SearchModal = ( {searchModalOpen, setSearchModalOpen} ) => {
             .from('recipes')
             .select('*')
             .eq('user_id', session.user.id)
-            .textSearch('recipe_name', text);
+            .textSearch('name', text.replace(' ', '+'));
         if (error) {
             console.error(error);
         } else {
@@ -72,6 +107,22 @@ const SearchModal = ( {searchModalOpen, setSearchModalOpen} ) => {
             setSearchResults(data);
         }
         setLoading(false);
+    }
+
+    const renderSearchResults = ({ item }) => {
+        return (
+            <TouchableOpacity
+            style={modalStyles.recipeContainer}
+            >
+                <RecipeBase
+                recipe={item}
+                />
+                <Image 
+                style={modalStyles.addIcon}
+                source={require('../../assets/add.png')}
+                />
+            </TouchableOpacity>
+        )
     }
 
    if (searchModalOpen) {
@@ -84,9 +135,12 @@ const SearchModal = ( {searchModalOpen, setSearchModalOpen} ) => {
                    >
                        <Pressable
                        style={modalStyles.overlay}
-                       onPress={() => setSearchModalOpen(false)}
+                       onPress={() => {setSearchModalOpen(false);setSearchResults([])}}
                        />
-                       <KeyboardAvoidingView style={modalStyles.modal}>
+                       <KeyboardAvoidingView 
+                       style={modalStyles.modal}
+                       keyboardVerticalOffset={100}
+                       >
                             <Text style={modalStyles.modalTitle}>Search your recipes</Text>
                             <TextInput
                             ref={(ref)=>inputRef.current=ref} 
@@ -96,6 +150,14 @@ const SearchModal = ( {searchModalOpen, setSearchModalOpen} ) => {
                                 console.log("trigger")
                                 searchRecipes(text);}}
                             />
+                            {searchText ?
+                                <FlatList
+                                data={searchResults}
+                                renderItem={renderSearchResults}
+                                keyExtractor={(item) => item.id.toString()}
+                                ListEmptyComponent={NoResults}
+                                />
+                            : <Text style={styles.lowImpactText}>Search for a recipe</Text>}
                        </KeyboardAvoidingView>
                    </Modal>
                )

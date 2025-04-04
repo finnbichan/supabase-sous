@@ -21,6 +21,10 @@ import './globals';
 import { AuthContext } from './Contexts';
 import List from './app/screens/List';
 import RightHeaderButton from './app/components/RightHeaderButton';
+import * as SplashScreen from 'expo-splash-screen';
+import Session from '@supabase/supabase-js'
+
+SplashScreen.preventAutoHideAsync();
 
 const Stack = createNativeStackNavigator();
 
@@ -219,17 +223,28 @@ function LogoTitle() {
 }
 
 export default function App() {
+  const [appIsReady, setAppIsReady] = useState(false);
   const [session, setSession] = useState(null);
   
   useEffect(() => {
      supabase.auth.onAuthStateChange((event, session) => {
       if (event == 'SIGNED_OUT') {
         setSession(null)
+        setAppIsReady(true)
       } else { 
         setSession(session)
+        setAppIsReady(true);
       }
     })
   }, [])
+
+  if(appIsReady) {
+    SplashScreen.hide();
+  }
+
+  if(!appIsReady) {
+    return(null)
+  }
 
   return (
     <AuthContext.Provider value={session}>
