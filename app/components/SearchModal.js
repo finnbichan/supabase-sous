@@ -77,7 +77,7 @@ const NoResults = () => {
     )
 }
 
-const SearchModal = ( {searchModalOpen, setSearchModalOpen} ) => {
+const SearchModal = ( {searchModalOpen, setSearchModalOpen, onSelectRecipe, meal_type, date} ) => {
     const [searchText, setSearchText] = useState('');
     const [searchResults, setSearchResults] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -109,10 +109,17 @@ const SearchModal = ( {searchModalOpen, setSearchModalOpen} ) => {
         setLoading(false);
     }
 
+    const selectRecipe = (recipe) => {
+        onSelectRecipe(recipe, meal_type, date);
+        console.log("hello")
+        setSearchModalOpen(false);
+    }
+
     const renderSearchResults = ({ item }) => {
         return (
             <TouchableOpacity
             style={modalStyles.recipeContainer}
+            onPress={() => selectRecipe(item)}
             >
                 <RecipeBase
                 recipe={item}

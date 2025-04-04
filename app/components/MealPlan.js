@@ -63,6 +63,8 @@ const NoPlan = ({ meal_name, date, meal_type, user_id, addPlannedRecipe }) => {
     const [newMealLoading, setNewMealLoading] = useState(false);
     const [searchModalOpen, setSearchModalOpen] = useState(false);
 
+    const session = useContext(AuthContext);
+
     const suggestRecipe = async (meal_type, date, user_id) => {
         setNewMealLoading(true);
         const {data, error} = await supabase.rpc('suggest_recipe', {mealtype_input: meal_type, date_input:date, userid_input: user_id})
@@ -78,7 +80,7 @@ const NoPlan = ({ meal_name, date, meal_type, user_id, addPlannedRecipe }) => {
                     "meal_type": item.meal_type || null,
                     "recipe": {
                         "recipe_id": item.recipe_id || "",
-                        "name": item.recipe_name || "",
+                        "name": item.name || "",
                         "ease": item.ease || 0,
                         "cuisine": item.cuisine || 0,
                         "diet": item.diet || 0,
@@ -92,11 +94,55 @@ const NoPlan = ({ meal_name, date, meal_type, user_id, addPlannedRecipe }) => {
         }
     }
 
+    const addRecipeBySearch = async (recipe, meal_type, date) => {
+        setNewMealLoading(true);
+        console.log("recipe", recipe)
+        const {data, error} = await supabase
+        .from('plannedrecipes')
+        .insert([
+            {
+                user_id: session.user.id,
+                recipe_id: recipe.id,
+                date: date,
+                meal_type: meal_type,
+                active: true
+            }
+        ])
+        .select()
+        if (error) {
+            console.log(error);
+            setNewMealLoading(false);
+        } else {
+            console.log(data.id, "data", data)
+            const createNewPlannedRecipe = (item) => {
+                return {
+                    "plannedrecipe_id": item.id || null,
+                    "date": item.date || null,
+                    "meal_type": item.meal_type || null,
+                    "recipe": {
+                        "recipe_id": item.recipe_id || "",
+                        "name": recipe.name || "",
+                        "ease": recipe.ease || 0,
+                        "cuisine": recipe.cuisine || 0,
+                        "diet": recipe.diet || 0
+                    }
+                } 
+            }
+            const newPlannedRecipe = createNewPlannedRecipe(data[0])
+            console.log("new planned recipe", newPlannedRecipe)
+            addPlannedRecipe(newPlannedRecipe);
+            setNewMealLoading(false);
+        }
+    }
+
     return (
         <View>
             <SearchModal
             searchModalOpen={searchModalOpen}
             setSearchModalOpen={setSearchModalOpen}
+            onSelectRecipe={addRecipeBySearch}
+            meal_type={meal_type}
+            date={date}
             />
             {newMealLoading ? (
                 <>
@@ -172,7 +218,7 @@ const YesPlan = ({navigation, user_id, meal_name, meal_type, recipe, date, plann
                         "meal_type": item.meal_type || null,
                         "recipe": {
                             "recipe_id": item.recipe_id || "",
-                            "name": item.recipe_name || "",
+                            "name": item.name || "",
                             "ease": item.ease || 0,
                             "cuisine": item.cuisine || 0,
                             "diet": item.diet || 0
