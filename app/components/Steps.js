@@ -1,6 +1,30 @@
-import {Text, TextInput, TouchableOpacity } from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, Image, View } from 'react-native';
 import React from 'react';
 import { styles } from '../styles/Common';
+import FLTextInput from './FloatingLabelInput';
+
+const stepStyles = StyleSheet.create({
+    button: {
+        marginHorizontal: 8,
+        alignSelf: 'flex-end',
+        backgroundColor: '#222222',
+        borderRadius: 4,
+        marginVertical: 8,
+        marginHorizontal: 12,
+    },
+    icon: {
+        height: 32,
+        width: 32
+    },
+    text: {
+        color: '#fff',
+        fontSize: 18
+    },
+    stepContainer : {
+        flexDirection: 'row',
+    }
+})
+
 
 const Steps = ({steps, onAddition, onChangeText, onRemove, editable}) => {
     return (<>
@@ -19,10 +43,13 @@ const Steps = ({steps, onAddition, onChangeText, onRemove, editable}) => {
                 })}
                 {steps.length < 10 && editable ? (
                     <TouchableOpacity
-                    style={styles.button}
+                    style={stepStyles.button}
                     onPress={onAddition}
                     >
-                        <Text style={styles.text}>Add another</Text>
+                        <Image
+                        style={stepStyles.icon}
+                        source={require('../../assets/add.png')}
+                        />
                     </TouchableOpacity>
                     ):(<></>)}
                 </>)
@@ -31,23 +58,25 @@ const Steps = ({steps, onAddition, onChangeText, onRemove, editable}) => {
 
 const Step = ({number, totalNumber, value, onChangeText, onRemove, editable}) => {
     return ( 
-        <>
-            <Text style={styles.text}>Step {number + 1}</Text>
-            <TextInput
-            style={styles.input}
-            onChangeText={(text) => onChangeText(number, text)}
-            value={value}
+        <View style={stepStyles.stepContainer}>
+            <FLTextInput
+            onChangeTextProp={(text) => onChangeText(number, text)}
+            defaultValue={value}
             editable={editable}
+            label={"Step " + (number + 1)}
             />
             {totalNumber > 1 && editable ? (
                 <TouchableOpacity
-                style={styles.button}
+                style={[stepStyles.button, {zIndex: 1, position: 'absolute', right: 0, top: 16}]}
                 onPress={() => onRemove(number)}
                 >
-                    <Text style={styles.text}>Remove</Text>
+                    <Image
+                        style={stepStyles.icon}
+                        source={require('../../assets/cross.png')}
+                        />
                 </TouchableOpacity>
             ):(<></>)}
-        </>
+        </View>
     )
 }
 

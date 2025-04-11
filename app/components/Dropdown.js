@@ -3,15 +3,16 @@ import React, { useState, useRef } from 'react';
 
 dropdownStyles = StyleSheet.create({
     input: {
-        borderColor: '#ffffff',
-        borderWidth: 1,
+        backgroundColor: '#222222',
         marginTop: 8,
         marginHorizontal: 8,
         borderRadius: 4,
         padding: 2,
         flexDirection: "row",
         alignItems: "center",
-        color: '#fff'
+        color: '#fff',
+        width: '95%',
+        marginTop: 20,
       },
       overlay: {
         height: '100%',
@@ -20,20 +21,30 @@ dropdownStyles = StyleSheet.create({
       dropdown: {
         position: 'absolute',
         borderColor: '#fff',
-        width: '90%',
+        width: '93%',
         shadowColor: '#000000',
         shadowRadius: 4,
         shadowOffset: { height: 4, width: 0 },
         shadowOpacity: 0.5,
         marginHorizontal: 8,
         color: '#fff',
-        backgroundColor: '#222222'
+        backgroundColor: '#181818',
+        alignSelf: 'center',
+        marginTop: '0',
+        marginBottom: '-2',
+        borderBottomLeftRadius: 8,
+        borderBottomRightRadius: 8,
+        paddingTop: 2,
+        left: 5
       },
       item: {
         paddingHorizontal: 5,
         paddingVertical: 5,
-        borderBottomWidth: 1,
-        color: '#fff'
+        color: '#fff',
+        backgroundColor: '#222222',
+        borderRadius: 4,
+        marginBottom: 4,
+
       },
       icons: {
         maxWidth: 37.5,
@@ -41,8 +52,7 @@ dropdownStyles = StyleSheet.create({
         marginLeft: "auto"
       },
       labelText: {
-        marginLeft:4,
-        color: '#fff'
+        marginLeft:4
       },
       text: {
         color: '#fff'
@@ -58,7 +68,7 @@ const Dropdown = ({ value, label, data, onSelect }) => {
 
     const openDropdown = () => {
         DropdownButton.current.measure((_fx, _fy, _w, h, _px, py) => {
-          setDropdownTop(py + h);
+          setDropdownTop(py + h - 50);
         });
         setVisible(true);
     };
@@ -110,7 +120,7 @@ const Dropdown = ({ value, label, data, onSelect }) => {
         style={dropdownStyles.input}
         >
             {renderDropdown()}
-            <Text style={dropdownStyles.labelText}>{(selected && selected.label) || label}</Text>
+            <Text style={[dropdownStyles.labelText, {color: selected ? '#fff' : '#b3b3b3'}]}>{(selected && selected.label) || label}</Text>
             <Image
             style={dropdownStyles.icons}
             source={require('../../assets/dropdown_arrow.png')}

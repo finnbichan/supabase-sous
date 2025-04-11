@@ -4,9 +4,9 @@ import { StyleSheet } from 'react-native';
 
 const editStyles = StyleSheet.create({
     editButton: {
-        height: 32,
-        width: 32,
-        marginRight: 10
+        height: 28,
+        width: 28,
+        marginRight: 14
     }
 })
 

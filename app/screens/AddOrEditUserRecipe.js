@@ -1,24 +1,23 @@
-import { Text, SafeAreaView, View, TouchableOpacity, TextInput, ActivityIndicator, Switch, ScrollView, KeyboardAvoidingView, Image } from 'react-native';
-import React, { useState } from 'react';
+import { Text, SafeAreaView, View, TouchableOpacity, TextInput, ActivityIndicator, Switch, ScrollView, KeyboardAvoidingView, Image, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
 import { styles } from '../styles/Common';
 import Dropdown from '../components/Dropdown';
 import Steps from '../components/Steps';
 import { supabase } from '../../supabase';
 import { useHeaderHeight } from '@react-navigation/elements'
-import BackButton from '../components/BackButton';
+import DoneButton from '../components/DoneButton';
+import FLTextInput from '../components/FloatingLabelInput';
+import Checkbox from '../components/Checkbox';
 
-const SubmitButton = ( {onPress} ) => {
-    return (
-        <TouchableOpacity
-        onPress={onPress}
-        >
-            <Image 
-            style={styles.editButton}
-            source={require('../../assets/tick.png')}
-            />
-        </TouchableOpacity>
-    )
-}
+const AddOrEditStyles = StyleSheet.create({
+    checkboxContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginHorizontal: 8,
+        marginTop: 20,
+    }
+})
 
 const AddOrEditUserRecipe = ( {route, navigation} ) => {
     const [recipe, setRecipe] = useState(route.params?.recipe ? route.params?.recipe : {});
@@ -30,12 +29,21 @@ const AddOrEditUserRecipe = ( {route, navigation} ) => {
 
     const newRecipe = route.params?.recipe ? false : true;
 
+    useEffect(() => {
+            navigation.setOptions({
+                headerRight: () => (
+                    <DoneButton
+                    onSubmit={onSubmit}
+                    isSubmitting={submitting}
+                    />
+                )
+                });
+          }, [navigation, recipe, steps, submitting, addSteps]);
+
     const changeRecipeProperty = (prop, newValue) => {
         const recipeCopy = recipe;
         recipeCopy[prop] = newValue;
-        console.log(prop, newValue)
         setRecipe(recipeCopy);
-        console.log(recipe);
     }
 
     const addStep = () => {
@@ -61,12 +69,11 @@ const AddOrEditUserRecipe = ( {route, navigation} ) => {
     }
 
     const onSubmit = () => {
-
         if (!(recipe.name && validateDropdown(recipe.cuisine) && validateDropdown(recipe.diet) && validateDropdown(recipe.ease))) {
             setValidationFailed(true);
         } else {
             setValidationFailed(false);
-            recipe.id ? update() : insert();
+            recipe.recipe_id ? update() : insert();
         }
     }
 
@@ -76,33 +83,34 @@ const AddOrEditUserRecipe = ( {route, navigation} ) => {
         const data = await supabase
         .from('recipes')
         .insert({
-            recipe_name: recipe.name,
+            name: recipe.name,
             description: recipe.desc,
             ease: recipe.ease,
             cuisine: recipe.cuisine,
             diet: recipe.diet,
             steps: stepsJSON
             })
+        .select()
+        data.data[0].recipe_id = data.data[0].id
+        delete data.data[0].id
         setSubmitting(false)
-        navigation.navigate('Recipe', {action: "add", recipe: recipe})
+        navigation.navigate('Recipe', {action: "add", recipe: data.data[0]})
         }
 
     const update = async () => {
         setSubmitting(true);
         const stepsJSON = addSteps ? JSON.stringify(steps) : null
-        console.log("updating", recipe.id)
         const data = await supabase
         .from('recipes')
         .update({
-            recipe_name: recipe.name,
+            name: recipe.name,
             description: recipe.desc,
             ease: recipe.ease,
             cuisine: recipe.cuisine,
             diet: recipe.diet,
             steps: stepsJSON
             })
-        .eq('id', recipe.id)
-        console.log(data)
+        .eq('id', recipe.recipe_id)
         setSubmitting(false)
         navigation.navigate('Recipe', {action: "update", recipe: recipe})
         }
@@ -110,13 +118,8 @@ const AddOrEditUserRecipe = ( {route, navigation} ) => {
 
     return (
         <SafeAreaView style={styles.container}>
-            <View style={styles.recipeTitleBox}>
+            <View style={[styles.recipeTitleBox, {left: 10}]}>
                 <Text style={styles.title}>{newRecipe ? "New Recipe" : recipe.name}</Text>
-                {submitting ? (
-                    <ActivityIndicator size="small"/>
-                ) : (
-                <SubmitButton onPress={onSubmit}/>
-                )}
             </View>
             <KeyboardAvoidingView
             keyboardVerticalOffset={height}
@@ -126,50 +129,45 @@ const AddOrEditUserRecipe = ( {route, navigation} ) => {
             <ScrollView
             contentContainerStyle={{flexGrow: 1}}
             >
-                <TextInput
+                <FLTextInput
                 id="name"
-                style={styles.input}
                 defaultValue={recipe.name}
-                onChangeText={(text) => {changeRecipeProperty("name", text)}}
-                placeholder='Recipe name...'
-                placeholderTextColor={'#fff'}
+                onChangeTextProp={(text) => {changeRecipeProperty("name", text)}}
+                label='Name'
                 />
-                <Text style={styles.text}>Description (optional)</Text>
-                <TextInput
+                <FLTextInput
                 id="description"
-                style={styles.input}
                 defaultValue={recipe.desc}
-                onChangeText={(text) => {changeRecipeProperty("desc", text)}}
-                placeholder='Add a short description for this recipe'
-                placeholderTextColor={'#fff'}
-                />
-                <Text style={styles.text}>Cuisine</Text>
+                onChangeTextProp={(text) => {changeRecipeProperty("desc", text)}}
+                label='Description (optional)'
+                />               
                 <Dropdown
                 data={cuisineList}
-                label="Select an option..."
+                label="Cuisine"
                 onSelect={(selected) => {changeRecipeProperty("cuisine", selected.id)}}
                 value={recipe.cuisine}
                 />
-                <Text style={styles.text}>Veggie or vegan?</Text>
                 <Dropdown
                 data={dietList}
-                label="Select an option..."
+                label="Veggie or vegan?"
                 onSelect={(selected) => {changeRecipeProperty("diet", selected.id)}}
                 value={recipe.diet}
                 />
-                <Text style={styles.text}>How long does it take?</Text>
                 <Dropdown
                 data={easeList}
-                label="Select an option..."
+                label="How long?"
                 onSelect={(selected) => {changeRecipeProperty("ease", selected.id)}}
                 value={recipe.ease}
                 />
-                <Text style={styles.text}>Steps</Text>
-                <Text style={styles.text}>Add steps now?</Text>
-                <Switch
-                onValueChange={() => setAddSteps(!addSteps)}
-                value={addSteps}
-                />
+                <View style={AddOrEditStyles.checkboxContainer}>
+                    <Text style={styles.text}>Steps</Text>
+                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                        <Text style={styles.text}>Add steps now?</Text>
+                        <Checkbox 
+                        isChecked={addSteps}
+                        onPress={() => setAddSteps(!addSteps)}/>
+                    </View>
+                </View>
                 {addSteps ? (
                     <Steps
                     steps={steps}

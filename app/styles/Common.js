@@ -1,6 +1,4 @@
-import { cloneElement } from 'react';
 import { StyleSheet } from 'react-native';
-import BackButton from '../components/BackButton';
 
 export const styles = StyleSheet.create({
     container: {
@@ -24,15 +22,12 @@ export const styles = StyleSheet.create({
       color: '#fff'
     },
     input: {
-      overlayColor: '#ffffff',
-      borderColor: '#ffffff',
-      borderWidth: 1,
-      width: '90%',
-      marginTop: 8,
-      marginHorizontal: 8,
+      width: '95%',
+      marginLeft: 8,
+      backgroundColor: '#222222',
       borderRadius: 4,
-      padding: 2,
-      color: '#fff'
+      color: '#fff',
+      marginVertical: 2,
     },
     buttonsParent: {
       flexDirection: "row"
@@ -44,7 +39,6 @@ export const styles = StyleSheet.create({
       borderColor: "#fff",
       backgroundColor: '#222222',
       marginHorizontal: 8,
-      borderWidth: 1,
       borderRadius: 4,
       paddingVertical: 4,
       paddingHorizontal: 8
@@ -125,23 +119,27 @@ export const styles = StyleSheet.create({
   overlay: {
     height: '100%',
     width: "100%",
-    justifyContent: 'center',
-    alignItems: 'center'
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)'
   },
   modal: {
     backgroundColor: '#181818',
-    borderColor: '#FFF',
-    borderRadius: 4,
-    borderWidth: 1,
-    width: '70%',
-    height: '10%',
+    padding: 20,
+    width: '90%',
     justifyContent: 'space-evenly',
-    alignItems: 'center'
+    alignItems: 'center',
+    alignSelf: 'center',
+    marginTop: '200',
+    position: 'absolute',
+    borderRadius: 8,
+    flexGrow: 0
   },
   modalButtons: {
     flexDirection: 'row',
     justifyContent: 'space-evenly',
-    padding: 4
+    padding: 4,
+    paddingTop: 12
   },
   userRecipesTitleBox: {
     paddingBottom: 10
@@ -163,6 +161,11 @@ export const styles = StyleSheet.create({
   },
   lowImpactText: {
     color: '#b3b3b3'
+  },
+  deleteButton: {
+    backgroundColor: '#222222',
+    borderRadius: 8,
+    alignSelf: 'flex-end',
+    margin: 12
   }
-    }
-  );
+  });

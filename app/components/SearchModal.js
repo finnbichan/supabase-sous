@@ -31,10 +31,11 @@ const modalStyles = StyleSheet.create({
         borderRadius: 4,
         padding: 2,
         width: '100%',
-        height: '64',
+        height: '50',
         color: '#fff',
         margin: 10,
-        paddingHorizontal: 10
+        paddingHorizontal: 10,
+        fontSize: 16
       },
       modalTitle: {
         color: '#fff',

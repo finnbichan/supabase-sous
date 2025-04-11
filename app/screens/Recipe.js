@@ -4,6 +4,7 @@ import { styles } from '../styles/Common';
 import { supabase } from '../../supabase';
 import Steps from '../components/Steps';
 import { AuthContext } from '../../Contexts';
+import FLTextInput from '../components/FloatingLabelInput';
 
 const Recipe = ({route, navigation}) => {
     const [loading, setLoading] = useState(true);
@@ -32,8 +33,9 @@ const Recipe = ({route, navigation}) => {
         console.log(recipe)
         setLoading(false)
         }
-    
+        //FIX for new recipes.
         const getCreatorName = async () => {
+            console.log(recipe.user_id)
             const {data, error} = await supabase
             .from('profiles')
             .select('display_name')
@@ -126,8 +128,16 @@ const Recipe = ({route, navigation}) => {
                 <>
                     <View>
                         {recipe.desc ? 
-                        (<Text style={styles.text}>{recipe.desc}</Text>) : 
-                        (<Text style={styles.text}>No description added</Text>)}
+                        (<FLTextInput
+                        editable={false}
+                        defaultValue={recipe.desc}
+                        label="Description"
+                        />) : 
+                        (<FLTextInput
+                         editable={false}
+                         defaultValue="No description added"
+                         label="Description"
+                         />)}
                     </View>
                     <View>
                         {recipe.steps ? (
@@ -136,16 +146,23 @@ const Recipe = ({route, navigation}) => {
                         steps={recipe.steps}
                         />
                         ) : (
-                            <Text style={styles.text}>No steps added</Text>
+                            <FLTextInput
+                         editable={false} 
+                         defaultValue="No steps added"
+                         label="Steps"
+                         />
                         )}
                     </View>
                     
                 </>
             )}
             <TouchableOpacity
-            style={styles.button}
+            style={styles.deleteButton}
             onPress={() => setDeleteModalOpen(true)}>
-                <Text style={styles.buttonText}>Delete</Text>
+                <Image
+                style={styles.addButton}
+                source={require('../../assets/delete.png')}
+                />
             </TouchableOpacity>
         </SafeAreaView>
         
