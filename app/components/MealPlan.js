@@ -5,28 +5,29 @@ import { supabase } from '../../supabase';
 import { AuthContext } from '../../Contexts';
 import RecipeBase from './RecipeBase';
 import SearchModal from './SearchModal';
+import { useTheme } from '@react-navigation/native';
 
-const mealPlanStyles = StyleSheet.create({
+const MealPlanStyles = (props) => StyleSheet.create({
     container: {
-        backgroundColor: '#222222',
+        backgroundColor: props.colours.card,
         borderRadius: 8,
         paddingHorizontal: 10,
         marginTop: 4
     },
     header: {
-        backgroundColor: '#222222',
+        backgroundColor: props.colours.card,
         padding: 10,
     },
     title: {
         fontSize: 16,
-        color: '#fff',
+        color: props.colours.text,
     },
     content: {
         padding: 10,
     },
     image: {
-        height: 32,
-        width: 32,
+        height: 36,
+        width: 36,
         marginHorizontal: 8
     },
     noPlanContainer: {
@@ -39,13 +40,13 @@ const mealPlanStyles = StyleSheet.create({
         alignItems: 'center'
     },
     noPlanText: {
-        color: '#FFF',
+        color: props.colours.text,
         fontSize: 18,
         paddingLeft: 4,
         paddingBottom: 4
     },
     lowImpactText: {
-        color: '#b3b3b3'
+        color: props.colours.secondaryText
     },
     yesPlanTopRow: {
         flexDirection: 'row',
@@ -59,11 +60,23 @@ const mealPlanStyles = StyleSheet.create({
     }
 });
 
+function useMealPlanStyles() {
+    const { colours } = useTheme();
+    const mealPlanstyles = React.useMemo(() => MealPlanStyles({ colours }), [colours]);
+    return mealPlanstyles;
+  }
+
 const NoPlan = ({ meal_name, date, meal_type, user_id, addPlannedRecipe }) => {
+    const { assets } = useTheme(); 
+    const mealPlanStyles = useMealPlanStyles();
+
+    
     const [newMealLoading, setNewMealLoading] = useState(false);
     const [searchModalOpen, setSearchModalOpen] = useState(false);
 
     const session = useContext(AuthContext);
+
+    
 
     const suggestRecipe = async (meal_type, date, user_id) => {
         setNewMealLoading(true);
@@ -160,7 +173,7 @@ const NoPlan = ({ meal_name, date, meal_type, user_id, addPlannedRecipe }) => {
                     onPress={() => setSearchModalOpen(true)}>
                         <Image
                         style={mealPlanStyles.image}
-                        source={require('../../assets/search.png')}
+                        source={assets.search}
                         />
                     </TouchableOpacity>
                     <TouchableOpacity
@@ -168,7 +181,7 @@ const NoPlan = ({ meal_name, date, meal_type, user_id, addPlannedRecipe }) => {
                     >
                         <Image
                         style={mealPlanStyles.image}
-                        source={require('../../assets/bolt.png')}
+                        source={assets.bolt}
                         />
                     </TouchableOpacity>
                 </View>
@@ -180,6 +193,8 @@ const NoPlan = ({ meal_name, date, meal_type, user_id, addPlannedRecipe }) => {
 
 const YesPlan = ({navigation, user_id, meal_name, meal_type, recipe, date, plannedrecipe_id, addPlannedRecipe, deletePlannedRecipe, rerollPlannedRecipe}) => {
     const [loading, setLoading] = useState(false)
+    const { assets } = useTheme();
+    const mealPlanStyles = useMealPlanStyles();
     const deactivatePlannedRecipe = async () => {
         console.log(plannedrecipe_id)
         setLoading(true)
@@ -253,20 +268,21 @@ const YesPlan = ({navigation, user_id, meal_name, meal_type, recipe, date, plann
                 </TouchableOpacity>
                 <View style={mealPlanStyles.noPlanButtons}>
                     <TouchableOpacity
+                    onPress={deactivatePlannedRecipe}
+                    
+                    >
+                        <Image
+                        style={mealPlanStyles.image}
+                        source={assets.cross}
+                        />
+                    </TouchableOpacity>
+                    <TouchableOpacity
                     onPress={() => rerollRecipe(meal_type, date, user_id, plannedrecipe_id)}
                     >
                         <Image
                         style={mealPlanStyles.image}
-                        source={require('../../assets/refresh.png')}
-                        />
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                    onPress={deactivatePlannedRecipe}
-                    >
-                        <Image
-                        style={mealPlanStyles.image}
-                        source={require('../../assets/cross.png')}
-                        />
+                        source={assets.refresh}
+                        /> 
                     </TouchableOpacity>
                 </View>
             </View>
@@ -277,6 +293,7 @@ const YesPlan = ({navigation, user_id, meal_name, meal_type, recipe, date, plann
 
 const MealPlan = ({ navigation, meal_type, date, recipe, plannedrecipe_id, addPlannedRecipe, deletePlannedRecipe, rerollPlannedRecipe }) => {
     const session = useContext(AuthContext)
+    const mealPlanStyles = useMealPlanStyles();
     var meal_name = null;
     switch(meal_type) {
         case(1) : {meal_name="Breakfast"; break;}

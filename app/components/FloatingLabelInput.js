@@ -1,32 +1,32 @@
-import { Animated, TextInput, Text, View, StyleSheet } from 'react-native';
+import { Animated, TextInput, Text, StyleSheet } from 'react-native';
 import React, { useState, useRef, useLayoutEffect } from 'react';
+import { useTheme } from '@react-navigation/native';
 
-const FLInputStyles = StyleSheet.create({
-    input: {
-        width: '95%',
-        marginLeft: 8,
-        backgroundColor: '#222222',
-        borderRadius: 4,
-        color: '#fff',
-        marginBottom: 2,
-        marginTop: 20,
-        paddingRight: 30,
-      },
-      label: {
-        color: '#b3b3b3'
-      },
-      animatedStyle: {
-        zIndex: 1,
-        position: 'absolute',
-        left: 15
-      },
-
-      
-})
 
 const FLTextInput = ( {id, label, defaultValue, onChangeTextProp, editable=true} ) => {
+    const { colours } = useTheme();
+    const FLInputStyles = StyleSheet.create({
+      input: {
+          width: '95%',
+          backgroundColor: colours.card,
+          borderRadius: 4,
+          color: colours.text,
+          marginBottom: 8,
+          marginTop: 20,
+          paddingRight: 30,
+          paddingLeft: 6,
+          height: 40
+        },
+        animatedStyle: {
+          zIndex: 1,
+          position: 'absolute',
+          left: 15
+        }   
+    })
     const [value, setValue] = useState(defaultValue);
     const [isUp, setIsUp] = useState(defaultValue ? true : false);
+
+    
 
     const moveText = useRef(new Animated.Value(defaultValue ? 1 : 0)).current;
     const inputRef = useRef();
@@ -81,12 +81,12 @@ const FLTextInput = ( {id, label, defaultValue, onChangeTextProp, editable=true}
     return (
         <>
             <Animated.View style={[FLInputStyles.animatedStyle, animStyle, {top: textPosition}]}>
-                <Text style={FLInputStyles.label}>{label}</Text>
+                <Text style={{color: colours.secondaryText}}>{label}</Text>
             </Animated.View>
             <TextInput
             ref={inputRef}
             id={id}
-            style={FLInputStyles.input}
+            style={[FLInputStyles.input]}
             value={value}
             onChangeText={onChangeText}
             onFocus={handleFocus}

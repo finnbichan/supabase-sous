@@ -1,6 +1,7 @@
 import { Image, TouchableOpacity } from 'react-native';
 import React, { useState } from 'react';
 import { StyleSheet } from 'react-native';
+import { useTheme } from '@react-navigation/native';
 
 const checkboxStyles = StyleSheet.create({
     icon: {
@@ -10,6 +11,8 @@ const checkboxStyles = StyleSheet.create({
 })
 
 const Checkbox = ( {onPress, isChecked} ) => {
+    const { assets } = useTheme();
+
     const toggleChecked = () => {
         onPress();
     }
@@ -19,7 +22,7 @@ const Checkbox = ( {onPress, isChecked} ) => {
             onPress={toggleChecked}>
                 <Image 
                 style={checkboxStyles.icon}
-                source={require('../../assets/check_box.png')}
+                source={assets.check_box}
                 />
             </TouchableOpacity>
         ) : (
@@ -27,7 +30,7 @@ const Checkbox = ( {onPress, isChecked} ) => {
             onPress={toggleChecked}>
                 <Image 
                 style={checkboxStyles.icon}
-                source={require('../../assets/check_box_outline.png')}
+                source={assets.check_box_outline}
                 />
             </TouchableOpacity>
         )

@@ -1,36 +1,16 @@
 import { View, Text, SafeAreaView, TouchableOpacity,ActivityIndicator, FlatList, Image, StyleSheet } from 'react-native';
 import React, { useEffect, useState, useContext } from 'react';
-import { styles } from '../styles/Common';
+import useStyles from '../styles/Common';
 import Recipe from '../components/RecipeBase';
 import { supabase } from '../../supabase';
 import { AuthContext } from '../../Contexts';
-
-const exploreStyles = StyleSheet.create({
-    container: {
-        backgroundColor: '#222222',
-        borderRadius: 8,
-        paddingHorizontal: 10,
-        marginTop: 4,
-        flexDirection: 'row',
-        justifyContent: 'space-between'
-    },
-    listFooter: {
-        alignItems: 'center',
-        padding: 10
-    }
-})
-
-const ExploreHeader = () => {
-    return (
-         <View style={styles.userRecipesTitleBox}>
-            <Text style={styles.title}>Explore</Text>
-        </View>
-    )
-}
+import { useTheme } from '@react-navigation/native';
+import AppHeaderText from '../components/AppHeaderText';
 
 const ExploreFooter = () => {
+    const styles = useStyles();
     return (
-        <View style={exploreStyles.listFooter}>
+        <View style={{alignItems: 'center', padding: 10}}>
             <Text style={styles.lowImpactText}>No more suggestions!</Text>
         </View>
     )
@@ -41,6 +21,18 @@ const Explore = ({route, navigation}) => {
     const [refreshing, setRefreshing] = useState(false);
     const [recipes, setRecipes] = useState(undefined);
     const [likedRecipes, setLikedRecipes] = useState([]);
+    const { colours, assets } = useTheme();
+    const styles = useStyles();
+    const exploreStyles = StyleSheet.create({
+        container: {
+            backgroundColor: colours.card,
+            borderRadius: 8,
+            paddingHorizontal: 10,
+            marginTop: 4,
+            flexDirection: 'row',
+            justifyContent: 'space-between'
+        }
+    })
 
     const session = useContext(AuthContext);
 
@@ -83,7 +75,7 @@ const Explore = ({route, navigation}) => {
                     <TouchableOpacity
                     onPress={() => {likeRecipe(item.id)}}
                     > 
-                        <Image source={require('../../assets/heart.png')} style={{width: 20, height: 20, margin: 10}} />
+                        <Image source={assets.heart} style={{width: 20, height: 20, margin: 10}} />
                     </TouchableOpacity>
             </View>
         )
@@ -102,7 +94,7 @@ const Explore = ({route, navigation}) => {
                     extraData={loading}
                     style={styles.recipeList}
                     showsVerticalScrollIndicator={false}
-                    ListHeaderComponent={<ExploreHeader />}
+                    ListHeaderComponent={<AppHeaderText>Explore</AppHeaderText>}
                     ListFooterComponent={<ExploreFooter />}
                     onRefresh={() => onRefresh()}
                     refreshing={refreshing}

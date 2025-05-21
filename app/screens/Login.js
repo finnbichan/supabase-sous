@@ -1,11 +1,16 @@
 import { View, Text, Pressable, TextInput, ActivityIndicator, SafeAreaView} from 'react-native';
 import React, { useState } from 'react';
-import { styles } from '../styles/Common';
 import { supabase } from '../../supabase';
+import AppHeaderText from '../components/AppHeaderText';
+import AppText from '../components/AppText';
+import FLTextInput from '../components/FloatingLabelInput';
+import AppButton from '../components/AppButton';
+import useStyles from '../styles/Common';
 
 const Login = ( { navigation }) => {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
+  const styles = useStyles();
 
   const signIn = async () => {
     setLoading(true);
@@ -31,19 +36,21 @@ const Login = ( { navigation }) => {
     return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
-        <Text style={styles.title}>Good to see you again</Text>
-        <Text style={styles.text}>Enter your email below to log in. We'll send a one time password to your email address to check it's really you.</Text>
-        <TextInput
-        style={styles.input}
-        placeholder="Email"
-        placeholderTextColor="#a9a9a9"
-        onChangeText={(text) => setEmail(text)}
+        <AppHeaderText>Good to see you again</AppHeaderText>
+        <AppText style={styles.text}>Enter your email below to log in. We'll send a one time password to your email address to check it's really you.</AppText>
+        <FLTextInput
+        id="email"
+        label="Email"
+        defaultValue={email}
+        onChangeTextProp={setEmail}
+        editable={true}
         />
         { loading ? <ActivityIndicator/>
         : (
-              <Pressable onPress={signIn} style={styles.button}>
-                <Text style={styles.buttonText}>Sign in</Text>
-              </Pressable>
+              <AppButton
+              label="Log In"
+              onPress={signIn}
+              />
         )}
   </View>
 </SafeAreaView>

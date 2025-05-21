@@ -1,13 +1,14 @@
 import React from 'react';
 import { TouchableOpacity } from 'react-native';
 import { View, Text, StyleSheet, Image } from 'react-native';
-import { styles } from '../styles/Common';
 import RecipeBase from './RecipeBase';
+import { useTheme } from '@react-navigation/native';
 
-
-const recipeStyles = StyleSheet.create({
+const Recipe = ({recipe, navigation}) => {
+    const { assets, colours } = useTheme(); 
+    const recipeStyles = StyleSheet.create({
     recipe: {
-        backgroundColor: "#222222",
+        backgroundColor: colours.card,
         borderRadius: 4,
         padding: 4,
         margin: 1,
@@ -35,8 +36,6 @@ const recipeStyles = StyleSheet.create({
         maxWidth: 30
     }
 })
-
-const Recipe = ({recipe, navigation}) => {
     return (
         <TouchableOpacity
         style={recipeStyles.recipe}
@@ -50,7 +49,7 @@ const Recipe = ({recipe, navigation}) => {
             <View style={recipeStyles.buttonSection}> 
                 <Image 
                 style={recipeStyles.chevron}
-                source={require('../../assets/chevron_right.png')}
+                source={assets.chevron_right}
                 />
             </View>
         </TouchableOpacity>

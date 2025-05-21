@@ -1,10 +1,10 @@
 import { supabase } from './supabase';
-import { NavigationContainer, useNavigation, useRoute, DarkTheme } from '@react-navigation/native';
+import { NavigationContainer, useNavigation, useRoute } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createDrawerNavigator, DrawerToggleButton} from '@react-navigation/drawer';
 import { HeaderBackButton } from '@react-navigation/elements';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Image } from 'react-native';
+import { Image, useColorScheme } from 'react-native';
 import { useState, useEffect, createContext, useContext } from 'react';
 import Login from './app/screens/Login';
 import Home from './app/screens/Home';
@@ -23,6 +23,9 @@ import List from './app/screens/List';
 import RightHeaderButton from './app/components/RightHeaderButton';
 import * as SplashScreen from 'expo-splash-screen';
 import Session from '@supabase/supabase-js'
+import { LightTheme, CustomDarkTheme } from './app/styles/Colours';
+import { useTheme } from '@react-navigation/native';
+import { createPortal } from 'react-dom';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -41,15 +44,15 @@ function LeftButton() {
   const renderBack = screen === 'Add a recipe' || screen === 'Recipe' || screen === 'Shopping Lists' || screen === 'List';
   const prevScreen = route.params?.prevScreen || 'Home';
   const editing = screen === 'Add a recipe' && route.params?.recipe;
-  
+  const { colours } = useTheme();
   return (
   renderBack ? (
     editing ?
-      <HeaderBackButton tintColor='#FFF' onPress={() => navigation.navigate(prevScreen, {prevScreen: 'Your recipes', recipe: route.params.recipe})} />
+      <HeaderBackButton tintColor={colours.text} onPress={() => navigation.navigate(prevScreen, {prevScreen: 'Your recipes', recipe: route.params.recipe})} />
     :
-      <HeaderBackButton tintColor='#FFF' onPress={() => navigation.navigate(prevScreen)} />
+      <HeaderBackButton tintColor={colours.text} onPress={() => navigation.navigate(prevScreen)} />
   ) : (
-    <DrawerToggleButton tintColor='#FFF'/>
+    <DrawerToggleButton tintColor={colours.text}/>
   )
 )
 }
@@ -79,19 +82,20 @@ function RightButton() {
 //and hide the buttons for add recipe/edit recipe/recipe view
 //Problem: tab button no longer highlighted on these screens
 function TabsStack() {
+  const { assets, colours } = useTheme();
   return (
     <MainAppTabs.Navigator
     screenOptions={{
       animation: 'shift',
       headerTitle: () => <LogoTitle />,
-      headerTitleAlign: 'left',
-      headerStyle: {backgroundColor: '#181818'},
+      headerTitleAlign: 'center',
+      headerStyle: {backgroundColor: colours.card},
       headerShadowVisible: false,
-      headerTintColor: '#fff',
+      headerTintColor: colours.text,
       headerLeft: () => <LeftButton />,
-      tabBarStyle: {backgroundColor:'#181818', borderTopWidth:0},
-      tabBarActiveTintColor: '#fff',
-      tabBarInactiveTintColor: '#B3B3B3',
+      tabBarStyle: {backgroundColor: colours.card, borderTopWidth:0},
+      tabBarActiveTintColor: colours.text,
+      tabBarInactiveTintColor: colours.secondaryText,
       tabBarHideOnKeyboard: true,
       headerRight: () => <RightButton />
     }}
@@ -103,12 +107,12 @@ function TabsStack() {
             focused ? (
             <Image 
             style={{width: 25, height: 25}}
-            source={require('./assets/calendar.png')}
+            source={assets.calendar}
             />
           ) : (
             <Image 
             style={{width: 25, height: 25}}
-            source={require('./assets/calendar_inactive.png')}
+            source={assets.calendar_inactive}
             />
           )
           )
@@ -120,7 +124,7 @@ function TabsStack() {
       }}/>
       <MainAppTabs.Screen name="List" component={List} options={{
         tabBarButton: () => null,
-        unmountOnBlur: true
+        unmountOnBlur: true,
       }}/>
       <MainAppTabs.Screen name="Your recipes" component={UserRecipes} 
       options={{
@@ -129,12 +133,12 @@ function TabsStack() {
             focused ? (
             <Image 
             style={{width: 25, height: 25}}
-            source={require('./assets/book.png')}
+            source={assets.book}
             />
           ) : (
             <Image 
             style={{width: 25, height: 25}}
-            source={require('./assets/book_inactive.png')}
+            source={assets.book_inactive}
             />
           )
           )
@@ -156,12 +160,12 @@ function TabsStack() {
             focused ? (
             <Image 
             style={{width: 25, height: 25}}
-            source={require('./assets/chef_hat.png')}
+            source={assets.chef_hat}
             />
           ) : (
             <Image 
             style={{width: 25, height: 25}}
-            source={require('./assets/chef_hat_inactive.png')}
+            source={assets.chef_hat_inactive}
             />
           )
           )
@@ -173,21 +177,21 @@ function TabsStack() {
 }
 
 function LoggedInStack() {
-
+  const { assets, colours } = useTheme();
   return (
       <LoggedInDrawer.Navigator
       screenOptions={{
-        drawerStyle: {backgroundColor: '#181818'},
-      drawerLabelStyle: {color: '#fff'},
-      drawerActiveBackgroundColor: '#404040'
+        drawerStyle: {backgroundColor: colours.card},
+      drawerLabelStyle: {color: colours.text},
+      drawerActiveBackgroundColor: '#00AEFF'
       }}>
         <LoggedInDrawer.Screen name="sous" component={TabsStack} options={{headerShown: false}}/>
         <LoggedInDrawer.Screen name="Settings" component={Settings} options={{
       headerTitle: () => <LogoTitle />,
       headerTitleAlign: 'left',
-      headerStyle: {backgroundColor: '#181818'},
+      headerStyle: {backgroundColor: colours.card},
       headerShadowVisible: false,
-      headerTintColor: '#fff',
+      headerTintColor: colours.text,
       headerLeft: () => <LeftButton />
     }}/>
       </LoggedInDrawer.Navigator>
@@ -195,15 +199,16 @@ function LoggedInStack() {
 };
 
 function AnonStack() {
+  const { colours } = useTheme();
   return (
     <LoggedOutStack.Navigator 
       initialRouteName='NewUser'
       screenOptions={{
         headerTitle: () => <LogoTitle />,
         headerTitleAlign: 'center',
-        headerStyle: {backgroundColor: '#222222'},
+        headerStyle: {backgroundColor: colours.card},
         headerShadowVisible: false,
-        headerTintColor: '#fff' 
+        headerTintColor: colours.card 
       }}
       >
       <LoggedOutStack.Screen name="Sign up" component={NewUser}/>
@@ -214,10 +219,11 @@ function AnonStack() {
 };
 //TODO: fix different positions
 function LogoTitle() {
+  const { assets } = useTheme();
   return (
     <Image
-      style={{ width: 300, height: 55, marginTop: 20}}
-      source={require('./assets/sous_transparent.png')}
+      style={{ width: 120, height: 50}}
+      source={assets.sous_transparent}
     />
   );
 }
@@ -225,6 +231,9 @@ function LogoTitle() {
 export default function App() {
   const [appIsReady, setAppIsReady] = useState(false);
   const [session, setSession] = useState(null);
+  const scheme = useColorScheme();
+
+  console.log(scheme)
   
   useEffect(() => {
      supabase.auth.onAuthStateChange((event, session) => {
@@ -248,7 +257,7 @@ export default function App() {
 
   return (
     <AuthContext.Provider value={session}>
-      <NavigationContainer theme={DarkTheme}>
+      <NavigationContainer theme={scheme === 'dark' ? CustomDarkTheme : LightTheme}>
         <Stack.Navigator 
         initialRouteName='AnonUser'
         options={{headerShown: false}}

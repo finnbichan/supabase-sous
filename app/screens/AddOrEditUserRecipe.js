@@ -1,6 +1,6 @@
 import { Text, SafeAreaView, View, TouchableOpacity, TextInput, ActivityIndicator, Switch, ScrollView, KeyboardAvoidingView, Image, StyleSheet } from 'react-native';
 import React, { useState, useEffect } from 'react';
-import { styles } from '../styles/Common';
+import useStyles from '../styles/Common';
 import Dropdown from '../components/Dropdown';
 import Steps from '../components/Steps';
 import { supabase } from '../../supabase';
@@ -8,6 +8,7 @@ import { useHeaderHeight } from '@react-navigation/elements'
 import DoneButton from '../components/DoneButton';
 import FLTextInput from '../components/FloatingLabelInput';
 import Checkbox from '../components/Checkbox';
+import AppHeaderText from '../components/AppHeaderText';
 
 const AddOrEditStyles = StyleSheet.create({
     checkboxContainer: {
@@ -26,6 +27,7 @@ const AddOrEditUserRecipe = ( {route, navigation} ) => {
     const [validationFailed, setValidationFailed] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const height = useHeaderHeight();
+    const styles = useStyles();
 
     const newRecipe = route.params?.recipe ? false : true;
 
@@ -119,7 +121,7 @@ const AddOrEditUserRecipe = ( {route, navigation} ) => {
     return (
         <SafeAreaView style={styles.container}>
             <View style={[styles.recipeTitleBox, {left: 10}]}>
-                <Text style={styles.title}>{newRecipe ? "New Recipe" : recipe.name}</Text>
+                <AppHeaderText>{newRecipe ? "New Recipe" : recipe.name}</AppHeaderText>
             </View>
             <KeyboardAvoidingView
             keyboardVerticalOffset={height}

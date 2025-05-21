@@ -1,6 +1,6 @@
 import { View, FlatList, ActivityIndicator, StyleSheet } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { styles } from '../styles/Common';
+import useStyles from '../styles/Common';
 import { supabase } from '../../supabase';
 import CollapsibleSection from './CollapsibleSection';
 import CalendarHeader from './CalendarHeader';
@@ -42,9 +42,6 @@ const calendarStyles = StyleSheet.create({
     flashIcon: {   
         marginLeft: 'auto'
     },
-    lowImpactText: {
-        color: '#b3b3b3'
-    }
 })
 
 
@@ -53,6 +50,7 @@ const Calendar = ({navigation}) => {
     const [plannedRecipes, setPlannedRecipes] = useState([]);
     const [action, setAction] = useState();
     const todaysDate = new Date();
+    const styles = useStyles();
 
     const createDateArray = () => {
         let dateArray = [];
@@ -83,22 +81,7 @@ const Calendar = ({navigation}) => {
         addPlannedRecipe(newRecipe);
     }
 
-    const createDateArrayForDropdown = (array) => {
-        let i = 0;
-        let dropdownDateArray = array.map((item) => {
-            i++;
-            return {
-                "label": item,
-                "id": i
-            }
-        })
-        return dropdownDateArray;
-    }
-
-
     const dateArray = createDateArray();
-
-    
 
     useEffect(() => {
         setLoading(true);

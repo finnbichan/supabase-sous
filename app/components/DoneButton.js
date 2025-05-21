@@ -1,6 +1,7 @@
 import { Image, TouchableOpacity, ActivityIndicator } from 'react-native';
 import React from 'react';
 import { StyleSheet } from 'react-native';
+import { useTheme } from '@react-navigation/native';
 
 const doneStyles = StyleSheet.create({
     editButton: {
@@ -11,6 +12,7 @@ const doneStyles = StyleSheet.create({
 })
 
 const DoneButton = ( { onSubmit, isSubmitting} ) => {
+    const { assets } = useTheme();
     return (
         <>
             {isSubmitting ? (<ActivityIndicator style={doneStyles.editButton}/>) : (
@@ -19,7 +21,7 @@ const DoneButton = ( { onSubmit, isSubmitting} ) => {
                     onPress={onSubmit}>
                         <Image 
                         style={doneStyles.editButton}
-                        source={require('../../assets/tick.png')}
+                        source={assets.tick}
                         />
                     </TouchableOpacity>
                 </>

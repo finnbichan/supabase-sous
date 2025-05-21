@@ -1,9 +1,14 @@
 import { View, Text, Pressable, TextInput, ActivityIndicator, SafeAreaView, TouchableOpacity} from 'react-native';
 import React, { useState } from 'react';
-import { styles } from '../styles/Common';
 import { supabase } from '../../supabase';
+import useStyles from '../styles/Common';
+import AppText from '../components/AppText';
+import AppHeaderText from '../components/AppHeaderText';
+import FLTextInput from '../components/FloatingLabelInput';
+import AppButton from '../components/AppButton';
 
 const ConfirmOTP = ({ route }) => {
+  const styles = useStyles();
   const [OTP, setOTP] = useState('');
   const [loading, setLoading] = useState(false);
   const { email } = route.params;
@@ -22,24 +27,20 @@ const ConfirmOTP = ({ route }) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
-        <Text style={styles.title}>Confirm your one time password</Text>
-        <Text style={styles.text}>We've sent a one time password to {email}. Type it in below to get cooking.</Text>
-        <TextInput
-        style={styles.input}
-        placeholder="Password"
-        placeholderTextColor="#a9a9a9"
-        onChangeText={(text) => setOTP(text)}
+        <AppHeaderText>Confirm your one time password</AppHeaderText>
+        <AppText>We've sent a one time password to {email}. Type it in below to get cooking.</AppText>
+        <FLTextInput
+        id="otp"
+        label="Password"
+        onChangeTextProp={(text) => setOTP(text)}
         />
-        <TouchableOpacity 
+        { loading ? <ActivityIndicator/>
+        : (
+        <AppButton
+        label="Submit"
         onPress={submitOTP}
-        style={styles.button}
-        >
-          <Text
-          style={styles.buttonText}
-          >
-            Submit
-          </Text>
-        </TouchableOpacity>
+        />
+        )}
   </View>
 </SafeAreaView>
 )

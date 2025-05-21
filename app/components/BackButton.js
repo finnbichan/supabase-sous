@@ -10,6 +10,7 @@ const backStyles = StyleSheet.create({
 })
 
 const BackButton = ( {nav} ) => {
+    const { assets } = useTheme();
     return (
         <TouchableOpacity
         onPress={() => {
@@ -17,7 +18,7 @@ const BackButton = ( {nav} ) => {
         }}>
             <Image 
             style={backStyles.backButton}
-            source={require('../../assets/chevron_left.png')}
+            source={assets.chevron_left}
             />
         </TouchableOpacity>
     )

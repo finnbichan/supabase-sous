@@ -1,6 +1,7 @@
 import { Image, TouchableOpacity, ActivityIndicator } from 'react-native';
 import React from 'react';
 import { StyleSheet } from 'react-native';
+import { useTheme } from '@react-navigation/native';
 
 const styles = StyleSheet.create({
     editButton: {
@@ -11,16 +12,17 @@ const styles = StyleSheet.create({
 })
 
 const RightHeaderButton = ( { navigation, icon, target, prevScreen} ) => {
+    const { assets } = useTheme();
     var iconPath = null;
     switch (icon) {
         case 'add':
-            iconPath = require('../../assets/add.png');
+            iconPath = assets.add;
             break;
         case 'list':
-            iconPath = require('../../assets/list.png');
+            iconPath = assets.list;
             break;
         default:
-            iconPath = require('../../assets/add.png');
+            iconPath = assets.add;
     }
     return (
         <TouchableOpacity

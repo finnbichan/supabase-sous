@@ -1,17 +1,10 @@
 import { View, Text, Pressable, SafeAreaView, TouchableOpacity,ActivityIndicator, FlatList, Image } from 'react-native';
 import React, { useEffect, useState, useContext } from 'react';
-import { styles } from '../styles/Common';
+import useStyles from '../styles/Common';
 import Recipe from '../components/RecipeOverview';
 import { supabase } from '../../supabase';
 import { AuthContext } from '../../Contexts';
-
-const RecipesHeader = () => {
-    return (   
-        <View style={styles.userRecipesTitleBox}>
-            <Text style={styles.title}>Your recipes</Text>
-        </View>
-    )
-}
+import AppHeaderText from '../components/AppHeaderText';
 
 const ListEmpty = () => {  
     return (
@@ -25,6 +18,7 @@ const UserRecipes = ({route, navigation}) => {
     const [loading, setLoading] = useState(true);
     const [recipes, setRecipes] = useState(undefined);
     const session = useContext(AuthContext)
+    const styles = useStyles();
 
     const getRecipes = async () => {
         console.log("fetching")
@@ -68,7 +62,7 @@ const UserRecipes = ({route, navigation}) => {
                     extraData={loading}
                     style={styles.recipeList}
                     showsVerticalScrollIndicator={false}
-                    ListHeaderComponent={<RecipesHeader navigation={navigation} />}
+                    ListHeaderComponent={<AppHeaderText>Your recipes</AppHeaderText>}
                     ListEmptyComponent={<ListEmpty />}
                     />
                 )}

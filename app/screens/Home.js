@@ -1,20 +1,22 @@
 import { View, Text, Pressable, SafeAreaView, StyleSheet } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { supabase } from '../../supabase';
 import Calendar from '../components/Calendar';
-import { styles } from '../styles/Common';
+import useStyles from '../styles/Common';
+import { AuthContext } from '../../Contexts';
 
 const Home = ({navigation}) => {
     const [name, setName] = useState('');
     const [dataLoading, setDataLoading] = useState(true)
+    const styles = useStyles();
+    const session = useContext(AuthContext);
 
     useEffect(()=> {
-      getUserName = async () => {
-        const userData = await supabase.auth.getUser();
+      const getUserName = async () => {
         const nameData = await supabase
         .from('profiles')
         .select('display_name')
-        .eq('id', userData.data.user.id);
+        .eq('id', session.user.id);
         setName(nameData.data[0].display_name);
         console.log(name);
       }

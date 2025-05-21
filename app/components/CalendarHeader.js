@@ -1,9 +1,11 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, use } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { styles } from '../styles/Common';
 import { AuthContext } from '../../Contexts';
+import AppHeaderText from './AppHeaderText';
+import useStyles from '../styles/Common';
 
 const CalendarHeader = () => {
+    const styles = useStyles();
     const session = useContext(AuthContext);
     const time = Number((new Date).getHours());
     var greeting = "Hey";
@@ -13,10 +15,10 @@ const CalendarHeader = () => {
     
     return (
             <View style={headerStyles.container}>
-                <Text style={styles.title}>{greeting}, {session.user.user_metadata.display_name}</Text>
+                <AppHeaderText>{greeting}, {session.user.user_metadata.display_name}</AppHeaderText>
             </View>
     );
-};
+}; 
 
 const headerStyles = StyleSheet.create({
     container: {

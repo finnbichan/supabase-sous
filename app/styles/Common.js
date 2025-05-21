@@ -1,10 +1,12 @@
 import { StyleSheet } from 'react-native';
+import { useTheme } from '@react-navigation/native';
+import React from 'react';
 
-export const styles = StyleSheet.create({
+const Styles = (props) => StyleSheet.create({
     container: {
       flexGrow: 1,
       padding: 5,
-      backgroundColor: '#121212'
+      backgroundColor: props.colours.background,
     },
     content: {
       alignItems: "center",
@@ -14,19 +16,19 @@ export const styles = StyleSheet.create({
       fontSize: 30,
       marginTop: 10,
       fontWeight: "bold",
-      color: '#fff',
+      color: props.colours.text,
       maxWidth: 300,
       textAlign: 'left'
      },
     text: {
-      color: '#fff'
+      color: props.colours.text
     },
     input: {
       width: '95%',
       marginLeft: 8,
-      backgroundColor: '#222222',
+      backgroundColor: props.colours.card,
       borderRadius: 4,
-      color: '#fff',
+      color: props.colours.text,
       marginVertical: 2,
     },
     buttonsParent: {
@@ -98,6 +100,10 @@ export const styles = StyleSheet.create({
       maxWidth: 37.5,
       maxHeight: 37.5
     },
+    icon: {
+      width: 32,
+      height: 32
+    },
     recipeList: {
       minWidth: "90%",
       marginBottom: -5
@@ -106,7 +112,7 @@ export const styles = StyleSheet.create({
       flexDirection: "row",
     },
     descriptors: {
-      backgroundColor: "#535353",
+      backgroundColor: props.colours.layer,
       borderRadius: 8,
       marginHorizontal: 2,
       marginVertical: 2,
@@ -114,7 +120,7 @@ export const styles = StyleSheet.create({
       paddingVertical: 2 
   },
   descriptorText : {
-      color: "#FFF"
+      color: props.colours.text,
   },
   overlay: {
     height: '100%',
@@ -160,12 +166,34 @@ export const styles = StyleSheet.create({
     marginTop: 10
   },
   lowImpactText: {
-    color: '#b3b3b3'
+    color: props.colours.secondaryText 
   },
   deleteButton: {
-    backgroundColor: '#222222',
+    backgroundColor: props.colours.background,
     borderRadius: 8,
     alignSelf: 'flex-end',
     margin: 12
-  }
+  },
+  footer: {
+    bottom: 0,
+    position: 'absolute',
+    alignItems: "center",
+    justifyContent: "center",
+    flexGrow: 1,
+  },
+  stepButton: {
+        marginHorizontal: 8,
+        alignSelf: 'flex-end',
+        backgroundColor: props.colours.card,
+        borderRadius: 4,
+        marginVertical: 8,
+        marginHorizontal: 12,
+    }
   });
+
+  function useStyles() {
+    const { colours } = useTheme();
+    const styles = React.useMemo(() => Styles({ colours }), [colours]);
+    return styles;
+  }
+   export default useStyles;

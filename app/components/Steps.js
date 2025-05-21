@@ -1,32 +1,13 @@
 import {StyleSheet, Text, TouchableOpacity, Image, View } from 'react-native';
 import React from 'react';
-import { styles } from '../styles/Common';
+import useStyles from '../styles/Common';
 import FLTextInput from './FloatingLabelInput';
-
-const stepStyles = StyleSheet.create({
-    button: {
-        marginHorizontal: 8,
-        alignSelf: 'flex-end',
-        backgroundColor: '#222222',
-        borderRadius: 4,
-        marginVertical: 8,
-        marginHorizontal: 12,
-    },
-    icon: {
-        height: 32,
-        width: 32
-    },
-    text: {
-        color: '#fff',
-        fontSize: 18
-    },
-    stepContainer : {
-        flexDirection: 'row',
-    }
-})
-
+import { useTheme } from '@react-navigation/native';
 
 const Steps = ({steps, onAddition, onChangeText, onRemove, editable}) => {
+    const { assets } = useTheme();
+    const styles = useStyles();
+    
     return (<>
                 {steps.map((x, i) => {
                     return (
@@ -43,12 +24,12 @@ const Steps = ({steps, onAddition, onChangeText, onRemove, editable}) => {
                 })}
                 {steps.length < 10 && editable ? (
                     <TouchableOpacity
-                    style={stepStyles.button}
+                    style={styles.stepButton}
                     onPress={onAddition}
                     >
                         <Image
-                        style={stepStyles.icon}
-                        source={require('../../assets/add.png')}
+                        style={styles.icon}
+                        source={assets.add}
                         />
                     </TouchableOpacity>
                     ):(<></>)}
@@ -57,8 +38,11 @@ const Steps = ({steps, onAddition, onChangeText, onRemove, editable}) => {
 
 
 const Step = ({number, totalNumber, value, onChangeText, onRemove, editable}) => {
+    const { assets, colours } = useTheme();
+    const styles = useStyles();
+
     return ( 
-        <View style={stepStyles.stepContainer}>
+        <View style={{flexDirection: 'row'}}>
             <FLTextInput
             onChangeTextProp={(text) => onChangeText(number, text)}
             defaultValue={value}
@@ -67,12 +51,12 @@ const Step = ({number, totalNumber, value, onChangeText, onRemove, editable}) =>
             />
             {totalNumber > 1 && editable ? (
                 <TouchableOpacity
-                style={[stepStyles.button, {zIndex: 1, position: 'absolute', right: 0, top: 16}]}
+                style={[styles.stepButton, {zIndex: 1, position: 'absolute', right: 0, top: 16}]}
                 onPress={() => onRemove(number)}
                 >
                     <Image
-                        style={stepStyles.icon}
-                        source={require('../../assets/cross.png')}
+                        style={styles.icon}
+                        source={assets.cross}
                         />
                 </TouchableOpacity>
             ):(<></>)}

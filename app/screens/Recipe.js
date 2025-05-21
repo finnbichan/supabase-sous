@@ -1,10 +1,12 @@
 import { View, Text, Pressable, SafeAreaView, TouchableOpacity,ActivityIndicator, Image, TouchableWithoutFeedback, Modal } from 'react-native';
 import React, { useEffect, useState, useContext } from 'react';
-import { styles } from '../styles/Common';
+import useStyles from '../styles/Common';
 import { supabase } from '../../supabase';
 import Steps from '../components/Steps';
 import { AuthContext } from '../../Contexts';
 import FLTextInput from '../components/FloatingLabelInput';
+import { useTheme } from '@react-navigation/native';
+import AppHeaderText from '../components/AppHeaderText';
 
 const Recipe = ({route, navigation}) => {
     const [loading, setLoading] = useState(true);
@@ -15,6 +17,9 @@ const Recipe = ({route, navigation}) => {
     const [creatorName, setCreatorName] = useState("");
     const session = useContext(AuthContext);
     const isOwnRecipe = recipe.user_id == session.user.id;
+    const { assets } = useTheme();
+    const styles = useStyles();
+
 
     console.log("yours", recipe)
     
@@ -108,7 +113,7 @@ const Recipe = ({route, navigation}) => {
         <SafeAreaView style={styles.container}>
             {DeleteModal()}
             <View style={styles.recipeTitleBox}>
-                <Text style={styles.title}>{recipe.name}</Text>
+                <AppHeaderText>{recipe.name}</AppHeaderText>
             </View>
             <View style={styles.descriptorsParent}>
                     <View style={styles.descriptors}>
@@ -161,7 +166,7 @@ const Recipe = ({route, navigation}) => {
             onPress={() => setDeleteModalOpen(true)}>
                 <Image
                 style={styles.addButton}
-                source={require('../../assets/delete.png')}
+                source={assets.delete}
                 />
             </TouchableOpacity>
         </SafeAreaView>

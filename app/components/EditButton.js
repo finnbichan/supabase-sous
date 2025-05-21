@@ -1,6 +1,7 @@
 import { Image, TouchableOpacity } from 'react-native';
 import React from 'react';
 import { StyleSheet } from 'react-native';
+import { useTheme } from '@react-navigation/native';
 
 const editStyles = StyleSheet.create({
     editButton: {
@@ -11,6 +12,7 @@ const editStyles = StyleSheet.create({
 })
 
 const EditButton = ( {nav, target, params} ) => {
+    const { assets } = useTheme();
     return (
         <TouchableOpacity
         onPress={() => {
@@ -18,7 +20,7 @@ const EditButton = ( {nav, target, params} ) => {
         }}>
             <Image 
             style={editStyles.editButton}
-            source={require('../../assets/edit.png')}
+            source={assets.edit}
             />
         </TouchableOpacity>
     )

@@ -1,42 +1,14 @@
 import { View, Text, Pressable, SafeAreaView, TouchableOpacity,ActivityIndicator, FlatList, Image } from 'react-native';
 import React, { useEffect, useState, useContext } from 'react';
-import { styles } from '../styles/Common';
+import useStyles from '../styles/Common';
 import Recipe from '../components/RecipeOverview';
 import { supabase } from '../../supabase';
 import { AuthContext } from '../../Contexts';
-
-const listViewStyles = {
-    list: {
-        minWidth: "95%",
-        marginBottom: -5
-    },
-    listItem: {
-        backgroundColor: "#222222",
-        borderRadius: 4,
-        padding: 4,
-        margin: 1,
-        flexDirection: 'row',
-        flexGrow: 1,
-        maxWidth: '99%',
-        marginBottom: 2,
-        justifyContent: 'space-between',
-        alignItems: 'center'
-    },
-    text: {
-        color: "#fff",
-        fontSize: 18
-    },
-    buttonSection: {
-        flexDirection: 'row',
-        justifyContent: 'flex-end'
-    },
-    chevron: {
-        maxHeight: 30,
-        maxWidth: 30
-    }
-}
+import { useTheme } from '@react-navigation/native';
+import AppHeaderText from '../components/AppHeaderText';
 
 const ListEmpty = () => {  
+    const styles = useStyles();
     return (
         <View>
             <Text style={styles.lowImpactText}>No shopping lists. Click + to add one.</Text>
@@ -45,9 +17,10 @@ const ListEmpty = () => {
 }
 
 const ListHeader = () => {
+    const styles = useStyles();
     return (
-    <View style={styles.userRecipesTitleBox}>
-        <Text style={styles.title}>Your shopping lists</Text>
+    <View style={{paddingBottom: 10}}>
+        <AppHeaderText>Your shopping lists</AppHeaderText>
     </View>
     )
 }
@@ -56,6 +29,38 @@ const ShoppingLists = ({navigation, route}) => {
     const [loading, setLoading] = useState(true);
     const [lists, setLists] = useState(undefined);
     const [action, setAction] = useState(route.params?.action);
+    const { assets, colours } = useTheme();
+    const styles = useStyles();
+    const listViewStyles = {
+        list: {
+            minWidth: "95%",
+            marginBottom: -5
+        },
+        listItem: {
+            backgroundColor: colours.card,
+            borderRadius: 4,
+            padding: 4,
+            margin: 1,
+            flexDirection: 'row',
+            flexGrow: 1,
+            maxWidth: '99%',
+            marginBottom: 2,
+            justifyContent: 'space-between',
+            alignItems: 'center'
+        },
+        text: {
+            color: colours.text,
+            fontSize: 18
+        },
+        buttonSection: {
+            flexDirection: 'row',
+            justifyContent: 'flex-end'
+        },
+        chevron: {
+            maxHeight: 30,
+            maxWidth: 30
+        }
+    }
 
     const session = useContext(AuthContext)
 
@@ -95,7 +100,7 @@ const ShoppingLists = ({navigation, route}) => {
                 <View style={listViewStyles.buttonSection}> 
                     <Image 
                     style={listViewStyles.chevron}
-                    source={require('../../assets/chevron_right.png')}
+                    source={assets.chevron_right}
                     />
                 </View>
             </TouchableOpacity>

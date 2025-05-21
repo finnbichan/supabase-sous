@@ -1,9 +1,14 @@
 import { View, Text, Pressable, TextInput, ActivityIndicator, SafeAreaView, TouchableOpacity} from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { styles } from '../styles/Common';
 import { supabase } from '../../supabase';
 import '../../globals';
 import Dropdown from '../components/Dropdown';
+import FLTextInput from '../components/FloatingLabelInput';
+import AppText from '../components/AppText';
+import AppHeaderText from '../components/AppHeaderText';
+import AppButton from '../components/AppButton';
+import { useTheme } from '@react-navigation/native';
+import useStyles from '../styles/Common';
 
 
 const NewUser = ( {navigation} ) => {
@@ -11,6 +16,10 @@ const NewUser = ( {navigation} ) => {
   const [name, setName] = useState('');
   const [country, setCountry] = useState('');
   const [loading, setLoading] = useState(false);
+  const { colours } = useTheme();
+  const styles = useStyles();
+
+  console.log(colours)
 
   const signUp = async () => {
     setLoading(true);
@@ -32,50 +41,37 @@ const NewUser = ( {navigation} ) => {
     .finally(() => {setLoading(false)}) 
   }
     return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, {backgroundColor: colours.background}]}>
       <View style={styles.content}>
-        <Text style={styles.title}>Welcome to sous!</Text>
-        <Text style={styles.text}>We need a few details from you to get started.</Text>
-        <TouchableOpacity 
-        onPress={() => {navigation.navigate("Login")}}
-        style={styles.button}
-        >
-          <Text
-          style={styles.buttonText}
-          >
-            Been here before?
-          </Text>
-        </TouchableOpacity>
-        <TextInput
-        style={styles.input}
-        placeholder="Email"
-        placeholderTextColor="#a9a9a9"
-        onChangeText={(text) => setEmail(text)}
+        <AppHeaderText>Welcome to sous.</AppHeaderText>
+        <AppText>We need a few details from you to get started.</AppText>
+        <FLTextInput
+        id="email"
+        label="Email"
+        defaultValue={email}
+        onChangeTextProp={setEmail}
+        editable={true}
         />
-        <TextInput
-        style={styles.input}
-        placeholder='Display Name'
-        placeholderTextColor="#a9a9a9"
-        onChangeText={(text) => setName(text)}
+        <FLTextInput
+        id="name"
+        label="Display Name"
+        defaultValue={name}
+        onChangeTextProp={setName}
+        editable={true}
         />
         <Dropdown
           data={countries}
           label="Region"
           onSelect={setCountry}
         />
-        <Text style={styles.text}>We don't use passwords here - when you click sign up, we'll send a one time password to your email address.</Text>
+        <AppText>We don't use passwords here - when you click sign up, we'll send a one time password to your email address.</AppText>
         {loading ? <ActivityIndicator /> : (
-        <TouchableOpacity 
-        onPress={signUp}
-        style={styles.button}
-        >
-          <Text
-          style={styles.buttonText}
-          >
-            Sign up
-          </Text>
-        </TouchableOpacity>
+          <AppButton
+          onPress={signUp}
+          label="Sign Up"
+          />
         )}
+        <AppText>Already have an account? <Text style={{color: colours.text, textDecorationLine: 'underline'}} onPress={() => navigation.navigate('Login')}>Log in</Text></AppText>
   </View>
 </SafeAreaView>
 )

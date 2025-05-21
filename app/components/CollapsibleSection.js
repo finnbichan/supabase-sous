@@ -1,8 +1,51 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, Animated } from 'react-native';
+import { useTheme } from '@react-navigation/native';
 
 const CollapsibleSection = ({ title, open, childrenIfOpen, childrenIfClosed }) => {
+    const { colours } = useTheme();
+    const styles = StyleSheet.create({
+        openContainer: {
+            borderRadius: 5,
+            overflow: 'hidden'
+        },
+        closedContainer: {
+            backgroundColor: colours.card,
+            borderRadius: 5,
+            overflow: 'hidden',
+        },
+        header: {
+            paddingLeft: 10,
+            paddingTop: 4,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            width: '99%'
+        },
+        title: {
+            fontSize: 16,
+            color: '#fff',
+        },
+        content: {
+            paddingLeft: 10,
+            paddingBottom: 10
+        },
+        largeText: {
+            color: colours.text,
+            fontSize: 20,
+            fontWeight: 'heavy',
+            fontFamily: ''
+        },
+        image: {
+            height: 32,
+            width: 32,
+            marginHorizontal: 8
+        },
+        topRow: {
+            
+        }
+    });
     const [collapsed, setCollapsed] = useState(open);
+    const { assets } = useTheme();  
 
     const toggleCollapse = () => {
         setCollapsed(!collapsed);
@@ -14,10 +57,10 @@ const CollapsibleSection = ({ title, open, childrenIfOpen, childrenIfClosed }) =
                 <Text style={styles.largeText}>{title}</Text>
                 <Image
                 style={styles.image}
-                source={collapsed ? require('../../assets/down.png') : require('../../assets/up.png')}
+                source={collapsed ? assets.down : assets.up}
                 />
             </TouchableOpacity>
-            {collapsed ? (
+            {collapsed ? ( 
                 <View style={styles.content}>{childrenIfClosed}</View>
             ) : (
             <View style={styles.content}>{childrenIfOpen}</View>
@@ -26,45 +69,6 @@ const CollapsibleSection = ({ title, open, childrenIfOpen, childrenIfClosed }) =
     );
 };
 
-const styles = StyleSheet.create({
-    openContainer: {
-        borderRadius: 5,
-        overflow: 'hidden'
-    },
-    closedContainer: {
-        backgroundColor: '#222222',
-        borderRadius: 5,
-        overflow: 'hidden',
-    },
-    header: {
-        paddingLeft: 10,
-        paddingTop: 4,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        width: '99%'
-    },
-    title: {
-        fontSize: 16,
-        color: '#fff',
-    },
-    content: {
-        paddingLeft: 10,
-        paddingBottom: 10
-    },
-    largeText: {
-        color: '#fff',
-        fontSize: 20,
-        fontWeight: 'heavy',
-        fontFamily: ''
-    },
-    image: {
-        height: 32,
-        width: 32,
-        marginHorizontal: 8
-    },
-    topRow: {
-        
-    }
-});
+
 
 export default CollapsibleSection;

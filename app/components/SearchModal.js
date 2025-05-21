@@ -4,7 +4,7 @@ import { AuthContext } from '../../Contexts';
 import { supabase } from '../../supabase';
 import { styles } from '../styles/Common';
 import RecipeBase from './RecipeBase';
-import { ScrollView } from 'react-native-web';
+import { useTheme } from '@react-navigation/native';
 
 const modalStyles = StyleSheet.create({
     overlay: {
@@ -83,6 +83,7 @@ const SearchModal = ( {searchModalOpen, setSearchModalOpen, onSelectRecipe, meal
     const [searchResults, setSearchResults] = useState([]);
     const [loading, setLoading] = useState(false);
     const inputRef = useRef(null);
+    const { assets } = useTheme();
 
     const session = useContext(AuthContext);
 
@@ -124,8 +125,8 @@ const SearchModal = ( {searchModalOpen, setSearchModalOpen, onSelectRecipe, meal
                 />
                 <Image 
                 style={modalStyles.addIcon}
-                source={require('../../assets/add.png')}
-                />
+                source={assets.add}
+                /> 
             </TouchableOpacity>
         )
     }
