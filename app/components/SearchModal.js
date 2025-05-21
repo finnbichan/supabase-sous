@@ -2,77 +2,14 @@ import { Modal, Pressable, View, TextInput, Text, StyleSheet, KeyboardAvoidingVi
 import React, { useState, useContext, useRef } from 'react';
 import { AuthContext } from '../../Contexts';
 import { supabase } from '../../supabase';
-import { styles } from '../styles/Common';
+import useStyles from '../styles/Common';
 import RecipeBase from './RecipeBase';
 import { useTheme } from '@react-navigation/native';
 
-const modalStyles = StyleSheet.create({
-    overlay: {
-        height: '100%',
-        width: "100%",
-        justifyContent: 'flex-start',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.7)'
-    },
-    modal: {
-        backgroundColor: '#181818',
-        padding: 20,
-        width: '90%',
-        justifyContent: 'space-evenly',
-        alignItems: 'center',
-        alignSelf: 'center',
-        marginTop: '200',
-        position: 'absolute',
-        borderRadius: 8,
-        flexGrow: 0
-      },
-      searchBox: {
-        backgroundColor: '#222222',
-        borderRadius: 4,
-        padding: 2,
-        width: '100%',
-        height: '50',
-        color: '#fff',
-        margin: 10,
-        paddingHorizontal: 10,
-        fontSize: 16
-      },
-      modalTitle: {
-        color: '#fff',
-        fontSize: 18,
-        marginBottom: 4,
-        textAlign: 'left',
-      },
-      itemContainer: {
-        backgroundColor: '#222222',
-        borderRadius: 4,
-        padding: 4,
-        margin: 1,
-        flexDirection: 'row',
-        flexGrow: 1,
-        maxWidth: '99%',
-        marginBottom: 2,
-        justifyContent: 'space-between',
-        alignItems: 'center'
-      },
-      addIcon: {
-        height: 32,
-        width: 32,
-        marginHorizontal: 8
-      },
-      recipeContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        width: '100%',
-        backgroundColor: '#222222',
-        borderRadius: 4,
-        marginVertical: 2,
-        padding: 4,
-        alignItems: 'center'
-      }
-})
+
 
 const NoResults = () => {
+    const styles = useStyles();
     return (
             <Text style={styles.lowImpactText}>No results found</Text>
     )
@@ -83,7 +20,73 @@ const SearchModal = ( {searchModalOpen, setSearchModalOpen, onSelectRecipe, meal
     const [searchResults, setSearchResults] = useState([]);
     const [loading, setLoading] = useState(false);
     const inputRef = useRef(null);
-    const { assets } = useTheme();
+    const { assets, colours } = useTheme();
+    const styles = useStyles();
+    const modalStyles = StyleSheet.create({
+        overlay: {
+            height: '100%',
+            width: "100%",
+            justifyContent: 'flex-start',
+            alignItems: 'center',
+            backgroundColor: 'rgba(0, 0, 0, 0.7)'
+        },
+        modal: {
+            backgroundColor: colours.background,
+            padding: 20,
+            width: '90%',
+            justifyContent: 'space-evenly',
+            alignItems: 'center',
+            alignSelf: 'center',
+            marginTop: '200',
+            position: 'absolute',
+            borderRadius: 8,
+            flexGrow: 0
+        },
+        searchBox: {
+            backgroundColor: colours.card,
+            borderRadius: 4,
+            padding: 2,
+            width: '100%',
+            height: '50',
+            color: colours.text,
+            margin: 10,
+            paddingHorizontal: 10,
+            fontSize: 16
+        },
+        modalTitle: {
+            color: colours.text,
+            fontSize: 18,
+            marginBottom: 4,
+            textAlign: 'left',
+        },
+        itemContainer: {
+            backgroundColor: colours.card,
+            borderRadius: 4,
+            padding: 4,
+            margin: 1,
+            flexDirection: 'row',
+            flexGrow: 1,
+            maxWidth: '99%',
+            marginBottom: 2,
+            justifyContent: 'space-between',
+            alignItems: 'center'
+        },
+        addIcon: {
+            height: 32,
+            width: 32,
+            marginHorizontal: 8
+        },
+        recipeContainer: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            width: '100%',
+            backgroundColor: colours.card,
+            borderRadius: 4,
+            marginVertical: 2,
+            padding: 4,
+            alignItems: 'center'
+        }
+    })
 
     const session = useContext(AuthContext);
 

@@ -160,7 +160,7 @@ const NoPlan = ({ meal_name, date, meal_type, user_id, addPlannedRecipe }) => {
             {newMealLoading ? (
                 <>
                     <Text style={mealPlanStyles.lowImpactText}>{meal_name}</Text>
-                    <ActivityIndicator />
+                    <ActivityIndicator style={{paddingBottom: 10}}/>
                 </>
             ) : (
             <View style={mealPlanStyles.noPlanContainer}>
@@ -251,7 +251,7 @@ const YesPlan = ({navigation, user_id, meal_name, meal_type, recipe, date, plann
             {loading ? (
                 <>
                     <Text style={mealPlanStyles.lowImpactText}>{meal_name}</Text>
-                    <ActivityIndicator />
+                    <ActivityIndicator style={{paddingBottom: 10}}/>
                 </>
             ) : (
             <View style={mealPlanStyles.yesPlanTopRow}>
