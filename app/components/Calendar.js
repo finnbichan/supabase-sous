@@ -191,17 +191,17 @@ const Calendar = ({navigation}) => {
     }
     
     return (
-        <View style={styles.calendarParent}>
+        <View style={{width: '100%'}}>
             {loading ? (
-            <>
+            <View>
                 <CalendarHeader />
-                <ActivityIndicator/> 
-            </>
+                <ActivityIndicator/>  
+            </View> 
         ) : (
            <FlatList
                 data={dateArray}
                 renderItem={({item}) => renderDate(item)}
-                style={styles.calendarList}
+                style={{marginBottom: '-5'}}
                 ListHeaderComponent={
                 <CalendarHeader />
                 }
