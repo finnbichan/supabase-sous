@@ -70,6 +70,7 @@ export const CustomDarkTheme = {
         chevron_right: require("../../assets/dark/chevron_right.png"),
         cross: require("../../assets/dark/cross.png"),
         delete: require("../../assets/dark/delete.png"),
+        down: require("../../assets/dark/down.png"), 
         drag_handle: require("../../assets/dark/drag_handle.png"),
         dropdown_arrow: require("../../assets/dark/dropdown_arrow.png"),
         edit: require("../../assets/dark/edit.png"),

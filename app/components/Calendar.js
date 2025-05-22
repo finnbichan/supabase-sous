@@ -1,6 +1,5 @@
 import { View, FlatList, ActivityIndicator, StyleSheet } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import useStyles from '../styles/Common';
 import { supabase } from '../../supabase';
 import CollapsibleSection from './CollapsibleSection';
 import CalendarHeader from './CalendarHeader';
@@ -9,9 +8,6 @@ import MealPlanSummary from './MealPlanSummary';
 
 
 const calendarStyles = StyleSheet.create({
-    calendarList: {
-        flexGrow: 1
-    },
     parentDateContainer: {
         borderRadius: 4,
         padding: 4,
@@ -19,29 +15,7 @@ const calendarStyles = StyleSheet.create({
     },
     planContainer:{
         marginLeft: '-10'
-    },
-    titleBox: {
-        margin: '-4',
-        borderRadius: 2,
-        flexDirection: 'row',
-        maxWidth: '100%',
-        padding: 4
-    },
-    largeText: {
-        color: '#fff',
-        fontSize: 20,
-        fontWeight: 'heavy',
-        fontFamily: ''
-    },
-    largerText: {
-        color: '#fff',
-        fontSize: 25,
-        fontWeight: 'heavy',
-        fontFamily: ''
-    },
-    flashIcon: {   
-        marginLeft: 'auto'
-    },
+    }
 })
 
 
@@ -50,12 +24,11 @@ const Calendar = ({navigation}) => {
     const [plannedRecipes, setPlannedRecipes] = useState([]);
     const [action, setAction] = useState();
     const todaysDate = new Date();
-    const styles = useStyles();
 
     const createDateArray = () => {
         let dateArray = [];
         for(let i = 0; i < 14; i++){
-            let date = new Date()
+            let date = new Date() 
             date.setDate(todaysDate.getDate() + i)
             dateArray.push(date.toISOString().slice(0,10))
         }
