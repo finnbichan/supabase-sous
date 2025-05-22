@@ -7,11 +7,6 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
-    "splash": {
-      "image": "./assets/icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#121212"
-    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.fxnnbxchxn.soussupa",
@@ -24,8 +19,12 @@
     "android": {
       "edgeToEdgeEnabled": true,
       "adaptiveIcon": {
-        "foregroundImage": "./assets/icon.png",
-        "backgroundColor": "#f2f2f2"
+        "foregroundImage": "./assets/light/splash.png",
+        "backgroundColor": "#f2f2f2",
+        "dark": {
+          "foregroundImage": "./assets/dark/splash.png",
+          "backgroundColor": "#000"
+        }
       },
       "splash": {
         "image": "./assets/light/splash.png",
