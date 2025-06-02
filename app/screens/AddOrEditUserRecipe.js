@@ -9,6 +9,9 @@ import DoneButton from '../components/DoneButton';
 import FLTextInput from '../components/FloatingLabelInput';
 import Checkbox from '../components/Checkbox';
 import AppHeaderText from '../components/AppHeaderText';
+import { useTheme } from '@react-navigation/native';
+import Ingredients from '../components/Ingredients';
+import Multiselect from '../components/Multiselect';
 
 const AddOrEditStyles = StyleSheet.create({
     checkboxContainer: {
@@ -24,10 +27,20 @@ const AddOrEditUserRecipe = ( {route, navigation} ) => {
     const [recipe, setRecipe] = useState(route.params?.recipe ? route.params?.recipe : {});
     const [addSteps, setAddSteps] = useState(!route.params?.recipe || route.params?.recipe.steps ? true : false);
     const [steps, setSteps] = useState(route.params?.recipe?.steps ? route.params?.recipe.steps : Array(1).fill(null));
+    const [addIngredients, setAddIngredients] = useState(true);
+    const [ingredients, setIngredients] = useState(Array(1).fill(null));
     const [validationFailed, setValidationFailed] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const height = useHeaderHeight();
     const styles = useStyles();
+    const { colours } = useTheme();
+    const mealTypesList = [
+        {id: 1, name: "Breakfast", selected: false},
+        {id: 2, name: "Lunch", selected: false},
+        {id: 3, name: "Dinner", selected: false}
+    ];
+    const [mealTypes, setMealTypes] = useState(mealTypesList);
+
 
     const newRecipe = route.params?.recipe ? false : true;
 
@@ -65,7 +78,31 @@ const AddOrEditUserRecipe = ( {route, navigation} ) => {
         temp.splice(num, 1);
         setSteps(temp);
     }
+     const addIngredient = () => {
+        let temp = [...ingredients];
+        temp.push(null);
+        setIngredients(temp);
+    }
 
+    const updateIngredient = (num, text) => {
+        let temp = [...ingredients];
+        temp[num] = text;
+        setIngredients(temp);
+    }
+
+    const removeIngredient = (num) => {
+        let temp = [...ingredients];
+        temp.splice(num, 1);
+        setIngredients(temp);
+    }
+
+    const onMultiselectChange = (id) => {
+        const temp = [...mealTypes];
+        const index = temp.findIndex((x) => x.id === id);
+        temp[index].selected = !temp[index].selected;
+        setMealTypes(temp);
+    }
+    console.log("outside", mealTypes)
     const validateDropdown = (value) => {
         if (value == null || value == undefined) {return false} else {return true}
     }
@@ -82,6 +119,9 @@ const AddOrEditUserRecipe = ( {route, navigation} ) => {
     const insert = async () => {
         setSubmitting(true);
         const stepsJSON = addSteps ? JSON.stringify(steps) : null
+        const ingredientsJSON = addIngredients ? JSON.stringify(ingredients) : null;
+        const meals = mealTypes.filter((x) => x.selected).map((x) => x.id);
+        console.log(ingredientsJSON, stepsJSON, meals)
         const data = await supabase
         .from('recipes')
         .insert({
@@ -90,7 +130,9 @@ const AddOrEditUserRecipe = ( {route, navigation} ) => {
             ease: recipe.ease,
             cuisine: recipe.cuisine,
             diet: recipe.diet,
-            steps: stepsJSON
+            steps: stepsJSON,
+            ingredients: ingredientsJSON,
+            meals: meals
             })
         .select()
         data.data[0].recipe_id = data.data[0].id
@@ -102,6 +144,7 @@ const AddOrEditUserRecipe = ( {route, navigation} ) => {
     const update = async () => {
         setSubmitting(true);
         const stepsJSON = addSteps ? JSON.stringify(steps) : null
+        const ingredientsJSON = addIngredients ? JSON.stringify(ingredients) : null;
         const data = await supabase
         .from('recipes')
         .update({
@@ -110,7 +153,8 @@ const AddOrEditUserRecipe = ( {route, navigation} ) => {
             ease: recipe.ease,
             cuisine: recipe.cuisine,
             diet: recipe.diet,
-            steps: stepsJSON
+            steps: stepsJSON,
+            ingredients: ingredientsJSON
             })
         .eq('id', recipe.recipe_id)
         setSubmitting(false)
@@ -120,17 +164,16 @@ const AddOrEditUserRecipe = ( {route, navigation} ) => {
 
     return (
         <SafeAreaView style={styles.container}>
-            <View style={[styles.recipeTitleBox, {left: 10}]}>
-                <AppHeaderText>{newRecipe ? "New Recipe" : recipe.name}</AppHeaderText>
-            </View>
+            
             <KeyboardAvoidingView
             keyboardVerticalOffset={height}
             behavior='padding'
-            style={{flexGrow: 1}}
+            style={{flexGrow: 1, marginTop: '-5'}}
             >
             <ScrollView
             contentContainerStyle={{flexGrow: 1}}
             >
+                <AppHeaderText>{newRecipe ? "New Recipe" : recipe.name}</AppHeaderText>
                 <FLTextInput
                 id="name"
                 defaultValue={recipe.name}
@@ -161,14 +204,37 @@ const AddOrEditUserRecipe = ( {route, navigation} ) => {
                 onSelect={(selected) => {changeRecipeProperty("ease", selected.id)}}
                 value={recipe.ease}
                 />
+                <Text style={[styles.text, {margin: 8}]}>Which meals? (select all that apply)</Text>
+                <Multiselect
+                data={mealTypes}
+                onPress={onMultiselectChange}
+                />
+                <View style={AddOrEditStyles.checkboxContainer}>
+                    <Text style={styles.text}>Ingredients</Text>
+                    <Switch
+                    trackColor={{false: colours.card, true: '#00AEFF'}}
+                    thumbColor={colours.layer}
+                    value={addIngredients}
+                    onValueChange={() => setAddIngredients(!addIngredients)}
+                    />
+                </View>
+                {addIngredients ? (
+                    <Ingredients
+                    ingredients={ingredients}
+                    onAddition={addIngredient}
+                    onChangeText={updateIngredient}
+                    onRemove={removeIngredient}
+                    editable={true}
+                    />
+                ) : (<></>)}
                 <View style={AddOrEditStyles.checkboxContainer}>
                     <Text style={styles.text}>Steps</Text>
-                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                        <Text style={styles.text}>Add steps now?</Text>
-                        <Checkbox 
-                        isChecked={addSteps}
-                        onPress={() => setAddSteps(!addSteps)}/>
-                    </View>
+                    <Switch
+                    trackColor={{false: colours.card, true: '#00AEFF'}}
+                    thumbColor={colours.layer}
+                    value={addSteps}
+                    onValueChange={() => setAddSteps(!addSteps)}
+                    />
                 </View>
                 {addSteps ? (
                     <Steps

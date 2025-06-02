@@ -1,37 +1,51 @@
-import { Image, TouchableOpacity } from 'react-native';
-import React, { useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { View, TouchableOpacity, FlatList, Text } from 'react-native';
+import React, { use, useState } from 'react';
+import { StyleSheet } from 'react-native';  
+import AppText from './AppText';
+import useStyles from '../styles/Common';
+import { useTheme } from '@react-navigation/native';
 
-const checkboxStyles = StyleSheet.create({
-    icon: {
-        height: 32,
-        width: 32
+const multiselectStyles = StyleSheet.create({
+    itemContainer: {
+        padding: 10,
+        borderRadius: 4,
+        marginVertical: 4,
+        marginHorizontal: 8
+    },
+    multiselect: {
+        flexDirection: 'row',
+        flexWrap: 'wrap'
     }
-})
+});
 
-const Multiselect = ( { data,  } ) => {
-    const toggleChecked = () => {
-        onPress();
-    }
+const Multiselect = ( { data, onPress } ) => {
+    console.log(data)
     return (
-        isChecked ? (
-            <TouchableOpacity
-            onPress={toggleChecked}>
-                <Image 
-                style={checkboxStyles.icon}
-                source={require('../../assets/check_box.png')}
+    <View style={multiselectStyles.multiselect}>
+        {data.map((x, i)=> {
+            return (
+                <MultiselectItem
+                    key={i}
+                    item={x}
+                    onPress={onPress}
                 />
-            </TouchableOpacity>
-        ) : (
-            <TouchableOpacity
-            onPress={toggleChecked}>
-                <Image 
-                style={checkboxStyles.icon}
-                source={require('../../assets/check_box_outline.png')}
-                />
-            </TouchableOpacity>
+            )
+        })}
+        </View>
         )
-    )
 }
 
-export default Checkbox;
+const MultiselectItem = ({ item, onPress }) => {
+    const { colours } = useTheme();
+    const styles = useStyles();
+    return (
+        <TouchableOpacity
+            style={[multiselectStyles.itemContainer, {backgroundColor: item.selected ? '#00AEFF' : colours.card}]}
+            onPress={()=>onPress(item.id)}
+        >
+            <Text style={styles.text}>{item.name}</Text>
+        </TouchableOpacity>
+    );
+};
+
+export default Multiselect;

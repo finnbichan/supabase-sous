@@ -13,9 +13,10 @@ const FLTextInput = ( {id, label, defaultValue, onChangeTextProp, editable=true}
           color: colours.text,
           marginBottom: 8,
           marginTop: 20,
+          marginLeft: 8,
           paddingRight: 30,
           paddingLeft: 6,
-          height: 40
+          height: 40,
         },
         animatedStyle: {
           zIndex: 1,
