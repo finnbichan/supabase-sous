@@ -65,9 +65,10 @@ function RightButton() {
   const session = useContext(AuthContext);
   const isOwnRecipe = route.params?.recipe?.user_id == session.user.id;
 
-  if (screen === 'Recipe' && isOwnRecipe) {
+  /*if (screen === 'Recipe' && isOwnRecipe) {
     return <EditButton nav={navigation} target={"Add a recipe"} params={{prevScreen: "Recipe", recipe: route.params.recipe}}/>
-  } else if (screen === 'Shopping Lists') {
+  } else */
+  if (screen === 'Shopping Lists') {
     return <RightHeaderButton navigation={navigation} target="List" prevScreen="Shopping Lists"/>
   } else if (screen === 'Your recipes') {
     return <RightHeaderButton navigation={navigation} target="Add a recipe" prevScreen="Your recipes"/>

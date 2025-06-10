@@ -5,10 +5,9 @@ import { useTheme } from '@react-navigation/native';
 
 const headerStyles = StyleSheet.create({
     header: {
-        fontFamily: 'Montserrat',
         fontSize: 30,
         fontWeight: 'bold',
-        marginLeft: 14,
+        marginLeft: 8,
         marginTop: 2,
         marginBottom: 2,
         textAlign: 'left',

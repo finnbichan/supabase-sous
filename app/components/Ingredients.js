@@ -39,7 +39,7 @@ const Ingredients = ({ingredients, onAddition, onChangeText, onRemove, editable=
 const Ingredient = ({number, totalNumber, value, onChangeText, onRemove, editable}) => {
     const { assets, colours } = useTheme();
     const styles = useStyles();
-    const placeholder = number === 0 ? 'Add some ingredients...': '';
+    const placeholder = number === 0 ? 'Add some ingredients...': 'Add some more...';
 
     return ( 
         <View style={{flexDirection: 'row'}}>
@@ -49,6 +49,7 @@ const Ingredient = ({number, totalNumber, value, onChangeText, onRemove, editabl
             onChangeText={(text) => onChangeText(number, text)}
             placeholder={placeholder}
             placeholderTextColor={colours.secondaryText}
+            editable={editable}
             />
 
             {totalNumber > 1 && editable ? (

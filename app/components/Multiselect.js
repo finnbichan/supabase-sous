@@ -18,7 +18,7 @@ const multiselectStyles = StyleSheet.create({
     }
 });
 
-const Multiselect = ( { data, onPress } ) => {
+const Multiselect = ( { data, onPress, editable=true } ) => {
     console.log(data)
     return (
     <View style={multiselectStyles.multiselect}>
@@ -28,6 +28,7 @@ const Multiselect = ( { data, onPress } ) => {
                     key={i}
                     item={x}
                     onPress={onPress}
+                    editable={editable}
                 />
             )
         })}
@@ -35,16 +36,26 @@ const Multiselect = ( { data, onPress } ) => {
         )
 }
 
-const MultiselectItem = ({ item, onPress }) => {
+const MultiselectItem = ({ item, onPress, editable }) => {
     const { colours } = useTheme();
     const styles = useStyles();
     return (
-        <TouchableOpacity
+        <>
+        {editable ? (
+            <TouchableOpacity
+                style={[multiselectStyles.itemContainer, {backgroundColor: item.selected ? '#00AEFF' : colours.card}]}
+                onPress={()=>onPress(item.id)}
+            >
+                <Text style={styles.text}>{item.name}</Text>
+            </TouchableOpacity>
+        ):(
+            <View
             style={[multiselectStyles.itemContainer, {backgroundColor: item.selected ? '#00AEFF' : colours.card}]}
-            onPress={()=>onPress(item.id)}
         >
             <Text style={styles.text}>{item.name}</Text>
-        </TouchableOpacity>
+        </View>
+        )}
+        </>
     );
 };
 

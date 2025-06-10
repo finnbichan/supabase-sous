@@ -7,6 +7,8 @@ import { AuthContext } from '../../Contexts';
 import FLTextInput from '../components/FloatingLabelInput';
 import { useTheme } from '@react-navigation/native';
 import AppHeaderText from '../components/AppHeaderText';
+import Multiselect from '../components/Multiselect';
+import EditButton from '../components/EditButton';
 
 const Recipe = ({route, navigation}) => {
     const [loading, setLoading] = useState(true);
@@ -15,11 +17,16 @@ const Recipe = ({route, navigation}) => {
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [deleting, setDeleting] = useState(false);
     const [creatorName, setCreatorName] = useState("");
+    const [mealTypes, setMealTypes] = useState([]);
     const session = useContext(AuthContext);
     const isOwnRecipe = recipe.user_id == session.user.id;
     const { assets } = useTheme();
     const styles = useStyles();
-
+    const mealTypeList = [
+        {id: 1, name: "Breakfast"},
+        {id: 2, name: "Lunch"},
+        {id: 3, name: "Dinner"}
+    ];
 
     console.log("yours", recipe)
     
@@ -27,15 +34,23 @@ const Recipe = ({route, navigation}) => {
         console.log("fetching additional info")
         const recipeAdditionalData = await supabase
         .from('recipes')
-        .select('description, steps')
+        .select('description, steps, ingredients, meals, has_image')
         .eq('id', recipe.recipe_id)
+        const mealTypes = mealTypeList.map((x) => {
+            return {
+                ...x,
+                selected: recipeAdditionalData.data[0].meals.includes(x.id)
+            }
+        })
+        console.log(recipeAdditionalData.data[0])
         const recipeExtra = {
             desc: recipeAdditionalData.data[0].description, 
-            steps: JSON.parse(recipeAdditionalData.data[0].steps)
+            steps: JSON.parse(recipeAdditionalData.data[0].steps),
+            meals: mealTypes,
+            hasImage: recipeAdditionalData.data[0].has_image
         }
-        console.log(recipeExtra)
         setRecipe({...recipe, ...recipeExtra})
-        console.log(recipe)
+        setMealTypes(mealTypes);
         setLoading(false)
         }
         //FIX for new recipes.
@@ -56,6 +71,14 @@ const Recipe = ({route, navigation}) => {
         getRecipeDetails()
     }, [updated])
 
+     useEffect(() => {
+        navigation.setOptions({
+            headerRight: () => (
+                <EditButton nav={navigation} target={"Add a recipe"} params={{prevScreen: "Recipe", recipe: recipe}}/>
+            )
+            });
+      }, [navigation, recipe]);
+
     useEffect(() => {
         if(!isOwnRecipe) {
             getCreatorName()
@@ -72,7 +95,7 @@ const Recipe = ({route, navigation}) => {
                     onPress={() => setDeleteModalOpen(false)}
                     >
                     <View style={styles.modal}>
-                        <Text style={styles.text}>Are you sure you want to delete this recipe?</Text>
+                        <Text style={styles.text}>Are you sure you want to remove this recipe?</Text>
                         <View style={styles.modalButtons}>
                             {deleting ? <ActivityIndicator /> : (
                             <>
@@ -80,13 +103,13 @@ const Recipe = ({route, navigation}) => {
                                 style={styles.button}
                                 onPress={deleteRecipe}
                                 >
-                                    <Text style={styles.buttonText}>Yes</Text>
+                                    <Text style={styles.text}>Yes</Text>
                                 </Pressable>
                                 <Pressable
                                 style={styles.button}
                                 onPress={() => {setDeleteModalOpen(false)}}
                                 >
-                                    <Text style={styles.buttonText}>Cancel</Text>
+                                    <Text style={styles.text}>Cancel</Text>
                                 </Pressable>
                             </>
                             )}
@@ -114,8 +137,9 @@ const Recipe = ({route, navigation}) => {
             {DeleteModal()}
             <View style={styles.recipeTitleBox}>
                 <AppHeaderText>{recipe.name}</AppHeaderText>
+                {isOwnRecipe ? <></> :  <Text style={[styles.lowImpactText, {marginLeft: 8}]}>by {creatorName}</Text>}
             </View>
-            <View style={styles.descriptorsParent}>
+            <View style={[styles.descriptorsParent, {marginLeft: 8}]}>
                     <View style={styles.descriptors}>
                         <Text style={styles.descriptorText}>{easeList[recipe.ease].label}</Text>
                     </View>
@@ -128,7 +152,7 @@ const Recipe = ({route, navigation}) => {
                     </View>
                 )}
             </View>
-            {isOwnRecipe ? <></> :  <Text style={styles.lowImpactText}>by {creatorName}</Text>}
+            
             {loading ? (<ActivityIndicator size="large" />) : (
                 <>
                     <View>
@@ -138,12 +162,15 @@ const Recipe = ({route, navigation}) => {
                         defaultValue={recipe.desc}
                         label="Description"
                         />) : 
-                        (<FLTextInput
-                         editable={false}
-                         defaultValue="No description added"
-                         label="Description"
-                         />)}
+                        (<Text style={[styles.lowImpactText, {margin: 8}]}>No description added</Text>)}
                     </View>
+                    {<View>
+                        <Text style={[styles.lowImpactText, {marginLeft: 8}]}>Meals</Text>
+                        <Multiselect
+                        data={mealTypes}
+                        editable={false}
+                        />
+                    </View>}
                     <View>
                         {recipe.steps ? (
                         <Steps
@@ -151,11 +178,7 @@ const Recipe = ({route, navigation}) => {
                         steps={recipe.steps}
                         />
                         ) : (
-                            <FLTextInput
-                         editable={false} 
-                         defaultValue="No steps added"
-                         label="Steps"
-                         />
+                            <Text style={[styles.lowImpactText, {margin: 8}]}>No steps added</Text>
                         )}
                     </View>
                     

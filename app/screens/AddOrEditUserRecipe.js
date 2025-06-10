@@ -7,11 +7,12 @@ import { supabase } from '../../supabase';
 import { useHeaderHeight } from '@react-navigation/elements'
 import DoneButton from '../components/DoneButton';
 import FLTextInput from '../components/FloatingLabelInput';
-import Checkbox from '../components/Checkbox';
 import AppHeaderText from '../components/AppHeaderText';
 import { useTheme } from '@react-navigation/native';
 import Ingredients from '../components/Ingredients';
 import Multiselect from '../components/Multiselect';
+import * as ImagePicker from 'expo-image-picker';
+import { decode } from 'base64-arraybuffer';
 
 const AddOrEditStyles = StyleSheet.create({
     checkboxContainer: {
@@ -27,8 +28,8 @@ const AddOrEditUserRecipe = ( {route, navigation} ) => {
     const [recipe, setRecipe] = useState(route.params?.recipe ? route.params?.recipe : {});
     const [addSteps, setAddSteps] = useState(!route.params?.recipe || route.params?.recipe.steps ? true : false);
     const [steps, setSteps] = useState(route.params?.recipe?.steps ? route.params?.recipe.steps : Array(1).fill(null));
-    const [addIngredients, setAddIngredients] = useState(true);
-    const [ingredients, setIngredients] = useState(Array(1).fill(null));
+    const [addIngredients, setAddIngredients] = useState(!route.params?.recipe || route.params?.recipe.ingredients ? true : false);
+    const [ingredients, setIngredients] = useState(route.params?.recipe?.ingredients ? route.params?.recipe.ingredients : Array(1).fill(null));
     const [validationFailed, setValidationFailed] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const height = useHeaderHeight();
@@ -39,10 +40,13 @@ const AddOrEditUserRecipe = ( {route, navigation} ) => {
         {id: 2, name: "Lunch", selected: false},
         {id: 3, name: "Dinner", selected: false}
     ];
-    const [mealTypes, setMealTypes] = useState(mealTypesList);
-
-
+    const [mealTypes, setMealTypes] = useState(route.params?.recipe?.meals ? route.params?.recipe?.meals : mealTypesList);
+    const [image, setImage] = useState(null);
+    const [uploadingImage, setUploadingImage] = useState(false);
+    const [downloadingImage, setDownloadingImage] = useState(false);
+    const [hasImage, setHasImage] = useState(route.params?.recipe?.hasImage ? route.params?.recipe?.meals: false)
     const newRecipe = route.params?.recipe ? false : true;
+
 
     useEffect(() => {
             navigation.setOptions({
@@ -102,9 +106,57 @@ const AddOrEditUserRecipe = ( {route, navigation} ) => {
         temp[index].selected = !temp[index].selected;
         setMealTypes(temp);
     }
-    console.log("outside", mealTypes)
     const validateDropdown = (value) => {
         if (value == null || value == undefined) {return false} else {return true}
+    }
+
+    const pickImage = async () => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ['images'],
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+            base64: true
+        })
+
+        if(!result.canceled) {
+            setImage(result.assets[0].uri)
+            setHasImage(true);
+            uploadImage(result.assets[0].base64)
+        }
+    }
+
+    const uploadImage = async (pickedImageBase64) => {
+        setUploadingImage(true);
+        const recipe_file_path = recipe.recipe_id + '.png'
+        console.log(recipe_file_path)
+        const {data, error} = await supabase.storage.from('recipe-images').upload(recipe_file_path, decode(pickedImageBase64), {
+            contentType: 'image/*',
+            upsert: true
+        }
+        )
+        if (error) {
+            console.log("error with image upload", error)
+        } else {
+            console.log("wahoo", data)
+            const { dbdata, dberror } = await supabase.from('recipes')
+            .update(
+                {hasImage: 1}
+            ).eq('id', recipe.recipe_id)
+            if (dberror) {
+                console.log("error", dberror)
+            } else {
+                console.log("full success")
+                setHasImage(true)
+                setUploadingImage(false)
+            }
+        }
+        
+    }
+
+    const downloadImage = async (recipe_id) => {
+        const { data } = supabase.storage.from('recipe-images').getPublicUrl(recipe_id + '.png')
+        console.log(data)
     }
 
     const onSubmit = () => {
@@ -145,6 +197,7 @@ const AddOrEditUserRecipe = ( {route, navigation} ) => {
         setSubmitting(true);
         const stepsJSON = addSteps ? JSON.stringify(steps) : null
         const ingredientsJSON = addIngredients ? JSON.stringify(ingredients) : null;
+        const meals = mealTypes.filter((x) => x.selected).map((x) => x.id);
         const data = await supabase
         .from('recipes')
         .update({
@@ -154,13 +207,14 @@ const AddOrEditUserRecipe = ( {route, navigation} ) => {
             cuisine: recipe.cuisine,
             diet: recipe.diet,
             steps: stepsJSON,
-            ingredients: ingredientsJSON
+            ingredients: ingredientsJSON,
+            meals: meals
             })
         .eq('id', recipe.recipe_id)
         setSubmitting(false)
         navigation.navigate('Recipe', {action: "update", recipe: recipe})
         }
-    
+        console.log(image)
 
     return (
         <SafeAreaView style={styles.container}>
@@ -173,7 +227,23 @@ const AddOrEditUserRecipe = ( {route, navigation} ) => {
             <ScrollView
             contentContainerStyle={{flexGrow: 1}}
             >
+                {hasImage ? (
+                    <>
+                <Text style={styles.text}>Beebop</Text>
+                <Image
+                source={{uri: image}}
+                style={{height: 'auto', width: '100%'}}
+                />
+                </>
+                ) : (<></>)}
                 <AppHeaderText>{newRecipe ? "New Recipe" : recipe.name}</AppHeaderText>
+                {uploadingImage ? <ActivityIndicator/> : <></>}
+                <TouchableOpacity
+                style={styles.button}
+                onPress={pickImage}
+                >
+                    <Text style={styles.text}>Add a photo of this meal</Text>
+                </TouchableOpacity>
                 <FLTextInput
                 id="name"
                 defaultValue={recipe.name}

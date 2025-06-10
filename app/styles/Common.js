@@ -38,15 +38,11 @@ const Styles = (props) => StyleSheet.create({
       alignItems: "center",
     },
     button: {
-      borderColor: "#fff",
-      backgroundColor: '#222222',
+      backgroundColor: props.colours.card,
       marginHorizontal: 8,
       borderRadius: 4,
       paddingVertical: 4,
       paddingHorizontal: 8
-    },
-    buttonText: {
-      color: "#ffffff"
     },
     helperText: {
       color: "#a9a9a9",
@@ -109,7 +105,7 @@ const Styles = (props) => StyleSheet.create({
       marginBottom: -5
     },
     descriptorsParent: {
-      flexDirection: "row",
+      flexDirection: "row"
     },
     descriptors: {
       backgroundColor: props.colours.layer,
@@ -130,7 +126,7 @@ const Styles = (props) => StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.7)'
   },
   modal: {
-    backgroundColor: '#181818',
+    backgroundColor: props.colours.background,
     padding: 20,
     width: '90%',
     justifyContent: 'space-evenly',
@@ -151,7 +147,7 @@ const Styles = (props) => StyleSheet.create({
     paddingBottom: 10
   },
   recipeTitleBox: {
-    flexDirection: 'row',
+    //flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%'
   },

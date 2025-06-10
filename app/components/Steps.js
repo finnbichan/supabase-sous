@@ -39,7 +39,7 @@ const Steps = ({steps, onAddition, onChangeText, onRemove, editable}) => {
 const Step = ({number, totalNumber, value, onChangeText, onRemove, editable}) => {
     const { assets, colours } = useTheme();
     const styles = useStyles();
-    const placeholder = number === 0 ? 'Add some steps...': '';
+    const placeholder = number === 0 ? 'Add some steps...': 'Add some more...';
 
     return ( 
         <View style={{flexDirection: 'row'}}>
