@@ -19,6 +19,12 @@ const Styles = (props) => StyleSheet.create({
       maxWidth: 300,
       textAlign: 'left'
      },
+     multiItemContainer: {
+        padding: 10,
+        borderRadius: 4,
+        marginVertical: 4,
+        marginHorizontal: 8
+    },
     text: {
       color: props.colours.text
     },

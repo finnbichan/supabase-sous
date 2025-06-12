@@ -22,9 +22,9 @@ import { AuthContext, CacheContext } from './Contexts';
 import List from './app/screens/List';
 import RightHeaderButton from './app/components/RightHeaderButton';
 import * as SplashScreen from 'expo-splash-screen';
-import Session from '@supabase/supabase-js'
 import { LightTheme, CustomDarkTheme } from './app/styles/Colours';
 import { useTheme } from '@react-navigation/native';
+import { BackHandler } from 'react-native';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -176,9 +176,26 @@ function TabsStack() {
   );
 }
 
+
+
 function LoggedInStack() {
   const { assets, colours } = useTheme();
   const [cache, setCache] = useState();
+  const route = useRoute();
+  const navigation = useNavigation();
+
+
+  function handleBack() {
+    const prevScreen = route.params?.prevScreen || 'Home';
+    console.log(route.params)
+    navigation.navigate(prevScreen)
+  }
+
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBack)
+    return () => backHandler.remove()
+  }, [])
+
   return (
     <CacheContext.Provider value={{cache, setCache}}>
       <LoggedInDrawer.Navigator

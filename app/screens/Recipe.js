@@ -13,7 +13,6 @@ import EditButton from '../components/EditButton';
 const Recipe = ({route, navigation}) => {
     console.log(route.params.recipe);
     const [recipe, setRecipe] = useState(route.params.recipe);
-    const [updated, setUpdated] = useState(route.params?.updated);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [deleting, setDeleting] = useState(false);
     const [creatorName, setCreatorName] = useState("");
@@ -32,16 +31,6 @@ const Recipe = ({route, navigation}) => {
                 selected: recipe.meals.includes(x.id)
             }})
         
-    console.log(recipe.steps, typeof(recipe.steps))
-
-
-    const downloadImage = async () => {
-        console.log("gudsakjcci gang")
-        const { data, error } = supabase.storage.from('recipe-images').getPublicUrl(recipe.recipe_id + '.png');
-        console.log("here", data, error)
-        setImage(data.publicUrl)
-    }
-    
     //FIX for new recipes.
     const getCreatorName = async () => {
         console.log(recipe.user_id)
@@ -57,11 +46,13 @@ const Recipe = ({route, navigation}) => {
     }
 
      useEffect(() => {
-        navigation.setOptions({
-            headerRight: () => (
-                <EditButton nav={navigation} target={"Add a recipe"} params={{prevScreen: "Recipe", recipe: recipe}}/>
-            )
-            });
+        if(isOwnRecipe) {
+            navigation.setOptions({
+                headerRight: () => (
+                    <EditButton nav={navigation} target={"Add a recipe"} params={{prevScreen: "Recipe", recipe: recipe}}/>
+                )
+                });
+            }
       }, [navigation, recipe]);
 
     useEffect(() => {
@@ -156,13 +147,28 @@ const Recipe = ({route, navigation}) => {
                 )
                 }
             </View>
-            {<View>
-                <Text style={[styles.lowImpactText, {marginLeft: 8}]}>Meals</Text>
-                <Multiselect
-                data={mealTypes}
+            {recipe.meals.map((x, i)=> {
+            return (
+                <View
+                style={[styles.multiItemContainer, {backgroundColor: '#00AEFF', alignSelf: 'flex-start'}]}
+                key={i}
+                >
+                    <Text style={styles.text}>{mealTypeList[i].name}</Text>
+                </View>
+            )
+        })}
+            {//TODO make collapsible
+            }
+            <View>
+                {recipe.ingredients ? (
+                <Steps
                 editable={false}
+                steps={JSON.parse(recipe.ingredients)}
                 />
-            </View>}
+                ) : (
+                    <Text style={[styles.lowImpactText, {margin: 8}]}>No ingredients added</Text>
+                )}
+            </View>
             <View>
                 {recipe.steps ? (
                 <Steps
@@ -173,6 +179,8 @@ const Recipe = ({route, navigation}) => {
                     <Text style={[styles.lowImpactText, {margin: 8}]}>No steps added</Text>
                 )}
             </View>
+            {/*
+            TODO move delete to edit screen
             <TouchableOpacity
             style={styles.deleteButton}
             onPress={() => setDeleteModalOpen(true)}>
@@ -181,6 +189,7 @@ const Recipe = ({route, navigation}) => {
                 source={assets.delete}
                 />
             </TouchableOpacity>
+            */}
         </SafeAreaView>
         
     )
