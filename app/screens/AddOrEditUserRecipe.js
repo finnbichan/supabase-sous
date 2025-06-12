@@ -65,7 +65,7 @@ const AddOrEditUserRecipe = ( {route, navigation} ) => {
                     />
                 )
                 });
-          }, [navigation, recipe, steps, submitting, addSteps, steps, addIngredients, ingredients, mealTypes, image]);
+          }, [navigation, recipe, steps, submitting, uploadingImage, addSteps, steps, addIngredients, ingredients, mealTypes, image, newImageUri]);
 
     const changeRecipeProperty = (prop, newValue) => {
         const recipeCopy = recipe;
@@ -159,7 +159,7 @@ const AddOrEditUserRecipe = ( {route, navigation} ) => {
 
 
     const onSubmit = () => {
-        if (!(recipe.name && validateDropdown(recipe.cuisine) && validateDropdown(recipe.diet) && validateDropdown(recipe.ease))) {
+        if (!(recipe.name && validateDropdown(recipe.cuisine) && validateDropdown(recipe.diet) && validateDropdown(recipe.ease) && !uploadingImage)) {
             setValidationFailed(true);
         } else {
             setValidationFailed(false);

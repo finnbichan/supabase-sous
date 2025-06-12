@@ -124,6 +124,7 @@ const Recipe = ({route, navigation}) => {
                 <Image
                 source={{uri : recipe.image_uri}}
                 style={{height: 300, width: '100%'}}
+                loadingIndicatorSource={<ActivityIndicator />}
                 />
             ):(<></>)}
             <View style={styles.recipeTitleBox}>

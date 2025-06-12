@@ -101,7 +101,7 @@ const Styles = (props) => StyleSheet.create({
     },
     recipeList: {
       minWidth: "90%",
-      marginBottom: -5
+      marginBottom: '-5'
     },
     descriptorsParent: {
       flexDirection: "row"
