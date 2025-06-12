@@ -1,9 +1,9 @@
-import { View, Text, Pressable, SafeAreaView, TouchableOpacity,ActivityIndicator, FlatList, Image } from 'react-native';
+import { View, Text, SafeAreaView, ActivityIndicator, FlatList } from 'react-native';
 import React, { useEffect, useState, useContext } from 'react';
 import useStyles from '../styles/Common';
 import Recipe from '../components/RecipeOverview';
 import { supabase } from '../../supabase';
-import { AuthContext } from '../../Contexts';
+import { AuthContext, CacheContext } from '../../Contexts';
 import AppHeaderText from '../components/AppHeaderText';
 
 const ListEmpty = () => {  
@@ -15,6 +15,7 @@ const ListEmpty = () => {
 }
 
 const UserRecipes = ({route, navigation}) => {
+    const {cache, setCache} = useContext(CacheContext)
     const [loading, setLoading] = useState(true);
     const [recipes, setRecipes] = useState(undefined);
     const session = useContext(AuthContext)
@@ -25,18 +26,17 @@ const UserRecipes = ({route, navigation}) => {
         const {data, error} = await supabase
         .rpc('get_user_recipes', {p_user_id: session.user.id})
         if (error) {
-            console.log(error)
+            console.log("error", error)
             return
         } else {
-            console.log(data)
             setRecipes(data)
             setLoading(false)
         }
     }
 
     useEffect(() => {
-        getRecipes(setLoading)
-    }, [route.params?.action])
+        getRecipes()
+    }, [cache])
 
     const renderRecipe = ({item}) => {
         return (

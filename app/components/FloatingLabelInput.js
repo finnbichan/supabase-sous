@@ -3,7 +3,7 @@ import React, { useState, useRef, useLayoutEffect } from 'react';
 import { useTheme } from '@react-navigation/native';
 
 
-const FLTextInput = ( {id, label, defaultValue, onChangeTextProp, editable=true} ) => {
+const FLTextInput = ( {id, label, defaultValue, onChangeTextProp, editable=true, rerenderTrigger} ) => {
     const { colours } = useTheme();
     const FLInputStyles = StyleSheet.create({
       input: {
@@ -36,7 +36,7 @@ const FLTextInput = ( {id, label, defaultValue, onChangeTextProp, editable=true}
       inputRef.current.measure((_fx, _fy, _w, h, _px, py) => {
         setTextPosition(_fy + h - 35);
       });
-    }, []);
+    }, [rerenderTrigger]);
 
     const [textPosition, setTextPosition] = useState(0);
 

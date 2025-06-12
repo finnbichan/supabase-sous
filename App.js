@@ -18,14 +18,13 @@ import Explore from './app/screens/Explore';
 import EditButton from './app/components/EditButton';
 import ShoppingLists from './app/screens/ShoppingLists';
 import './globals';
-import { AuthContext } from './Contexts';
+import { AuthContext, CacheContext } from './Contexts';
 import List from './app/screens/List';
 import RightHeaderButton from './app/components/RightHeaderButton';
 import * as SplashScreen from 'expo-splash-screen';
 import Session from '@supabase/supabase-js'
 import { LightTheme, CustomDarkTheme } from './app/styles/Colours';
 import { useTheme } from '@react-navigation/native';
-import { createPortal } from 'react-dom';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -179,7 +178,9 @@ function TabsStack() {
 
 function LoggedInStack() {
   const { assets, colours } = useTheme();
+  const [cache, setCache] = useState();
   return (
+    <CacheContext.Provider value={{cache, setCache}}>
       <LoggedInDrawer.Navigator
       screenOptions={{
         drawerStyle: {backgroundColor: colours.card},
@@ -196,6 +197,7 @@ function LoggedInStack() {
       headerLeft: () => <LeftButton />
     }}/>
       </LoggedInDrawer.Navigator>
+      </CacheContext.Provider>
   )
 };
 

@@ -5,7 +5,6 @@ import React from 'react';
 const Styles = (props) => StyleSheet.create({
     container: {
       flexGrow: 1,
-      padding: 5,
       backgroundColor: props.colours.background,
     },
     content: {
