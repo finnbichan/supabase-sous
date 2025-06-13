@@ -13,7 +13,8 @@ import Ingredients from '../components/Ingredients';
 import Multiselect from '../components/Multiselect';
 import * as ImagePicker from 'expo-image-picker';
 import { decode } from 'base64-arraybuffer';
-import { CacheContext } from '../../Contexts';
+import { AuthContext, CacheContext } from '../../Contexts';
+import uuid from 'react-native-uuid';
 
 const AddOrEditStyles = StyleSheet.create({
     checkboxContainer: {
@@ -54,7 +55,9 @@ const AddOrEditUserRecipe = ( {route, navigation} ) => {
     const [image, setImage] = useState(route.params?.recipe?.image_uri ? route.params?.recipe?.image_uri : null);
     const [newImageUri, setNewImageUri] = useState(null);
     const [uploadingImage, setUploadingImage] = useState(false);
+    const [validationMessage, setValidationMessage] = useState('Something went wrong');
     const newRecipe = route.params?.recipe ? false : true;
+    const session = useContext(AuthContext);
 
     useEffect(() => {
             navigation.setOptions({
@@ -140,7 +143,7 @@ const AddOrEditUserRecipe = ( {route, navigation} ) => {
 
     const uploadImage = async (pickedImageBase64) => {
         setUploadingImage(true)
-        const recipe_file_path = recipe.recipe_id + recipe.user_id + '.png'
+        const recipe_file_path = uuid.v4() + '.png'
         console.log(recipe_file_path)
         const {data, error} = await supabase.storage.from('recipe-images').upload(recipe_file_path, decode(pickedImageBase64), {
             contentType: 'image/*',
@@ -156,11 +159,35 @@ const AddOrEditUserRecipe = ( {route, navigation} ) => {
         setUploadingImage(false);
     }
 
-
+    const validate = () => {
+        if (uploadingImage) {
+            setValidationMessage('Please wait for the image to finish uploading.')
+            return false;
+        } 
+        else if (!(recipe.name && validateDropdown(recipe.cuisine) && validateDropdown(recipe.diet) && validateDropdown(recipe.ease))) {
+            setValidationMessage('Please make sure all fields are filled in')
+            return false
+        }
+        else if (!mealTypes.some((x) => x.selected === true)) {
+            setValidationMessage('Please choose which meals this recipe is for')
+            return false
+        }
+        else if (addIngredients && !ingredients[0]) {
+            setValidationMessage('Please add some ingredients')
+            return false
+        } 
+        else if (addSteps && !steps[0]) {
+            setValidationMessage('Please add some steps')
+            return false
+        } else {
+            return true
+        }
+    }
 
     const onSubmit = () => {
-        if (!(recipe.name && validateDropdown(recipe.cuisine) && validateDropdown(recipe.diet) && validateDropdown(recipe.ease) && !uploadingImage)) {
+        if (!validate()) {
             setValidationFailed(true);
+            setTimeout(() => setValidationFailed(false), 4000);
         } else {
             setValidationFailed(false);
             recipe.recipe_id ? update() : insert();
@@ -224,7 +251,13 @@ const AddOrEditUserRecipe = ( {route, navigation} ) => {
 
     return (
         <SafeAreaView style={styles.container}>
-            
+            {validationFailed ? (
+            <View 
+            style={{position: 'absolute', width: '98%', backgroundColor: 'red', zIndex: 1, margin: 4, borderRadius: 4}}
+            >
+                <Text style={[styles.text, {padding: 4}]}>{validationMessage}</Text>
+            </View>
+            ) : (<></>)}
             <KeyboardAvoidingView
             keyboardVerticalOffset={height}
             behavior='padding'
@@ -234,10 +267,16 @@ const AddOrEditUserRecipe = ( {route, navigation} ) => {
             contentContainerStyle={{flexGrow: 1}}
             >
                 {image ? (
-                    <>
+                    <TouchableOpacity
+                    onPress={pickImage}
+                    >
                         <Image
                         source={{uri: image}}
                         style={{height: 300, width: '100%'}}
+                        />
+                        <Image
+                        source={assets.camera}
+                        style={[styles.icon, {position: 'absolute', alignSelf: 'center', top: 150}]}
                         />
                         {uploadingImage ? (
                         <>
@@ -245,7 +284,7 @@ const AddOrEditUserRecipe = ( {route, navigation} ) => {
                             <Text style={styles.text}>Uploading...</Text>
                         </>
                         ): <></>}
-                    </>
+                    </TouchableOpacity>
                 ) : (
                     <View
                     style={{height: 100, width: '100%', paddingHorizontal: 20, alignItems: 'center', justifyContent: 'center'}}
@@ -268,14 +307,14 @@ const AddOrEditUserRecipe = ( {route, navigation} ) => {
                 defaultValue={recipe.name}
                 onChangeTextProp={(text) => {changeRecipeProperty("name", text)}}
                 label='Name'
-                rerenderTrigger={image}
+                rerenderTrigger={uploadingImage}
                 />
                 <FLTextInput
                 id="description"
                 defaultValue={recipe.desc}
                 onChangeTextProp={(text) => {changeRecipeProperty("desc", text)}}
                 label='Description (optional)'
-                rerenderTrigger={image}
+                rerenderTrigger={uploadingImage}
                 />               
                 <Dropdown
                 data={cuisineList}
@@ -337,7 +376,6 @@ const AddOrEditUserRecipe = ( {route, navigation} ) => {
                     />
                 ) : (<></>)
                 }
-                {validationFailed ? (<Text style={styles.text}>Please make sure you have filled in all the fields above</Text>) : (<></>)}
             </ScrollView>
             </KeyboardAvoidingView>
         </SafeAreaView>

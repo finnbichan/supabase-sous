@@ -9,6 +9,7 @@ import { useTheme } from '@react-navigation/native';
 import AppHeaderText from '../components/AppHeaderText';
 import Multiselect from '../components/Multiselect';
 import EditButton from '../components/EditButton';
+import CollapsibleSection from '../components/CollapsibleSection';
 
 const Recipe = ({route, navigation}) => {
     console.log(route.params.recipe);
@@ -115,7 +116,7 @@ const Recipe = ({route, navigation}) => {
                 <Image
                 source={{uri : recipe.image_uri}}
                 style={{height: 300, width: '100%'}}
-                loadingIndicatorSource={<ActivityIndicator />}
+                loadingIndicatorSource={assets.bolt}
                 />
             ):(<></>)}
             <View style={styles.recipeTitleBox}>
@@ -147,6 +148,7 @@ const Recipe = ({route, navigation}) => {
                 )
                 }
             </View>
+            <View style={{flexDirection: 'row'}}>
             {recipe.meals.map((x, i)=> {
             return (
                 <View
@@ -156,14 +158,21 @@ const Recipe = ({route, navigation}) => {
                     <Text style={styles.text}>{mealTypeList[i].name}</Text>
                 </View>
             )
-        })}
+            })}
+            </View>
             {//TODO make collapsible
             }
             <View>
                 {recipe.ingredients ? (
+                <CollapsibleSection
+                title='Ingredients'
+                open={false}
+                childrenIfOpen={
                 <Steps
                 editable={false}
                 steps={JSON.parse(recipe.ingredients)}
+                />}
+                childrenIfClosed={<></>}
                 />
                 ) : (
                     <Text style={[styles.lowImpactText, {margin: 8}]}>No ingredients added</Text>

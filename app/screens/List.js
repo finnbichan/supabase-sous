@@ -1,7 +1,7 @@
-import { View, Text, TextInput, SafeAreaView, TouchableOpacity, Image, Platform, FlatList, StyleSheet, KeyboardAvoidingView } from 'react-native';
+import { View, Text, TextInput, SafeAreaView, TouchableOpacity, Image, Platform, FlatList, StyleSheet, KeyboardAvoidingView, ScrollView } from 'react-native';
 import React, { useEffect, useState, useContext } from 'react';
 import useStyles from '../styles/Common';
-import { useRoute } from '@react-navigation/native';
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import Checkbox from '../components/Checkbox';
 import DoneButton from '../components/DoneButton';
 import { supabase } from '../../supabase';
@@ -29,13 +29,14 @@ const List = ({navigation, route}) => {
             width: '100%', 
             flexDirection: 'row',
             justifyContent: 'space-between',
-            marginBottom: 4,
-            marginLeft: 4,
-            borderRadius: 4,
+            //marginBottom: 4,
+            //marginLeft: 4,
+            //borderRadius: 4,
             height: 50,
             alignItems: 'center',
-            borderWidth: 1,
-            borderColor: 'red'
+            borderTopWidth: 1,
+            borderBottomWidth: 1,
+            borderColor: colours.layer
         },
         button: {
             height: 32,
@@ -73,8 +74,6 @@ const List = ({navigation, route}) => {
 
     const isNewList = true ? route.params?.list === undefined : false;
 
-    console.log("is new list", isNewList)
-
     useEffect(() => {
         navigation.setOptions({
             headerRight: () => (
@@ -94,11 +93,10 @@ const List = ({navigation, route}) => {
     const submitList = () => {
         setSubmitting(true)
         isNewList ? insertList() : updateList()
-        setSubmitting(false)
     }
 
     const insertList =  async() => {
-        console.log("data", list)
+        console.log("data", submitting)
         const {data, error} = await supabase
         .from('lists')
         .insert([{
@@ -107,11 +105,14 @@ const List = ({navigation, route}) => {
             }])
         if (error) {
             console.log(error)
+            setSubmitting(false)
         } else {
             console.log(data)
             const updateDate = Date.now()
+            setSubmitting(false)
             navigation.navigate('Shopping Lists', {prevScreen: "Home", action: updateDate})
         }
+        
     }
 
     console.log("list", list ? true : false)       
@@ -127,15 +128,19 @@ const List = ({navigation, route}) => {
         .eq('id', route.params?.list_id)
         if (error) {
             console.log(error)
+            setSubmitting(false)
         }
         else {
             console.log(data)
             const updateDate = Date.now()
+            setSubmitting(false)
             navigation.navigate('Shopping Lists', {prevScreen: "Home", action: updateDate})
+            
         }
+        
     }
 
-    const renderListItem = ({item}) => {
+    const ListItem = ({item}) => {
         
         const onItemTextChange = (text) => {
             const cpList = [...list]
@@ -173,43 +178,50 @@ const List = ({navigation, route}) => {
             </View>
         )
     }
-
+    
     return (
         <SafeAreaView style={styles.container}>
-            <View style={[styles.content, {borderWidth: 1, borderColor: 'red'}]}>
-                <View style={listStyles.titleContainer}>
-                    <TextInput 
-                    style={styles.title}
-                    onChangeText={(text) => setListName(text)}
-                    placeholder='Untitled List'
-                    placeholderTextColor={colours.secondaryText}
-                    >
-                    {listName}
-                    </TextInput>
-                </View>
-                {list.length ? (
-                    <>
-                        <FlatList
-                        data={list.filter(val => val.checked === false)}
-                        renderItem={renderListItem}
-                        keyExtractor={item => item.id}
-                        style={listStyles.itemList}
-                        />
-                        <FlatList
-                        data={list.filter(val => val.checked === true)}
-                        renderItem={renderListItem}
-                        keyExtractor={item => item.id}
-                        style={listStyles.itemList}
-                        />
-                    </>
-                ) : (
-                    <Text style={styles.lowImpactText}>Add some items!</Text>
-                )}
-            </View>
+            <View style={{height: '100%'}}>
+                <ScrollView contentContainerStyle={{justifyContent: 'center', alignItems: 'center', marginBottom: 4}}>
+                    <View style={listStyles.titleContainer}>
+                        <TextInput 
+                        style={styles.title}
+                        onChangeText={(text) => setListName(text)}
+                        placeholder='Untitled List'
+                        placeholderTextColor={colours.secondaryText}
+                        >
+                        {listName}
+                        </TextInput>
+                    </View>
+                    {list.length ? (
+                        <>
+                            {list.filter(val => val.checked === false).map((x, i) => {
+                                return (
+                                    <ListItem
+                                    item={x}
+                                    key={i}
+                                    />
+                                )
+                            })}
+                            {list.filter(val => val.checked === true).map((x, i) => {
+                                return (
+                                    <ListItem
+                                    item={x}
+                                    key={i}
+                                    />
+                                )
+                            })}
+                            
+                            
+                        </>
+                    ) : (
+                        <Text style={styles.lowImpactText}>Add some items!</Text>
+                    )}
+                </ScrollView>
             <KeyboardAvoidingView
-                style={listStyles.keyboardAvoider}
-                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 1000}
+            //style={listStyles.keyboardAvoider}
+            behavior='padding'
+            keyboardVerticalOffset='106'
             >
                 <View style={listStyles.inputContainer}>
                     <TextInput 
@@ -228,6 +240,7 @@ const List = ({navigation, route}) => {
                     </TouchableOpacity>
                 </View>
             </KeyboardAvoidingView>
+            </View>
         </SafeAreaView>
     )
 }
