@@ -1,11 +1,11 @@
 import { View, Text, Pressable, SafeAreaView, TouchableOpacity,ActivityIndicator, FlatList, Image } from 'react-native';
 import React, { useEffect, useState, useContext } from 'react';
 import useStyles from '../styles/Common';
-import Recipe from '../components/RecipeOverview';
 import { supabase } from '../../supabase';
 import { AuthContext } from '../../Contexts';
 import { useTheme } from '@react-navigation/native';
 import AppHeaderText from '../components/AppHeaderText';
+import GenerateModal from '../components/GenerateModal';
 
 const ListEmpty = () => {  
     const styles = useStyles();
@@ -18,9 +18,24 @@ const ListEmpty = () => {
 
 const ListHeader = () => {
     const styles = useStyles();
+    const [genModalOpen, setGenModalOpen] = useState(false);
+    const { assets, colours } = useTheme();
     return (
-    <View style={{paddingBottom: 10}}>
+    <View style={{paddingVertical: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
         <AppHeaderText>Your shopping lists</AppHeaderText>
+        <TouchableOpacity
+            style={{backgroundColor: colours.card, borderRadius: 8}}
+            onPress={() => setGenModalOpen(true)}
+        >
+                <Image
+                source={assets.list_gen}
+                style={{width: 44, height: 44}}
+                />
+        </TouchableOpacity>
+        <GenerateModal
+            genModalOpen={genModalOpen}
+            setGenModalOpen={setGenModalOpen}
+        />
     </View>
     )
 }
@@ -59,6 +74,15 @@ const ShoppingLists = ({navigation, route}) => {
         chevron: {
             maxHeight: 30,
             maxWidth: 30
+        },
+        gen_button: {
+            position: 'absolute',
+            bottom: 10,
+            right: 10,
+            margin: 12,
+            backgroundColor: colours.card,
+            borderRadius: 8,
+            padding: 8
         }
     }
 

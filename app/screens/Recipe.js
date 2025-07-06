@@ -170,7 +170,7 @@ const Recipe = ({route, navigation}) => {
                 childrenIfOpen={
                 <Steps
                 editable={false}
-                steps={JSON.parse(recipe.ingredients)}
+                steps={recipe.ingredients}
                 />}
                 childrenIfClosed={<></>}
                 />
@@ -182,7 +182,7 @@ const Recipe = ({route, navigation}) => {
                 {recipe.steps ? (
                 <Steps
                 editable={false}
-                steps={JSON.parse(recipe.steps)}
+                steps={recipe.steps}
                 />
                 ) : (
                     <Text style={[styles.lowImpactText, {margin: 8}]}>No steps added</Text>

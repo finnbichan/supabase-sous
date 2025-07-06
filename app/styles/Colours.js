@@ -41,6 +41,7 @@ export const LightTheme = {
         splash: require("../../assets/light/splash.png"),
         tick: require("../../assets/light/tick.png"),
         up: require("../../assets/light/up.png"),
+        list_gen: require("../../assets/light/list_gen.png")
     }
 }
 
@@ -84,5 +85,6 @@ export const CustomDarkTheme = {
         splash: require("../../assets/dark/splash.png"),
         tick: require("../../assets/dark/tick.png"),
         up: require("../../assets/dark/up.png"),
+        list_gen: require("../../assets/dark/list_gen.png")
     }
 }

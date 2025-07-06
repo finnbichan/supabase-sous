@@ -1,10 +1,11 @@
 import { View, FlatList, ActivityIndicator, StyleSheet } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { supabase } from '../../supabase';
 import CollapsibleSection from './CollapsibleSection';
 import CalendarHeader from './CalendarHeader';
 import MealPlan from './MealPlan';
 import MealPlanSummary from './MealPlanSummary';
+import { AuthContext } from '../../Contexts';
 
 
 const calendarStyles = StyleSheet.create({
@@ -24,6 +25,7 @@ const Calendar = ({navigation}) => {
     const [plannedRecipes, setPlannedRecipes] = useState([]);
     const [action, setAction] = useState();
     const todaysDate = new Date();
+    const session = useContext(AuthContext);
 
     const createDateArray = () => {
         let dateArray = [];
@@ -59,51 +61,21 @@ const Calendar = ({navigation}) => {
     useEffect(() => {
         setLoading(true);
         const getPlannedRecipes = async () => {
-            const userData = await supabase.auth.getUser()
-            const plannedRecipesData = await supabase
-            .from('plannedrecipes')
-            .select()
-            .eq('user_id', userData.data.user.id)
-            .eq('active', 1)
-            .gte('date', dateArray[0])
-            .lte('date', dateArray[dateArray.length - 1])
-            .order('date')
-            const recipesArray = plannedRecipesData.data.map((item) => item.recipe_id)
-            const plannedRecipeIds = plannedRecipesData.data.map((item) => {
-                return {
-                    plannedrecipe_id: item.id,
-                    date: item.date,
-                    recipe: item.recipe_id,
-                    meal_type: item.meal_type
-                }}
-            )
-            const recipeFullData = await supabase
-            .from('recipes')
-            .select()
-            .in('id', recipesArray)
-            const plannedRecipesFull = recipeFullData.data.map((item) => {
-                return {
-                    recipe_id: item.id,
-                    name: item.name,
-                    ease: item.ease,
-                    cuisine: item.cuisine,
-                    diet: item.diet,
-                    user_id: item.user_id
-                }})
-            const plannedRecipesComplete = plannedRecipeIds.map((item) => {
-                return {
-                    plannedrecipe_id: item.plannedrecipe_id,
-                    date: item.date,
-                    meal_type: item.meal_type,
-                    recipe: plannedRecipesFull.find((recipe) => recipe.recipe_id === item.recipe)
-                }
-            })
-            setPlannedRecipes(plannedRecipesComplete)
-            console.log(plannedRecipes)
-            setLoading(false)
+            const { data, error } = await supabase.rpc('get_planned_recipes', {
+                p_user_id: session.user.id,
+                p_start_date: dateArray[0], 
+                p_end_date: dateArray[dateArray.length - 1]
+            });
+            if (error) {
+                console.error("Error fetching planned recipes:", error);
+            } else {
+                setPlannedRecipes(data)
+                
+            }
+            setLoading(false);
         }
         getPlannedRecipes()
-    }, [action])
+    }, [action]) 
 
     const renderDate = (mealdate) => {
         const dateString = new Date(mealdate).toDateString().slice(0,10);

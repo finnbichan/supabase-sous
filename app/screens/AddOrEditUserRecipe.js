@@ -196,8 +196,8 @@ const AddOrEditUserRecipe = ( {route, navigation} ) => {
 
     const insert = async () => {
         setSubmitting(true);
-        const stepsJSON = addSteps ? JSON.stringify(steps) : null
-        const ingredientsJSON = addIngredients ? JSON.stringify(ingredients) : null;
+        const stepsJSON = addSteps ? steps : null
+        const ingredientsJSON = addIngredients ? ingredients : null;
         const meals = mealTypes.filter((x) => x.selected).map((x) => x.id);
         const imageUri = newImageUri ? newImageUri : image;
         const data = await supabase
@@ -223,8 +223,8 @@ const AddOrEditUserRecipe = ( {route, navigation} ) => {
 
     const update = async () => {
         setSubmitting(true);
-        const stepsJSON = addSteps ? JSON.stringify(steps) : null
-        const ingredientsJSON = addIngredients ? JSON.stringify(ingredients) : null;
+        const stepsJSON = addSteps ? steps : null
+        const ingredientsJSON = addIngredients ? ingredients : null;
         const meals = mealTypes.filter((x) => x.selected).map((x) => x.id);
         const imageUri = newImageUri ? newImageUri : image;
         const data = await supabase
