@@ -66,7 +66,7 @@ function useMealPlanStyles() {
     return mealPlanstyles;
   }
 
-const NoPlan = ({ meal_name, date, meal_type, user_id, addPlannedRecipe }) => {
+const NoPlan = ({ meal_name, date, meal_type, user_id, addPlannedRecipe, editable }) => {
     const { assets } = useTheme(); 
     const mealPlanStyles = useMealPlanStyles();
 
@@ -168,6 +168,7 @@ const NoPlan = ({ meal_name, date, meal_type, user_id, addPlannedRecipe }) => {
                     <Text style={mealPlanStyles.lowImpactText}>{meal_name}</Text>
                     <Text style={mealPlanStyles.noPlanText}>Nothing planned</Text>
                 </View>
+                {editable ? ( 
                 <View style={mealPlanStyles.noPlanButtons}>
                     <TouchableOpacity
                     onPress={() => setSearchModalOpen(true)}>
@@ -185,13 +186,14 @@ const NoPlan = ({ meal_name, date, meal_type, user_id, addPlannedRecipe }) => {
                         />
                     </TouchableOpacity>
                 </View>
+                ) : (<></>)}
             </View>
             )}
         </View>
     )
 }
 
-const YesPlan = ({navigation, user_id, meal_name, meal_type, recipe, date, plannedrecipe_id, addPlannedRecipe, deletePlannedRecipe, rerollPlannedRecipe}) => {
+const YesPlan = ({navigation, user_id, meal_name, meal_type, recipe, date, plannedrecipe_id, deletePlannedRecipe, rerollPlannedRecipe, editable}) => {
     const [loading, setLoading] = useState(false)
     const { assets } = useTheme();
     const mealPlanStyles = useMealPlanStyles();
@@ -266,6 +268,7 @@ const YesPlan = ({navigation, user_id, meal_name, meal_type, recipe, date, plann
                     recipe={recipe}
                     />
                 </TouchableOpacity>
+                { editable ? (
                 <View style={mealPlanStyles.noPlanButtons}>
                     <TouchableOpacity
                     onPress={deactivatePlannedRecipe}
@@ -285,13 +288,14 @@ const YesPlan = ({navigation, user_id, meal_name, meal_type, recipe, date, plann
                         /> 
                     </TouchableOpacity>
                 </View>
+                ) : (<></>)}
             </View>
             )}
         </View>
     )
 }
 
-const MealPlan = ({ navigation, meal_type, date, recipe, plannedrecipe_id, addPlannedRecipe, deletePlannedRecipe, rerollPlannedRecipe }) => {
+const MealPlan = ({ navigation, meal_type, date, recipe, plannedrecipe_id, addPlannedRecipe, deletePlannedRecipe, rerollPlannedRecipe, editable }) => {
     const session = useContext(AuthContext)
     const mealPlanStyles = useMealPlanStyles();
     var meal_name = null;
@@ -310,6 +314,7 @@ const MealPlan = ({ navigation, meal_type, date, recipe, plannedrecipe_id, addPl
                 meal_type={meal_type}
                 date={date}
                 addPlannedRecipe={addPlannedRecipe}
+                editable={editable}
                 />
             ) : (
                 <YesPlan
@@ -323,6 +328,7 @@ const MealPlan = ({ navigation, meal_type, date, recipe, plannedrecipe_id, addPl
                 addPlannedRecipe={addPlannedRecipe}
                 deletePlannedRecipe={deletePlannedRecipe}
                 rerollPlannedRecipe={rerollPlannedRecipe}
+                editable={editable}
                 />
             )}
         </View>
