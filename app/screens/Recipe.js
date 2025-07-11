@@ -22,15 +22,10 @@ const Recipe = ({route, navigation}) => {
     const { assets } = useTheme();
     const styles = useStyles();
     const mealTypeList = [
-        {id: 1, name: "Breakfast"},
-        {id: 2, name: "Lunch"},
-        {id: 3, name: "Dinner"}
+        {id: 0, name: "Breakfast"},
+        {id: 1, name: "Lunch"},
+        {id: 2, name: "Dinner"}
     ];
-    const mealTypes = mealTypeList.map((x) => {
-            return {
-                ...x,
-                selected: recipe.meals.includes(x.id)
-            }})
         
     //FIX for new recipes.
     const getCreatorName = async () => {
@@ -155,7 +150,7 @@ const Recipe = ({route, navigation}) => {
                 style={[styles.multiItemContainer, {backgroundColor: '#00AEFF', alignSelf: 'flex-start'}]}
                 key={i}
                 >
-                    <Text style={styles.text}>{mealTypeList[i].name}</Text>
+                    <Text style={styles.text}>{mealTypeList.find(e => e.id == x).name}</Text>
                 </View>
             )
             })}

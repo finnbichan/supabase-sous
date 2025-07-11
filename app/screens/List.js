@@ -10,13 +10,14 @@ import { useTheme } from '@react-navigation/native';
 const List = ({navigation, route}) => {
     const [list, setList] = useState(route.params?.list || []);
     const [newListItem, setNewListItem] = useState('');
+    console.log("route params", route.params);
     const [listName, setListName] = useState(route.params?.list_name);
     const [submitting, setSubmitting] = useState(false);
     const { assets, colours } = useTheme();
     const styles = useStyles(); 
     const listStyles = StyleSheet.create({
         textInput: {
-            width: '80%',
+            width: '100%',
             marginLeft: 8,
             color: colours.text,
         },

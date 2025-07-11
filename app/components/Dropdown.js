@@ -81,6 +81,7 @@ const Dropdown = ({ value, label, data, onSelect }) => {
     };
 
     const [selected, setSelected] = useState(data[value]);
+    console.log("selected", value)
 
     const onItemPress = (item) => {
         setSelected(item);

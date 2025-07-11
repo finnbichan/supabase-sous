@@ -39,9 +39,9 @@ const AddOrEditUserRecipe = ( {route, navigation} ) => {
     const styles = useStyles();
     const { assets, colours } = useTheme();
     const mealTypesList = [
-        {id: 1, name: "Breakfast", selected: false},
-        {id: 2, name: "Lunch", selected: false},
-        {id: 3, name: "Dinner", selected: false}
+        {id: 0, name: "Breakfast", selected: false},
+        {id: 1, name: "Lunch", selected: false},
+        {id: 2, name: "Dinner", selected: false}
     ];
     const convertMealTypes = (meals) => {
         const mealTypes = mealTypesList.map((x) => {

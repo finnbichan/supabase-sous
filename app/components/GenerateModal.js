@@ -1,33 +1,37 @@
 import { Modal, Pressable, View, TextInput, Text, StyleSheet, ActivityIndicator, FlatList, TouchableOpacity, Image } from 'react-native';
-import React, { useState, useContext, useRef, useEffect } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { AuthContext } from '../../Contexts';
 import { supabase } from '../../supabase';
 import useStyles from '../styles/Common';
 import RecipeBase from './RecipeBase';
-import { useTheme } from '@react-navigation/native';
+import { useNavigation, useTheme } from '@react-navigation/native';
 import AppHeaderText from './AppHeaderText';
 import Dropdown from './Dropdown';
+import AppText from './AppText';
+import AppButton from './AppButton';
 
 
 const GenerateModal = ({genModalOpen, setGenModalOpen}) => {
-    const [loading, setLoading] = useState(false);
-    const [plannedRecipes, setPlannedRecipes] = useState([]);
-    const { assets, colours } = useTheme();
-    const styles = useStyles();
-    const todaysDate = new Date();
-    const session = useContext(AuthContext);
-
     const createDateArray = () => {
         let dateArray = [];
         for(let i = 0; i < 14; i++){
             let date = new Date() 
-            date.setDate(todaysDate.getDate() + i)
+            date.setDate(date.getDate() + i)
             dateArray.push(date.toISOString().slice(0,10))
         }
         return dateArray
     }
-
+    const navigation = useNavigation();
     const dateArray = createDateArray();
+    const [loading, setLoading] = useState(false);
+    const [startDate, setStartDate] = useState(dateArray[0]);
+    const [endDate, setEndDate] = useState(dateArray[5]);
+    const [plannedRecipes, setPlannedRecipes] = useState([]);
+    const [submitting, setSubmitting] = useState(false);
+    const { assets, colours } = useTheme();
+    const styles = useStyles();
+     
+    const session = useContext(AuthContext);
 
     const getPlannedRecipes = async () => {
         console.log("here");
@@ -39,15 +43,37 @@ const GenerateModal = ({genModalOpen, setGenModalOpen}) => {
         if (error) {
             console.error("Error fetching planned recipes:", error);
         } else {
+            console.log('data', data)
             setPlannedRecipes(data)
         }
         setLoading(false);
     }
 
-
+    const generateList = async () => {
+        setSubmitting(true);
+        let listName = startDate + " to " + endDate;
+        const { data, error } = await supabase.rpc('create_list', {
+            p_user_id: session.user.id,
+            p_list_name: listName,
+            p_start_date: startDate,
+            p_end_date: endDate
+        });
+        if (error) {
+            console.error("Error generating shopping list:", error);
+        } else {
+            console.log('Generated shopping list:', data, data.list_name);
+            navigation.navigate('List', {
+                list: data.list,
+                list_id: data.id,
+                list_name: data.list_name,
+                prevScreen: "Shopping Lists",});
+        }
+        setSubmitting(false);
+        setGenModalOpen(false);
+    }
 
     useEffect(() => {
-        if (genModalOpen) {
+        if (genModalOpen && plannedRecipes) {
             setLoading(true);
             getPlannedRecipes();
         }}, [genModalOpen]);
@@ -56,7 +82,7 @@ const GenerateModal = ({genModalOpen, setGenModalOpen}) => {
         overlay: {
             height: '100%',
             width: "100%",
-            justifyContent: 'flex-start',
+            justifyContent: 'center',
             alignItems: 'center',
             backgroundColor: 'rgba(0, 0, 0, 0.7)'
         },
@@ -67,8 +93,8 @@ const GenerateModal = ({genModalOpen, setGenModalOpen}) => {
             justifyContent: 'space-evenly',
             alignItems: 'center',
             alignSelf: 'center',
-            marginTop: '200',
-            position: 'absolute',
+            marginTop: '150',
+            position: 'absolute', 
             borderRadius: 8,
             flexGrow: 0
         },
@@ -118,6 +144,8 @@ const GenerateModal = ({genModalOpen, setGenModalOpen}) => {
         }
     })
 
+    console.log(dateArray.indexOf(startDate), dateArray.indexOf(endDate), dateArray.slice(dateArray.indexOf(startDate), dateArray.indexOf(endDate)+1))
+
    if (genModalOpen) {
                return (
                    <Modal 
@@ -132,14 +160,53 @@ const GenerateModal = ({genModalOpen, setGenModalOpen}) => {
                        <View style={modalStyles.modal}>
                         <AppHeaderText>Generate a shopping list</AppHeaderText>
                         { loading ? <ActivityIndicator /> : (
-                            <Dropdown
-                            value={dateArray[0]}
-                            label="Start date"
-                            data={dateArray.map((date, idx) => {
-                                return {id: idx, label: String(date)}
-                            })}
-                            onSelect={()=>console.log("wah")}
-                            />
+                            <>  
+                                <Text style={[styles.lowImpactText, {alignSelf: 'flex-start', marginLeft: 8, marginBottom: '-10'}]}>From</Text>
+                                <Dropdown
+                                value={0}
+                                label="Start date"
+                                data={dateArray.map((date, idx) => {
+                                    return {id: idx, label: String(date)}
+                                })}
+                                onSelect={(item) => setStartDate(dateArray[item.id])}
+                                />
+                                <Text style={[styles.lowImpactText, {alignSelf: 'flex-start', marginBottom: '-10', marginLeft: 8, marginTop: 10}]}>to</Text>
+                                <Dropdown
+                                value={5}
+                                label="End date"
+                                data={dateArray.map((date, idx) => {
+                                    return {id: idx, label: String(date)}
+                                })}
+                                onSelect={(item) => setEndDate(dateArray[item.id])}
+                                />
+                                
+                               <View style={{width: '100%', marginLeft: '-8'}}>
+                                    <AppText>Meals included:</AppText>
+                                    <FlatList
+                                        data={dateArray.slice(dateArray.indexOf(startDate), dateArray.indexOf(endDate)+1)}
+                                        style={{marginLeft: 16}}
+                                        renderItem={(item) => {
+                                            const meals = plannedRecipes.filter(d => item.item == d.date).map(r => r.recipe.name)
+                                            console.log("meals", meals)
+                                            return (
+                                                <>
+                                                {meals[0] ? (
+                                                    <Text style={styles.lowImpactText}>{meals.join(', ')}</Text>
+                                                ) : (
+                                                    <></>
+                                                )}
+                                                </>
+                                            )
+                                        }}
+                                    />
+                                </View>
+                                {submitting ? <ActivityIndicator /> : (
+                               <AppButton
+                                label="Generate"
+                                onPress={generateList}
+                                />
+                                )}
+                            </>
                         )}
                        </View>
                    </Modal>
