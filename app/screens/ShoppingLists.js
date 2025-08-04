@@ -2,7 +2,7 @@ import { View, Text, Pressable, SafeAreaView, TouchableOpacity,ActivityIndicator
 import React, { useEffect, useState, useContext } from 'react';
 import useStyles from '../styles/Common';
 import { supabase } from '../../supabase';
-import { AuthContext } from '../../Contexts';
+import { AuthContext, CacheContext } from '../../Contexts';
 import { useTheme } from '@react-navigation/native';
 import AppHeaderText from '../components/AppHeaderText';
 import GenerateModal from '../components/GenerateModal';
@@ -85,7 +85,7 @@ const ShoppingLists = ({navigation, route}) => {
             padding: 8
         }
     }
-
+    const {cache, setCache} = useContext(CacheContext)
     const session = useContext(AuthContext)
 
     console.log("action", route.params?.action)
@@ -107,7 +107,7 @@ const ShoppingLists = ({navigation, route}) => {
 
     useEffect(() => {
         getLists()
-    }, [route.params?.action])
+    }, [route.params?.action, cache])
 
     const renderList = ({item}) => {
         const dateString = new Date(item.last_updated_at).toDateString().slice(0,10);

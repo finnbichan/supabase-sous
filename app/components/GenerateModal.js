@@ -1,6 +1,6 @@
 import { Modal, Pressable, View, TextInput, Text, StyleSheet, ActivityIndicator, FlatList, TouchableOpacity, Image } from 'react-native';
 import React, { useState, useContext, useEffect } from 'react';
-import { AuthContext } from '../../Contexts';
+import { AuthContext, CacheContext } from '../../Contexts';
 import { supabase } from '../../supabase';
 import useStyles from '../styles/Common';
 import RecipeBase from './RecipeBase';
@@ -28,6 +28,7 @@ const GenerateModal = ({genModalOpen, setGenModalOpen}) => {
     const [endDate, setEndDate] = useState(dateArray[5]);
     const [plannedRecipes, setPlannedRecipes] = useState([]);
     const [submitting, setSubmitting] = useState(false);
+    const {cache, setCache} = useContext(CacheContext)
     const { assets, colours } = useTheme();
     const styles = useStyles();
      
@@ -61,6 +62,7 @@ const GenerateModal = ({genModalOpen, setGenModalOpen}) => {
         if (error) {
             console.error("Error generating shopping list:", error);
         } else {
+            setCache(Date.now());
             console.log('Generated shopping list:', data, data.list_name);
             navigation.navigate('List', {
                 list: data.list,
