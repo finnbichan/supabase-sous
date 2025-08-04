@@ -37,7 +37,8 @@ const MealPlanStyles = (props) => StyleSheet.create({
     },
     noPlanButtons: {
         flexDirection: 'row',
-        alignItems: 'center'
+        alignItems: 'center',
+        width: 100
     },
     noPlanText: {
         color: props.colours.text,
@@ -56,7 +57,8 @@ const MealPlanStyles = (props) => StyleSheet.create({
         marginBottom: 4
     },
     yesPlanLeftSection: {
-        maxWidth: '73%'
+        flexGrow: 1,
+        maxWidth: '73%',
     }
 });
 
@@ -76,74 +78,28 @@ const NoPlan = ({ meal_name, date, meal_type, user_id, addPlannedRecipe, editabl
 
     const session = useContext(AuthContext);
 
-    
-
     const suggestRecipe = async (meal_type, date, user_id) => {
         setNewMealLoading(true);
-        const {data, error} = await supabase.rpc('suggest_recipe', {mealtype_input: meal_type, date_input:date, userid_input: user_id})
+        const {data, error} = await supabase.rpc('suggest_recipe', {p_mealtype: meal_type, p_date:date, p_user_id: user_id})
         if (error) {
             console.log(error);
             setNewMealLoading(false);
-        } else {
-            console.log("data", data)
-            const createNewPlannedRecipe = (item) => {
-                return {
-                    "plannedrecipe_id": item.id || null,
-                    "date": item.date || null,
-                    "meal_type": item.meal_type || null,
-                    "recipe": {
-                        "recipe_id": item.recipe_id || "",
-                        "name": item.name || "",
-                        "ease": item.ease || 0,
-                        "cuisine": item.cuisine || 0,
-                        "diet": item.diet || 0,
-                        "user_id": item.user_id || null
-                    }
-                } 
-            }
-            const newPlannedRecipe = createNewPlannedRecipe(data)
-            addPlannedRecipe(newPlannedRecipe);
+        } else { 
+            addPlannedRecipe(data);
             setNewMealLoading(false);
         }
     }
 
     const addRecipeBySearch = async (recipe, meal_type, date) => {
         setNewMealLoading(true);
-        console.log("recipe", recipe)
-        const {data, error} = await supabase
-        .from('plannedrecipes')
-        .insert([
-            {
-                user_id: session.user.id,
-                recipe_id: recipe.recipe_id,
-                date: date,
-                meal_type: meal_type,
-                active: true
-            }
-        ])
-        .select()
+        const {data, error} = await supabase.rpc('add_single_planned_recipe', 
+            {p_mealtype: meal_type, p_date:date, p_user_id: session.user.id, p_recipe_id: recipe.recipe_id})
         if (error) {
             console.log(error);
             setNewMealLoading(false);
         } else {
             console.log(data.id, "data", data)
-            const createNewPlannedRecipe = (item) => {
-                return {
-                    "plannedrecipe_id": item.id || null,
-                    "date": item.date || null,
-                    "meal_type": item.meal_type || null,
-                    "recipe": {
-                        "recipe_id": item.recipe_id || "",
-                        "name": recipe.name || "",
-                        "ease": recipe.ease || 0,
-                        "cuisine": recipe.cuisine || 0,
-                        "diet": recipe.diet || 0
-                    }
-                } 
-            }
-            const newPlannedRecipe = createNewPlannedRecipe(data[0])
-            console.log("new planned recipe", newPlannedRecipe)
-            addPlannedRecipe(newPlannedRecipe);
+            addPlannedRecipe(data);
             setNewMealLoading(false);
         }
     }

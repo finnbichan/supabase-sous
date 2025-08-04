@@ -22,9 +22,9 @@ const Recipe = ({route, navigation}) => {
     const { assets } = useTheme();
     const styles = useStyles();
     const mealTypeList = [
-        {id: 0, name: "Breakfast"},
-        {id: 1, name: "Lunch"},
-        {id: 2, name: "Dinner"}
+        {id: 1, name: "Breakfast"},
+        {id: 2, name: "Lunch"},
+        {id: 3, name: "Dinner"}
     ];
         
     //FIX for new recipes.

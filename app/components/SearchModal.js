@@ -101,7 +101,7 @@ const SearchModal = ( {searchModalOpen, setSearchModalOpen, onSelectRecipe, meal
         setLoading(true);
         console.log("searching for", text)
         const { data, error } = await supabase
-            .rpc('search_recipes_by_name', {p_user_id: session.user.id, search_term: text})
+            .rpc('search_recipes_by_name', {p_user_id: session.user.id, p_search_term: text})
         if (error) {
             console.error(error);
         } else {
