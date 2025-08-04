@@ -71,7 +71,6 @@ const Calendar = ({navigation}) => {
                 console.error("Error fetching planned recipes:", error);
             } else {
                 setPlannedRecipes(data)
-                
             }
             setLoading(false);
         }

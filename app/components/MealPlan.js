@@ -178,28 +178,13 @@ const YesPlan = ({navigation, user_id, meal_name, meal_type, recipe, date, plann
         .eq('id', plannedrecipe_id)
         if (delete_error) {
             console.log("error", delete_error);
-        } else {
+        } else { 
             //generate new recipe
-            const { data: suggest_data, error: suggest_error } = await supabase.rpc('suggest_recipe', {mealtype_input: meal_type, date_input:date, userid_input: user_id})
+            const { data: suggest_data, error: suggest_error } = await supabase.rpc('suggest_recipe', {p_mealtype: meal_type, p_date:date, p_user_id: user_id})
             if (suggest_error) {
                 console.log(suggest_error);
             } else {
-                const createNewPlannedRecipe = (item) => {
-                    return {
-                        "plannedrecipe_id": item.id || null,
-                        "date": item.date || null,
-                        "meal_type": item.meal_type || null,
-                        "recipe": {
-                            "recipe_id": item.recipe_id || "",
-                            "name": item.name || "",
-                            "ease": item.ease || 0,
-                            "cuisine": item.cuisine || 0,
-                            "diet": item.diet || 0
-                        }
-                    } 
-                }
-                const newPlannedRecipe = createNewPlannedRecipe(suggest_data)
-                rerollPlannedRecipe(newPlannedRecipe, plannedrecipe_id);
+                rerollPlannedRecipe(suggest_data, plannedrecipe_id);
             }
         }       
         setLoading(false)
