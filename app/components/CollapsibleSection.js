@@ -1,18 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image, Animated } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { useTheme } from '@react-navigation/native';
+import Animated, {LinearTransition, FadingTransition, useAnimatedStyle, interpolate, interpolateColor} from 'react-native-reanimated';
 
-const CollapsibleSection = ({ title, open, childrenIfOpen, childrenIfClosed }) => {
-    const { colours } = useTheme();
-    const styles = StyleSheet.create({
-        openContainer: {
+const collapsibleStyles = StyleSheet.create({
+        collapsibleContainer: {
             borderRadius: 5,
             overflow: 'hidden'
-        },
-        closedContainer: {
-            backgroundColor: colours.card,
-            borderRadius: 5,
-            overflow: 'hidden',
         },
         header: {
             paddingLeft: 10,
@@ -30,7 +24,6 @@ const CollapsibleSection = ({ title, open, childrenIfOpen, childrenIfClosed }) =
             paddingBottom: 10
         },
         largeText: {
-            color: colours.text,
             fontSize: 20,
             fontWeight: 'heavy',
             fontFamily: ''
@@ -44,28 +37,33 @@ const CollapsibleSection = ({ title, open, childrenIfOpen, childrenIfClosed }) =
             
         }
     });
-    const [collapsed, setCollapsed] = useState(open);
-    const { assets } = useTheme();  
+
+const CollapsibleSection = ({ title, open, childrenIfOpen, childrenIfClosed }) => {
+    const { colours, assets } = useTheme();
+    const [collapsed, setCollapsed] = useState(open);  
 
     const toggleCollapse = () => {
         setCollapsed(!collapsed);
     }; 
 
     return (
-        <View style={collapsed ? styles.closedContainer : styles.openContainer}>
-            <TouchableOpacity onPress={toggleCollapse} style={styles.header}>
-                <Text style={styles.largeText}>{title}</Text>
+        <Animated.View  
+        style={[collapsibleStyles.collapsibleContainer, {backgroundColor: collapsed ? colours.card : null, transitionProperty: 'backgroundColor', transitionDuration: '2s'}]}
+        layout={LinearTransition}
+        >
+            <TouchableOpacity onPress={toggleCollapse} style={collapsibleStyles.header}>
+                <Text style={[collapsibleStyles.largeText, {color: colours.text}]}>{title}</Text>
                 <Image
-                style={styles.image}
+                style={collapsibleStyles.image}
                 source={collapsed ? assets.down : assets.up}
                 />
             </TouchableOpacity>
             {collapsed ? ( 
-                <View style={styles.content}>{childrenIfClosed}</View>
+                <View style={collapsibleStyles.content}>{childrenIfClosed}</View>
             ) : (
-            <View style={styles.content}>{childrenIfOpen}</View>
+            <View style={collapsibleStyles.content}>{childrenIfOpen}</View>
             )}
-        </View>
+        </Animated.View>
     );
 };
 
