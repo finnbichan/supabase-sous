@@ -143,6 +143,7 @@ const ShoppingLists = ({navigation, route}) => {
                     renderItem={renderList}
                     ListEmptyComponent={ListEmpty}
                     ListHeaderComponent={<ListHeader/>}
+                    showsVerticalScrollIndicator={false}
                     />
                 )}
             </View>

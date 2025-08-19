@@ -40,7 +40,7 @@ function LeftButton() {
   const route = useRoute();
   const navigation = useNavigation();
   const screen = route.name;
-  const renderBack = screen === 'Add a recipe' || screen === 'Recipe' || screen === 'Shopping Lists' || screen === 'List';
+  const renderBack = screen === 'Add a recipe' || screen === 'Recipe' || screen === 'List';
   const prevScreen = route.params?.prevScreen || 'Home';
   const editing = screen === 'Add a recipe' && route.params?.recipe;
   const { colours } = useTheme();
@@ -71,8 +71,6 @@ function RightButton() {
     return <RightHeaderButton navigation={navigation} target="List" prevScreen="Shopping Lists"/>
   } else if (screen === 'Your recipes') {
     return <RightHeaderButton navigation={navigation} target="Add a recipe" prevScreen="Your recipes"/>
-  } else if (screen === 'Home') {
-    return <RightHeaderButton navigation={navigation} icon='list' target="Shopping Lists" prevScreen="Home"/>
   } else {
     return <></>
   }
@@ -119,13 +117,6 @@ function TabsStack() {
         }
       }}
       /> 
-      <MainAppTabs.Screen name="Shopping Lists" component={ShoppingLists} options={{
-        tabBarButton: () => null
-      }}/>
-      <MainAppTabs.Screen name="List" component={List} options={{
-        tabBarButton: () => null,
-        unmountOnBlur: true,
-      }}/>
       <MainAppTabs.Screen name="Your recipes" component={UserRecipes} 
       options={{
         tabBarIcon: ({focused}) => {
@@ -153,6 +144,27 @@ function TabsStack() {
         tabBarButton: () => null,
         unmountOnBlur: true
       }} />
+      <MainAppTabs.Screen name="Shopping Lists" component={ShoppingLists} options={{
+        tabBarIcon: ({focused}) => {
+          return (
+            focused ? (
+            <Image 
+            style={{width: 25, height: 25}}
+            source={assets.list}
+            />
+          ) : (
+            <Image 
+            style={{width: 25, height: 25}}
+            source={assets.list_inactive}
+            />
+          )
+          )
+        }
+      }}/>
+      <MainAppTabs.Screen name="List" component={List} options={{
+        tabBarButton: () => null,
+        unmountOnBlur: true,
+      }}/>
       <MainAppTabs.Screen name="Explore" component={Explore}
       options={{
         tabBarIcon: ({focused}) => {

@@ -1,5 +1,5 @@
-import { View, Text, Pressable, SafeAreaView, TouchableOpacity,ActivityIndicator, Image, TouchableWithoutFeedback, Modal } from 'react-native';
-import React, { useEffect, useState, useContext, useLayoutEffect } from 'react';
+import { View, Text, Pressable, SafeAreaView, ActivityIndicator, Image, Modal } from 'react-native';
+import React, { useEffect, useState, useContext } from 'react';
 import useStyles from '../styles/Common';
 import { supabase } from '../../supabase';
 import Steps from '../components/Steps';
@@ -7,9 +7,9 @@ import { AuthContext } from '../../Contexts';
 import FLTextInput from '../components/FloatingLabelInput';
 import { useTheme } from '@react-navigation/native';
 import AppHeaderText from '../components/AppHeaderText';
-import Multiselect from '../components/Multiselect';
 import EditButton from '../components/EditButton';
 import CollapsibleSection from '../components/CollapsibleSection';
+import AppText from '../components/AppText';
 
 const Recipe = ({route, navigation}) => {
     console.log(route.params.recipe);
@@ -160,7 +160,7 @@ const Recipe = ({route, navigation}) => {
             <View>
                 {recipe.ingredients ? (
                 <CollapsibleSection
-                title='Ingredients'
+                title={<AppText>Ingredients</AppText>}
                 open={false}
                 childrenIfOpen={
                 <Steps

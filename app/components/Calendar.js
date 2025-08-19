@@ -1,4 +1,4 @@
-import { View, FlatList, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, FlatList, ActivityIndicator, StyleSheet, Text } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import { supabase } from '../../supabase';
 import CollapsibleSection from './CollapsibleSection';
@@ -6,6 +6,8 @@ import CalendarHeader from './CalendarHeader';
 import MealPlan from './MealPlan';
 import MealPlanSummary from './MealPlanSummary';
 import { AuthContext } from '../../Contexts';
+import { useTheme } from '@react-navigation/native';
+import useStyles from '../styles/Common';
 
 
 const calendarStyles = StyleSheet.create({
@@ -27,6 +29,8 @@ const Calendar = ({navigation}) => {
     const [historyOpen, setHistoryOpen] = useState(false);
     const todaysDate = new Date();
     const session = useContext(AuthContext);
+    const {colours, assets} = useTheme();
+    const styles = useStyles();
 
     const createDateArray = () => {
         let dateArray = [];
@@ -79,7 +83,9 @@ const Calendar = ({navigation}) => {
 
     const renderDate = (mealdate) => {
         const mealdateDateObject = new Date(mealdate);
-        const dateString = new Date(mealdate).toDateString().slice(0,10);
+        const daysOfTheWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const day = daysOfTheWeek[mealdateDateObject.getDay()];
+        const date = mealdateDateObject.toDateString().slice(4, 10);
         const isTodaysMeal = mealdate === todaysDate.toISOString().slice(0,10)
         const onlyShowWhenHistoryOpen = mealdateDateObject < todaysDate && !isTodaysMeal;
         const breakfast = plannedRecipes.find(({date, meal_type}) => date === mealdate && meal_type === 1)
@@ -89,7 +95,14 @@ const Calendar = ({navigation}) => {
         return (
             <View style={calendarStyles.parentDateContainer}>
                 <CollapsibleSection
-                title={isTodaysMeal ? "Today's menu" : dateString}
+                title={isTodaysMeal ? (
+                <Text style={{fontSize: 20, color: colours.text}}>Today's menu</Text> 
+                ) : (
+                    <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
+                        <Text style={{fontSize: 20, color: colours.text, paddingEnd: 5}}>{day}</Text>
+                        <Text style={styles.lowImpactText}>({date})</Text>
+                    </View>
+            )}
                 open={!isTodaysMeal}
                 childrenIfOpen={
                     <View style={calendarStyles.planContainer}>
@@ -157,6 +170,7 @@ const Calendar = ({navigation}) => {
                 historyOpen={historyOpen}
                 onHistoryOpen={() => setHistoryOpen(!historyOpen)}/>
                 }
+                showsVerticalScrollIndicator={false}
             /> 
             )}
         </View>

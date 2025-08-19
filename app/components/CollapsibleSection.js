@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { useTheme } from '@react-navigation/native';
-import Animated, {LinearTransition, FadingTransition, useAnimatedStyle, interpolate, interpolateColor} from 'react-native-reanimated';
+import Animated, {LinearTransition} from 'react-native-reanimated';
 
 const collapsibleStyles = StyleSheet.create({
         collapsibleContainer: {
@@ -40,7 +40,7 @@ const collapsibleStyles = StyleSheet.create({
 
 const CollapsibleSection = ({ title, open, childrenIfOpen, childrenIfClosed }) => {
     const { colours, assets } = useTheme();
-    const [collapsed, setCollapsed] = useState(open);  
+    const [collapsed, setCollapsed] = useState(open); 
 
     const toggleCollapse = () => {
         setCollapsed(!collapsed);
@@ -48,11 +48,11 @@ const CollapsibleSection = ({ title, open, childrenIfOpen, childrenIfClosed }) =
 
     return (
         <Animated.View  
-        style={[collapsibleStyles.collapsibleContainer, {backgroundColor: collapsed ? colours.card : null, transitionProperty: 'backgroundColor', transitionDuration: '2s'}]}
+        style={[collapsibleStyles.collapsibleContainer, {backgroundColor: collapsed ? colours.card : null}]}
         layout={LinearTransition}
         >
             <TouchableOpacity onPress={toggleCollapse} style={collapsibleStyles.header}>
-                <Text style={[collapsibleStyles.largeText, {color: colours.text}]}>{title}</Text>
+                {title}
                 <Image
                 style={collapsibleStyles.image}
                 source={collapsed ? assets.down : assets.up}

@@ -35,7 +35,6 @@ const GenerateModal = ({genModalOpen, setGenModalOpen}) => {
     const session = useContext(AuthContext);
 
     const getPlannedRecipes = async () => {
-        console.log("here");
         const { data, error } = await supabase.rpc('get_planned_recipes', {
             p_user_id: session.user.id,
             p_start_date: dateArray[0], 
@@ -44,7 +43,6 @@ const GenerateModal = ({genModalOpen, setGenModalOpen}) => {
         if (error) {
             console.error("Error fetching planned recipes:", error);
         } else {
-            console.log('data', data)
             setPlannedRecipes(data)
         }
         setLoading(false);
@@ -52,7 +50,9 @@ const GenerateModal = ({genModalOpen, setGenModalOpen}) => {
 
     const generateList = async () => {
         setSubmitting(true);
-        let listName = startDate + " to " + endDate;
+        const startString = new Date(startDate).toDateString().slice(4, 10);
+        const endString = new Date(endDate).toDateString().slice(4, 10);
+        let listName = startString + " - " + endString;
         const { data, error } = await supabase.rpc('create_list', {
             p_user_id: session.user.id,
             p_list_name: listName,
@@ -146,8 +146,6 @@ const GenerateModal = ({genModalOpen, setGenModalOpen}) => {
         }
     })
 
-    console.log(dateArray.indexOf(startDate), dateArray.indexOf(endDate), dateArray.slice(dateArray.indexOf(startDate), dateArray.indexOf(endDate)+1))
-
    if (genModalOpen) {
                return (
                    <Modal 
@@ -161,8 +159,8 @@ const GenerateModal = ({genModalOpen, setGenModalOpen}) => {
                        />
                        <View style={modalStyles.modal}>
                         <AppHeaderText>Generate a shopping list</AppHeaderText>
-                        { loading ? <ActivityIndicator /> : (
-                            <>  
+                        
+                            <>
                                 <Text style={[styles.lowImpactText, {alignSelf: 'flex-start', marginLeft: 8, marginBottom: '-10'}]}>From</Text>
                                 <Dropdown
                                 value={0}
@@ -183,13 +181,14 @@ const GenerateModal = ({genModalOpen, setGenModalOpen}) => {
                                 />
                                 
                                <View style={{width: '100%', marginLeft: '-8'}}>
+                                { loading ? <ActivityIndicator /> : (
+                                    <>
                                     <AppText>Meals included:</AppText>
                                     <FlatList
                                         data={dateArray.slice(dateArray.indexOf(startDate), dateArray.indexOf(endDate)+1)}
                                         style={{marginLeft: 16}}
                                         renderItem={(item) => {
                                             const meals = plannedRecipes.filter(d => item.item == d.date).map(r => r.recipe.name)
-                                            console.log("meals", meals)
                                             return (
                                                 <>
                                                 {meals[0] ? (
@@ -201,6 +200,7 @@ const GenerateModal = ({genModalOpen, setGenModalOpen}) => {
                                             )
                                         }}
                                     />
+                                </>)}
                                 </View>
                                 {submitting ? <ActivityIndicator /> : (
                                <AppButton
@@ -209,7 +209,6 @@ const GenerateModal = ({genModalOpen, setGenModalOpen}) => {
                                 />
                                 )}
                             </>
-                        )}
                        </View>
                    </Modal>
                )
