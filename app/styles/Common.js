@@ -6,6 +6,7 @@ const Styles = (props) => StyleSheet.create({
     container: {
       flexGrow: 1,
       backgroundColor: props.colours.background,
+      paddingTop: 50
     },
     content: {
       alignItems: "center",
@@ -107,7 +108,8 @@ const Styles = (props) => StyleSheet.create({
     },
     recipeList: {
       minWidth: "90%",
-      marginBottom: '-5'
+      marginBottom: '-5',
+      paddingHorizontal: 4
     },
     descriptorsParent: {
       flexDirection: "row"

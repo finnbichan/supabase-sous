@@ -2,13 +2,16 @@ import React, { useState, useContext, use } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { AuthContext } from '../../Contexts';
 import AppHeaderText from './AppHeaderText';
+import AppText from './AppText';
 import useStyles from '../styles/Common';
 import { useTheme } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 
 const CalendarHeader = ({historyOpen, onHistoryOpen}) => {
     const styles = useStyles();
     const { colours, assets } = useTheme();
     const session = useContext(AuthContext);
+    const navigation = useNavigation();
     const time = Number((new Date).getHours());
     var greeting = "Hey";
     if (time < 12) {greeting = "Morning"}
@@ -17,23 +20,43 @@ const CalendarHeader = ({historyOpen, onHistoryOpen}) => {
     
     return (
             <View style={headerStyles.container}>
-                <AppHeaderText>{greeting}, {session.user.user_metadata.display_name}</AppHeaderText>
-                <TouchableOpacity
-                style={{flexDirection: 'row', padding: 10, borderRadius: 8, backgroundColor: historyOpen ? colours.layer : colours.background}}
-                onPress={onHistoryOpen}
-                >   
-                    <Image style={styles.icon} source={assets.history}/>
-                    <Image style={styles.icon} source={historyOpen ? assets.up : assets.down}/>
-                </TouchableOpacity>
+                <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 4}}>
+                    <AppHeaderText>{greeting}, {session.user.user_metadata.display_name}</AppHeaderText>
+                    <TouchableOpacity
+                    style={{flexDirection: 'row', padding: 10, borderRadius: 8}}
+                    onPress={() => navigation.openDrawer()}
+                    >
+                        <Image
+                        style={styles.icon}
+                        source={assets.settings}
+                        />
+                    </TouchableOpacity>
+                </View>
+                <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                    <Text style={{fontSize: 24, color: colours.text, paddingHorizontal: 10, paddingTop: 4}}>
+                        Your meal plan
+                    </Text>
+                    <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
+                        <TouchableOpacity
+                        style={{flexDirection: 'row', padding: 8, marginRight: 12}}
+                        >   
+                            <Image style={styles.icon} source={assets.calendar_gen}/>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                        style={{flexDirection: 'row', padding: 10, borderRadius: 8, backgroundColor: historyOpen ? colours.card : colours.background}}
+                        onPress={onHistoryOpen}
+                        >   
+                            <Image style={styles.icon} source={assets.history}/>
+                            <Image style={[styles.icon, {marginLeft: '-8'}]} source={historyOpen ? assets.up : assets.down}/>
+                        </TouchableOpacity>
+                    </View>
+                </View>
             </View>
     );
 }; 
 
 const headerStyles = StyleSheet.create({
     container: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginBottom: 10,
         marginTop: 4,
         marginRight: 4
     },

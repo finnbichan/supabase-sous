@@ -75,14 +75,6 @@ const List = ({navigation, route}) => {
 
     const isNewList = true ? route.params?.list === undefined : false;
 
-    useEffect(() => {
-        navigation.setOptions({
-            headerRight: () => (
-                <DoneButton onSubmit={submitList} isSubmitting={submitting}/>
-            )
-            });
-      }, [navigation, submitting, list, listName]);
-
     const onAddItem = () => {
         if (newListItem) {
             const newId = list.length;
@@ -183,6 +175,15 @@ const List = ({navigation, route}) => {
     return (
         <SafeAreaView style={styles.container}>
             <View style={{height: '100%'}}>
+                <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: '-20', paddingHorizontal: 8, paddingTop: Platform.OS === 'ios' ? 0 : 8}}>
+                    <TouchableOpacity onPress={() => navigation.navigate("Shopping Lists")}>
+                        <Image
+                        source={assets.back}
+                        style={styles.icon}
+                        />
+                    </TouchableOpacity>
+                    <DoneButton onSubmit={submitList} isSubmitting={submitting}/>
+                </View>
                 <ScrollView contentContainerStyle={{justifyContent: 'center', alignItems: 'center', marginBottom: 4}}>
                     <View style={listStyles.titleContainer}>
                         <TextInput 

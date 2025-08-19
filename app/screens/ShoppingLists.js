@@ -6,6 +6,7 @@ import { AuthContext, CacheContext } from '../../Contexts';
 import { useTheme } from '@react-navigation/native';
 import AppHeaderText from '../components/AppHeaderText';
 import GenerateModal from '../components/GenerateModal';
+import RightHeaderButton from '../components/RightHeaderButton';
 
 const ListEmpty = () => {  
     const styles = useStyles();
@@ -16,22 +17,24 @@ const ListEmpty = () => {
     )
 }
 
-const ListHeader = () => {
-    const styles = useStyles();
+const ListHeader = ({navigation}) => {
     const [genModalOpen, setGenModalOpen] = useState(false);
     const { assets, colours } = useTheme();
     return (
-    <View style={{paddingVertical: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
-        <AppHeaderText>Your shopping lists</AppHeaderText>
+    <View style={{padding: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: '100%'}}>
+        <AppHeaderText>Your lists</AppHeaderText>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
         <TouchableOpacity
-            style={{backgroundColor: colours.card, borderRadius: 8}}
+        style={{marginRight: 30}}
             onPress={() => setGenModalOpen(true)}
         >
                 <Image
                 source={assets.list_gen}
-                style={{width: 44, height: 44}}
+                style={{width: 32, height: 32}}
                 />
         </TouchableOpacity>
+        <RightHeaderButton navigation={navigation} target="List" prevScreen="Shopping Lists"/>
+        </View>
         <GenerateModal
             genModalOpen={genModalOpen}
             setGenModalOpen={setGenModalOpen}
@@ -134,6 +137,7 @@ const ShoppingLists = ({navigation, route}) => {
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.content}>
+                <ListHeader navigation={navigation}/>
                 {loading ? (
                     <ActivityIndicator/>
                 ) : (
@@ -142,7 +146,6 @@ const ShoppingLists = ({navigation, route}) => {
                     data={lists}
                     renderItem={renderList}
                     ListEmptyComponent={ListEmpty}
-                    ListHeaderComponent={<ListHeader/>}
                     showsVerticalScrollIndicator={false}
                     />
                 )}

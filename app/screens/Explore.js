@@ -79,6 +79,7 @@ const Explore = ({route, navigation}) => {
             width={width}
             height={height}
             tabBarHeight={tabBarHeight}
+            navigation={navigation}
             />
         )
     }
@@ -111,7 +112,7 @@ const Explore = ({route, navigation}) => {
     )
 }
 
-const RecipePage = ({item, width, height, tabBarHeight}) => {
+const RecipePage = ({item, width, height, tabBarHeight, navigation}) => {
     const [isLiked, setIsLiked] = useState(false);
     const styles = useStyles();
     const { cache, setCache } = useContext(CacheContext);

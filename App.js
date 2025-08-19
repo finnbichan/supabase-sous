@@ -85,7 +85,7 @@ function TabsStack() {
     <MainAppTabs.Navigator
     screenOptions={{
       animation: 'shift',
-      headerTitle: () => <LogoTitle />,
+      headerShown: false,
       headerTitleAlign: 'center',
       headerStyle: {backgroundColor: colours.card},
       headerShadowVisible: false,
@@ -100,6 +100,7 @@ function TabsStack() {
     >
       <MainAppTabs.Screen name="Home" component={Home}
       options={{
+        headerTitle: () => <LogoTitle />,
         tabBarIcon: ({focused}) => {
           return (
             focused ? (
@@ -119,6 +120,7 @@ function TabsStack() {
       /> 
       <MainAppTabs.Screen name="Your recipes" component={UserRecipes} 
       options={{
+        headerShown: false,
         tabBarIcon: ({focused}) => {
           return (
             focused ? (
@@ -214,7 +216,8 @@ function LoggedInStack() {
       screenOptions={{
         drawerStyle: {backgroundColor: colours.card},
       drawerLabelStyle: {color: colours.text},
-      drawerActiveBackgroundColor: '#00AEFF'
+      drawerActiveBackgroundColor: '#00AEFF',
+      drawerPosition: 'right'
       }}>
         <LoggedInDrawer.Screen name="sous" component={TabsStack} options={{headerShown: false}}/>
         <LoggedInDrawer.Screen name="Settings" component={Settings} options={{
