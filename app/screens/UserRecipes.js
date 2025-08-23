@@ -25,8 +25,7 @@ const ListHeader = ({navigation}) => {
         <View style={{paddingVertical: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
             <AppHeaderText>Your recipes</AppHeaderText>
             <View style={{flexDirection: 'row'}}>
-                
-                <RightHeaderButton navigation={navigation} target="Add a recipe" prevScreen="Your recipes"/>
+                <RightHeaderButton navigation={navigation} target="Add a recipe" prevScreen="Recipes"/>
             </View>
         </View>
         <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingBottom: 10}}>

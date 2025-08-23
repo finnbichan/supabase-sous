@@ -1,4 +1,4 @@
-import { Text, SafeAreaView, View, TouchableOpacity, TextInput, ActivityIndicator, Switch, ScrollView, KeyboardAvoidingView, Image, StyleSheet } from 'react-native';
+import { Text, SafeAreaView, View, TouchableOpacity, Platform, ActivityIndicator, Switch, ScrollView, KeyboardAvoidingView, Image, StyleSheet } from 'react-native';
 import React, { useState, useEffect, useLayoutEffect, useContext } from 'react';
 import useStyles from '../styles/Common';
 import Dropdown from '../components/Dropdown';
@@ -15,6 +15,8 @@ import * as ImagePicker from 'expo-image-picker';
 import { decode } from 'base64-arraybuffer';
 import { AuthContext, CacheContext } from '../../Contexts';
 import uuid from 'react-native-uuid';
+import BackButton from '../components/BackButton';
+import EditButton from '../components/EditButton';
 
 const AddOrEditStyles = StyleSheet.create({
     checkboxContainer: {
@@ -32,7 +34,7 @@ const AddOrEditUserRecipe = ( {route, navigation} ) => {
     const [addSteps, setAddSteps] = useState(!route.params?.recipe || route.params?.recipe.steps ? true : false);
     const [steps, setSteps] = useState(route.params?.recipe?.steps ? JSON.parse(route.params?.recipe.steps) : Array(1).fill(null));
     const [addIngredients, setAddIngredients] = useState(!route.params?.recipe || route.params?.recipe.ingredients ? true : false);
-    const [ingredients, setIngredients] = useState(route.params?.recipe?.ingredients ? JSON.parse(route.params?.recipe.ingredients) : Array(1).fill(null));
+    const [ingredients, setIngredients] = useState(route.params?.recipe?.ingredients ? route.params?.recipe.ingredients : Array(1).fill(null));
     const [validationFailed, setValidationFailed] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const height = useHeaderHeight();
@@ -58,17 +60,6 @@ const AddOrEditUserRecipe = ( {route, navigation} ) => {
     const [validationMessage, setValidationMessage] = useState('Something went wrong');
     const newRecipe = route.params?.recipe ? false : true;
     const session = useContext(AuthContext);
-
-    useEffect(() => {
-            navigation.setOptions({
-                headerRight: () => (
-                    <DoneButton
-                    onSubmit={onSubmit}
-                    isSubmitting={submitting}
-                    />
-                )
-                });
-          }, [navigation, recipe, steps, submitting, uploadingImage, addSteps, steps, addIngredients, ingredients, mealTypes, image, newImageUri]);
 
     const changeRecipeProperty = (prop, newValue) => {
         const recipeCopy = recipe;
@@ -218,7 +209,7 @@ const AddOrEditUserRecipe = ( {route, navigation} ) => {
         delete data.data[0].id
         setSubmitting(false)
         setCache(data.data[0])
-        navigation.navigate('Recipe', {prevScreen: "Your recipes", recipe: data.data[0]})
+        navigation.navigate('Recipe', {prevScreen: "Recipes", recipe: data.data[0]})
         }
 
     const update = async () => {
@@ -246,11 +237,19 @@ const AddOrEditUserRecipe = ( {route, navigation} ) => {
         delete data.data[0].id
         setSubmitting(false)
         setCache(data.data[0])
-        navigation.navigate('Recipe', {prevScreen: "Your recipes", recipe: data.data[0]})
+        navigation.navigate('Recipe', {prevScreen: "Recipes", recipe: data.data[0]})
         }
 
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView style={[styles.container, {paddingTop: recipe.image_uri ? 0 : 90}]}>
+            <View style={{flexDirection: 'row', justifyContent: 'space-between', width: '100%', alignItems: 'center', position: 'absolute', top: Platform.OS === 'ios' ? 0 : 50, zIndex: 1, paddingHorizontal: 8}}>
+                <View style={{borderRadius: 100, backgroundColor: colours.card}}>
+                    <BackButton nav={navigation} route={route} params={{prevScreen: 'Recipes', recipe: route.params.recipe}}/>
+                </View>
+                <View style={{borderRadius: 100, backgroundColor: colours.card, padding: 4}}>
+                    <DoneButton onSubmit={onSubmit} isSubmitting={submitting}/>
+                </View>
+            </View>
             {validationFailed ? (
             <View 
             style={{position: 'absolute', width: '98%', backgroundColor: 'red', zIndex: 1, margin: 4, borderRadius: 4}}

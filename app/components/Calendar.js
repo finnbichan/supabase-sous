@@ -5,7 +5,7 @@ import CollapsibleSection from './CollapsibleSection';
 import CalendarHeader from './CalendarHeader';
 import MealPlan from './MealPlan';
 import MealPlanSummary from './MealPlanSummary';
-import { AuthContext } from '../../Contexts';
+import { AuthContext, CacheContext } from '../../Contexts';
 import { useTheme } from '@react-navigation/native';
 import useStyles from '../styles/Common';
 
@@ -25,7 +25,7 @@ const calendarStyles = StyleSheet.create({
 const Calendar = ({navigation}) => {
     const [loading, setLoading] = useState(true);
     const [plannedRecipes, setPlannedRecipes] = useState([]);
-    const [action, setAction] = useState();
+    const { cache } = useContext(CacheContext);
     const [historyOpen, setHistoryOpen] = useState(false);
     const todaysDate = new Date();
     const session = useContext(AuthContext);
@@ -79,7 +79,7 @@ const Calendar = ({navigation}) => {
             setLoading(false);
         }
         getPlannedRecipes()
-    }, [action]) 
+    }, [cache]) 
 
     const renderDate = (mealdate) => {
         const mealdateDateObject = new Date(mealdate);

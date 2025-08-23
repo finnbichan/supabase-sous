@@ -180,27 +180,27 @@ const GenerateModal = ({genModalOpen, setGenModalOpen}) => {
                                 onSelect={(item) => setEndDate(dateArray[item.id])}
                                 />
                                 
-                               <View style={{width: '100%', marginLeft: '-8'}}>
-                                { loading ? <ActivityIndicator /> : (
-                                    <>
+                                <View style={{width: '100%', marginLeft: '-8'}}>
                                     <AppText>Meals included:</AppText>
-                                    <FlatList
-                                        data={dateArray.slice(dateArray.indexOf(startDate), dateArray.indexOf(endDate)+1)}
-                                        style={{marginLeft: 16}}
-                                        renderItem={(item) => {
-                                            const meals = plannedRecipes.filter(d => item.item == d.date).map(r => r.recipe.name)
-                                            return (
-                                                <>
-                                                {meals[0] ? (
-                                                    <Text style={styles.lowImpactText}>{meals.join(', ')}</Text>
-                                                ) : (
-                                                    <></>
-                                                )}
-                                                </>
-                                            )
-                                        }}
-                                    />
-                                </>)}
+                                    { loading ? <ActivityIndicator /> : (
+                                        <>
+                                        <FlatList
+                                            data={dateArray.slice(dateArray.indexOf(startDate), dateArray.indexOf(endDate)+1)}
+                                            style={{marginLeft: 16}}
+                                            renderItem={(item) => {
+                                                const meals = plannedRecipes.filter(d => item.item == d.date).map(r => r.recipe.name)
+                                                return (
+                                                    <>
+                                                    {meals[0] ? (
+                                                        <Text style={styles.lowImpactText}>{meals.join(', ')}</Text>
+                                                    ) : (
+                                                        <></>
+                                                    )}
+                                                    </>
+                                                )
+                                            }}
+                                        />
+                                    </>)}
                                 </View>
                                 {submitting ? <ActivityIndicator /> : (
                                <AppButton

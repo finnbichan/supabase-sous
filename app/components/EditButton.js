@@ -6,8 +6,7 @@ import { useTheme } from '@react-navigation/native';
 const editStyles = StyleSheet.create({
     editButton: {
         height: 28,
-        width: 28,
-        marginRight: 14
+        width: 28
     }
 })
 

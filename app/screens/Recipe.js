@@ -1,4 +1,4 @@
-import { View, Text, Pressable, SafeAreaView, ActivityIndicator, Image, Modal } from 'react-native';
+import { View, Text, Pressable, SafeAreaView, ActivityIndicator, Image, Modal, Platform } from 'react-native';
 import React, { useEffect, useState, useContext } from 'react';
 import useStyles from '../styles/Common';
 import { supabase } from '../../supabase';
@@ -10,6 +10,7 @@ import AppHeaderText from '../components/AppHeaderText';
 import EditButton from '../components/EditButton';
 import CollapsibleSection from '../components/CollapsibleSection';
 import AppText from '../components/AppText';
+import BackButton from '../components/BackButton';
 
 const Recipe = ({route, navigation}) => {
     console.log(route.params.recipe);
@@ -19,7 +20,7 @@ const Recipe = ({route, navigation}) => {
     const [creatorName, setCreatorName] = useState("");
     const session = useContext(AuthContext);
     const isOwnRecipe = recipe.user_id == session.user.id;
-    const { assets } = useTheme();
+    const { assets, colours } = useTheme();
     const styles = useStyles();
     const mealTypeList = [
         {id: 1, name: "Breakfast"},
@@ -101,12 +102,20 @@ const Recipe = ({route, navigation}) => {
         .eq('id', recipe.recipe_id)
         console.log(data)
         setDeleting(false)
-        navigation.navigate('Your recipes', {action: "delete" + recipe.recipe_id})
+        navigation.navigate('Recipes', {action: "delete" + recipe.recipe_id})
     }
 
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView style={[styles.container, {paddingTop: recipe.image_uri ? 0 : 90}]}>
             {DeleteModal()}
+            <View style={{flexDirection: 'row', justifyContent: 'space-between', width: '100%', alignItems: 'center', position: 'absolute', top: Platform.OS === 'ios' ? 0 : 50, zIndex: 1, paddingHorizontal: 8}}>
+                <View style={{borderRadius: 100, backgroundColor: colours.card}}>
+                    <BackButton nav={navigation} route={route}/>
+                </View>
+                <View style={{borderRadius: 100, backgroundColor: colours.card, padding: 4}}>
+                    <EditButton nav={navigation} target={"Add a recipe"} params={{prevScreen: "Recipe", recipe: route.params.recipe}}/>
+                </View>
+            </View>
             {recipe.image_uri ? (
                 <Image
                 source={{uri : recipe.image_uri}}

@@ -6,8 +6,10 @@ import AppText from './AppText';
 import useStyles from '../styles/Common';
 import { useTheme } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
+import GeneratePlanModal from './GeneratePlanModal';
 
 const CalendarHeader = ({historyOpen, onHistoryOpen}) => {
+    const [genModalOpen, setGenModalOpen] = useState(false);
     const styles = useStyles();
     const { colours, assets } = useTheme();
     const session = useContext(AuthContext);
@@ -33,12 +35,13 @@ const CalendarHeader = ({historyOpen, onHistoryOpen}) => {
                     </TouchableOpacity>
                 </View>
                 <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-                    <Text style={{fontSize: 24, color: colours.text, paddingHorizontal: 10, paddingTop: 4}}>
+                    <Text style={{fontSize: 24, color: colours.text, paddingHorizontal: 12, paddingTop: 4}}>
                         Your meal plan
                     </Text>
                     <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
                         <TouchableOpacity
                         style={{flexDirection: 'row', padding: 8, marginRight: 12}}
+                        onPress={() => setGenModalOpen(true)}
                         >   
                             <Image style={styles.icon} source={assets.calendar_gen}/>
                         </TouchableOpacity>
@@ -51,6 +54,10 @@ const CalendarHeader = ({historyOpen, onHistoryOpen}) => {
                         </TouchableOpacity>
                     </View>
                 </View>
+                <GeneratePlanModal
+                    genModalOpen={genModalOpen}
+                    setGenModalOpen={setGenModalOpen}
+                />
             </View>
     );
 }; 

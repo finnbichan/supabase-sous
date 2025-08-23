@@ -6,6 +6,7 @@ import Checkbox from '../components/Checkbox';
 import DoneButton from '../components/DoneButton';
 import { supabase } from '../../supabase';
 import { useTheme } from '@react-navigation/native';
+import BackButton from '../components/BackButton';
 
 const List = ({navigation, route}) => {
     const [list, setList] = useState(route.params?.list || []);
@@ -30,9 +31,6 @@ const List = ({navigation, route}) => {
             width: '100%', 
             flexDirection: 'row',
             justifyContent: 'space-between',
-            //marginBottom: 4,
-            //marginLeft: 4,
-            //borderRadius: 4,
             height: 50,
             alignItems: 'center',
             borderTopWidth: 1,
@@ -66,7 +64,8 @@ const List = ({navigation, route}) => {
         },
         itemText: {
             color: colours.text,
-            fontSize: 18
+            fontSize: 18,
+            marginLeft: 8
         },
         checkboxContainer: {
             padding: 8
@@ -151,10 +150,6 @@ const List = ({navigation, route}) => {
             <View style={item.checked ? {opacity: 0.5} : {opacity:1}}>
                 <View style={listStyles.itemContainer}>
                     <View style={listStyles.leftItemContainer}>
-                        <Image
-                        style={listStyles.button}
-                        source={assets.drag_handle}
-                        />
                         <TextInput 
                         style={listStyles.itemText} 
                         value={item.label} 
@@ -176,12 +171,7 @@ const List = ({navigation, route}) => {
         <SafeAreaView style={styles.container}>
             <View style={{height: '100%'}}>
                 <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: '-20', paddingHorizontal: 8, paddingTop: Platform.OS === 'ios' ? 0 : 8}}>
-                    <TouchableOpacity onPress={() => navigation.navigate("Shopping Lists")}>
-                        <Image
-                        source={assets.back}
-                        style={styles.icon}
-                        />
-                    </TouchableOpacity>
+                    <BackButton nav={navigation} route={route}/>
                     <DoneButton onSubmit={submitList} isSubmitting={submitting}/>
                 </View>
                 <ScrollView contentContainerStyle={{justifyContent: 'center', alignItems: 'center', marginBottom: 4}}>

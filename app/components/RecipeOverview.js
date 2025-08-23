@@ -40,7 +40,7 @@ const Recipe = ({recipe, navigation}) => {
         <TouchableOpacity
         style={recipeStyles.recipe}
         onPress={()=>{
-            navigation.navigate("Recipe", {prevScreen: 'Your recipes', recipe: recipe});
+            navigation.navigate("Recipe", {prevScreen: 'Recipes', recipe: recipe});
         }}
         >
             <RecipeBase

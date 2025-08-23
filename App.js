@@ -118,7 +118,7 @@ function TabsStack() {
         }
       }}
       /> 
-      <MainAppTabs.Screen name="Your recipes" component={UserRecipes} 
+      <MainAppTabs.Screen name="Recipes" component={UserRecipes} 
       options={{
         headerShown: false,
         tabBarIcon: ({focused}) => {

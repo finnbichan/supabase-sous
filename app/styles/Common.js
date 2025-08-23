@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Platform } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 import React from 'react';
 
@@ -6,7 +6,7 @@ const Styles = (props) => StyleSheet.create({
     container: {
       flexGrow: 1,
       backgroundColor: props.colours.background,
-      paddingTop: 50
+      paddingTop: Platform.OS === 'android' ? 50 : 0
     },
     content: {
       alignItems: "center",

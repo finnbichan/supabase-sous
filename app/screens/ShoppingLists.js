@@ -5,7 +5,7 @@ import { supabase } from '../../supabase';
 import { AuthContext, CacheContext } from '../../Contexts';
 import { useTheme } from '@react-navigation/native';
 import AppHeaderText from '../components/AppHeaderText';
-import GenerateModal from '../components/GenerateModal';
+import GenerateListModal from '../components/GenerateListModal';
 import RightHeaderButton from '../components/RightHeaderButton';
 
 const ListEmpty = () => {  
@@ -26,16 +26,16 @@ const ListHeader = ({navigation}) => {
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
         <TouchableOpacity
         style={{marginRight: 30}}
-            onPress={() => setGenModalOpen(true)}
+        onPress={() => setGenModalOpen(true)}
         >
-                <Image
-                source={assets.list_gen}
-                style={{width: 32, height: 32}}
-                />
+            <Image
+            source={assets.list_gen}
+            style={{width: 36, height: 36}}
+            />
         </TouchableOpacity>
         <RightHeaderButton navigation={navigation} target="List" prevScreen="Shopping Lists"/>
         </View>
-        <GenerateModal
+        <GenerateListModal
             genModalOpen={genModalOpen}
             setGenModalOpen={setGenModalOpen}
         />

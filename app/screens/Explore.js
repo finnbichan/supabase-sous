@@ -85,7 +85,7 @@ const Explore = ({route, navigation}) => {
     }
 
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView>
             <View style={styles.content}>
                 {loading ? (
                     <View style={{height: height, justifyContent: 'center'}}>
@@ -98,11 +98,10 @@ const Explore = ({route, navigation}) => {
                     keyExtractor={item => item.recipe_id}
                     extraData={loading}
                     pagingEnabled={true}
-                    snapToAlignment={'end'}
+                    snapToAlignment='end'
                     decelerationRate='fast'
-                    style={styles.recipeList}
                     showsVerticalScrollIndicator={false}
-                    onRefresh={() => onRefresh()}
+                    onRefresh={onRefresh}
                     refreshing={refreshing}
                     ListFooterComponent={<ExploreFooter />}
                     />
