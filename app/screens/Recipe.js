@@ -108,8 +108,8 @@ const Recipe = ({route, navigation}) => {
     return (
         <SafeAreaView style={[styles.container, {paddingTop: recipe.image_uri ? 0 : 90}]}>
             {DeleteModal()}
-            <View style={{flexDirection: 'row', justifyContent: 'space-between', width: '100%', alignItems: 'center', position: 'absolute', top: Platform.OS === 'ios' ? 0 : 50, zIndex: 1, paddingHorizontal: 8}}>
-                <View style={{borderRadius: 100, backgroundColor: colours.card}}>
+            <View style={{flexDirection: 'row', justifyContent: 'space-between', width: '100%', alignItems: 'center', position: 'absolute', top: Platform.OS === 'ios' ? 0 : 50, zIndex: 1, paddingHorizontal: 16}}>
+                <View style={{borderRadius: 100, backgroundColor: colours.card, padding: 4}}>
                     <BackButton nav={navigation} route={route}/>
                 </View>
                 <View style={{borderRadius: 100, backgroundColor: colours.card, padding: 4}}>
