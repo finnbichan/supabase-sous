@@ -4,7 +4,7 @@ import { useTheme } from '@react-navigation/native';
 
 const Dropdown = ({ value, label, data, onSelect }) => {
   const { colours, assets } = useTheme();
-      dropdownStyles = StyleSheet.create({
+  const dropdownStyles = StyleSheet.create({
         input: {
             backgroundColor: colours.card,
             marginTop: 8,

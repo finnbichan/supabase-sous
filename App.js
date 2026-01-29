@@ -237,7 +237,7 @@ function AnonStack() {
   const { colours } = useTheme();
   return (
     <LoggedOutStack.Navigator 
-      initialRouteName='NewUser'
+      initialRouteName='Sign up'
       screenOptions={{
         headerTitle: () => <LogoTitle />,
         headerTitleAlign: 'center',
