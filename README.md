@@ -1,33 +1,35 @@
-![The sous logo](readme_assets/sous_transparent_cropped.png)
+<div align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="readme_assets/sous_transparent_dark.png">
+    <img alt="Text changing depending on mode. Light: 'So light!' Dark: 'So dark!'" src="readme_assets/sous_transparent.png">
+    </picture>
+  <p>Your personal meal planning assistant.</p>
+</div>
 
-*sous* (intentionally not capitalised) is a personal project and is primarily a learning exercise. The idea behind it is to take the effort out of meal planning. It is built using React Native and Supabase.
+---
 
-## Quick Links
-- [Screenshots](#screenshots) 
-    - [Home page](#home-page)
-    - [Shopping lists](#shopping-list-page)
-    - [Your recipes](#your-recipes)  
-- [Contributing](#contributing)  
-- [Licence](#licence)  
+## 📖 About
 
+*Sous* is a project inspired by the myriad of meal planning apps that seem very expensive for very basic functionality. This app is (at the moment) for personal use by myself and my girlfriend.
 
-## Screenshots
-### Home page
-The main page of the app - here is where you plan your meals, either manually or using the suggestion tool.
-![The home page of the sous app](readme_assets/Home.png)
-### Shopping lists
-Functionality that lets you create and update shopping lists.
-![The shopping lists page of the sous app](readme_assets/Lists.png)
-### Your recipes
-This page includes both recipes you have added yourself and ones you have liked from the 'Explore' page.
-![The Your Recipes page of the sous app](readme_assets/Recipes.png)
+## ✨ Features
 
+- **Meal Planning:** Easily plan your meals for the week ahead. Add recipes yourself, get suggestions for individual meals, or generate a plan for up to two weeks.
+- **Recipe Management:** Add and organise your recipes.
+- **Shopping Lists:** Automatically generate shopping lists based on your meal plan. Auto-categorise list items to make shopping easy.
+- **Explore:** TikTok-style scrolling recipes to discover inspiration.
+- **Cross-Platform:** Works on both Android and iOS.
 
-## Contributing
+## 📸 Screenshots
 
-As this is a learning exercise, contributions to this repository will not be accepted.
+| Home | Recipes | Login |
+| :---: | :---: | :---: |
+| <img src="readme_assets/Home.png" alt="Home Screen" width="250"/> | <img src="readme_assets/Search.png" alt="Recipes Screen" width="250"/> | <img src="readme_assets/Login.png" alt="Login Screen" width="250"/> |
 
-## Licence
+## 🛠️ Technologies Used
 
-There is no licence associated with this project.
+- **Frontend:** [React Native](https://reactnative.dev/) with [Expo](https://expo.dev/)
+- **Backend:** [Supabase](https://supabase.io/)
+- **Navigation:** [React Navigation](https://reactnavigation.org/)
+- **UI:** Custom components with a focus on a clean and minimal design.
 

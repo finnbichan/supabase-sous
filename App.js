@@ -294,7 +294,6 @@ export default function App() {
     <AuthContext.Provider value={session}>
       <NavigationContainer theme={scheme === 'dark' ? CustomDarkTheme : LightTheme}>
         <Stack.Navigator 
-        initialRouteName='AnonUser'
         options={{headerShown: false}}
         >
           {session ? (
