@@ -15,7 +15,7 @@ const RecipeBase = ({recipe}) => {
         },
         nameSection: {
             flexDirection: 'column',
-            maxWidth: '95%'
+            maxWidth: '80%'
         },
         buttonSection: {
             flexDirection: 'row',
@@ -30,7 +30,13 @@ const RecipeBase = ({recipe}) => {
     })
     return (
         <View style={recipeStyles.nameSection}>
-                <Text style={recipeStyles.name}>{recipe.name}</Text>
+                <Text 
+                    style={recipeStyles.name}
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                >
+                    {recipe.name}
+                </Text>
                 <View style={styles.descriptorsParent}>
                     <View style={styles.descriptors}>
                         <Text style={styles.descriptorText}>{easeList[recipe.ease].label}</Text>

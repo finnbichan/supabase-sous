@@ -4,7 +4,7 @@ import { StyleSheet } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 
 
-const AppButton = ( {onPress, label} ) => {
+const AppButton = ( {onPress, label, disabled = false} ) => {
     const { colours } = useTheme();
     
     const appButtonStyles = StyleSheet.create({
@@ -17,6 +17,9 @@ const AppButton = ( {onPress, label} ) => {
             alignContent: 'center',
             marginVertical: 8,
         },
+        buttonDisabled: {
+            opacity: 0.5
+        },
         text: {
             color: '#FFF',
             fontSize: 16,
@@ -26,7 +29,7 @@ const AppButton = ( {onPress, label} ) => {
 
     
     return (
-        <TouchableOpacity onPress={onPress} style={appButtonStyles.button}>
+        <TouchableOpacity onPress={onPress} style={[appButtonStyles.button, disabled && appButtonStyles.buttonDisabled]} disabled={disabled}>
             <Text style={appButtonStyles.text}>{label}</Text>
         </TouchableOpacity>
     )

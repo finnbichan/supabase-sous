@@ -1,11 +1,10 @@
-import { View, Text, Pressable, SafeAreaView, TouchableOpacity,ActivityIndicator, FlatList, Image } from 'react-native';
+import { View, Text, SafeAreaView, TouchableOpacity,ActivityIndicator, FlatList, Image } from 'react-native';
 import React, { useEffect, useState, useContext } from 'react';
 import useStyles from '../styles/Common';
 import { supabase } from '../../supabase';
 import { AuthContext, CacheContext } from '../../Contexts';
 import { useTheme } from '@react-navigation/native';
 import AppHeaderText from '../components/AppHeaderText';
-import GenerateListModal from '../components/GenerateListModal';
 import RightHeaderButton from '../components/RightHeaderButton';
 
 const ListEmpty = () => {  
@@ -18,27 +17,12 @@ const ListEmpty = () => {
 }
 
 const ListHeader = ({navigation}) => {
-    const [genModalOpen, setGenModalOpen] = useState(false);
-    const { assets, colours } = useTheme();
     return (
     <View style={{padding: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: '100%'}}>
         <AppHeaderText>Your lists</AppHeaderText>
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
-        <TouchableOpacity
-        style={{marginRight: 30}}
-        onPress={() => setGenModalOpen(true)}
-        >
-            <Image
-            source={assets.list_gen}
-            style={{width: 36, height: 36}}
-            />
-        </TouchableOpacity>
         <RightHeaderButton navigation={navigation} target="List" prevScreen="Shopping Lists"/>
         </View>
-        <GenerateListModal
-            genModalOpen={genModalOpen}
-            setGenModalOpen={setGenModalOpen}
-        />
     </View>
     )
 }

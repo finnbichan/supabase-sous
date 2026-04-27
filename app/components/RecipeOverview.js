@@ -13,8 +13,7 @@ const Recipe = ({recipe, navigation}) => {
         padding: 4,
         margin: 1,
         flexDirection: 'row',
-        flexGrow: 1,
-        maxWidth: '99%',
+        width: '100%',
         marginBottom: 2,
         justifyContent: 'space-between',
         alignItems: 'center'
@@ -25,7 +24,7 @@ const Recipe = ({recipe, navigation}) => {
     },
     nameSection: {
         flexDirection: 'column',
-        maxWidth: '90%'
+        maxWidth: '85%'
     },
     buttonSection: {
         flexDirection: 'row',

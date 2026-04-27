@@ -1,13 +1,12 @@
 import { View, Text, TextInput, FlatList, Pressable, Image, TouchableOpacity, StyleSheet, Modal } from 'react-native';
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useTheme } from '@react-navigation/native';
 
-const Dropdown = ({ value, label, data, onSelect }) => {
+const Dropdown = ({ value, label, data, onSelect, compact = false, style }) => {
   const { colours, assets } = useTheme();
   const dropdownStyles = StyleSheet.create({
         input: {
             backgroundColor: colours.card,
-            marginTop: 8,
             marginHorizontal: 8,
             borderRadius: 4,
             padding: 2,
@@ -17,7 +16,16 @@ const Dropdown = ({ value, label, data, onSelect }) => {
             width: '95%',
             marginTop: 20,
             height: 40
-          },
+        },
+        compactInput: {
+            width: 'auto',
+            flex: 1,
+            minWidth: 0,
+            marginHorizontal: 0,
+            marginTop: 0,
+            paddingHorizontal: 12,
+            borderRadius: 999
+        },
           overlay: {
             height: '100%',
             width: "100%"
@@ -58,8 +66,9 @@ const Dropdown = ({ value, label, data, onSelect }) => {
           labelText: {
             marginLeft:4
           },
-          text: {
-            color: '#fff'
+          compactLabelText: {
+            marginLeft: 0,
+            marginRight: 8
           }
     });
     const [visible, setVisible] = useState(false);
@@ -81,7 +90,10 @@ const Dropdown = ({ value, label, data, onSelect }) => {
     };
 
     const [selected, setSelected] = useState(data[value]);
-    console.log("selected", value)
+
+    useEffect(() => {
+        setSelected(data[value]);
+    }, [data, value]);
 
     const onItemPress = (item) => {
         setSelected(item);
@@ -121,10 +133,10 @@ const Dropdown = ({ value, label, data, onSelect }) => {
         <TouchableOpacity
         ref={DropdownButton}
         onPress={toggleDropdown}
-        style={[dropdownStyles.input]}
+        style={[dropdownStyles.input, compact && dropdownStyles.compactInput, style]}
         >
             {renderDropdown()}
-            <Text style={[dropdownStyles.labelText, {color: selected ? colours.text : colours.secondaryText}]}>{(selected && selected.label) || label}</Text>
+            <Text style={[dropdownStyles.labelText, compact && dropdownStyles.compactLabelText, {color: selected ? colours.text : colours.secondaryText}]}>{(selected && selected.label) || label}</Text>
             <Image
             style={dropdownStyles.icons}
             source={assets.dropdown_arrow}

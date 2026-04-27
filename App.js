@@ -91,7 +91,7 @@ function TabsStack() {
       headerShadowVisible: false,
       headerTintColor: colours.text,
       headerLeft: () => <LeftButton />,
-      tabBarStyle: {backgroundColor: colours.card, borderTopWidth:0},
+      //tabBarStyle: {backgroundColor: colours.card, borderTopWidth:0},
       tabBarActiveTintColor: colours.text,
       tabBarInactiveTintColor: colours.secondaryText,
       tabBarHideOnKeyboard: true,
@@ -140,13 +140,15 @@ function TabsStack() {
       />
       <MainAppTabs.Screen name="Add a recipe" component={AddOrEditUserRecipe} options={{
         tabBarButton: () => null,
+        tabBarItemStyle: { display: 'none' },
         unmountOnBlur: true
       }} />
       <MainAppTabs.Screen name="Recipe" component={Recipe} options={{
         tabBarButton: () => null,
+        tabBarItemStyle: { display: 'none' },
         unmountOnBlur: true
       }} />
-      <MainAppTabs.Screen name="Shopping Lists" component={ShoppingLists} options={{
+      <MainAppTabs.Screen name="List" component={List} options={{
         tabBarIcon: ({focused}) => {
           return (
             focused ? (
@@ -162,10 +164,6 @@ function TabsStack() {
           )
           )
         }
-      }}/>
-      <MainAppTabs.Screen name="List" component={List} options={{
-        tabBarButton: () => null,
-        unmountOnBlur: true,
       }}/>
       <MainAppTabs.Screen name="Explore" component={Explore}
       options={{
@@ -310,4 +308,3 @@ export default function App() {
     </AuthContext.Provider>
   );
 }
-
