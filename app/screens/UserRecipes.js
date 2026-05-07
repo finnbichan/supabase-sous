@@ -174,10 +174,11 @@ const UserRecipes = ({route, navigation}) => {
                     renderItem={renderRecipe}
                     keyExtractor={item => item.recipe_id}
                     extraData={loading}
-                    style={styles.recipeList}
+                    style={[styles.recipeList, { width: '100%', paddingHorizontal: 0 }]}
                     showsVerticalScrollIndicator={false}
                     scrollIndicatorInsets={{ right: -4 }}
                     ListEmptyComponent={<ListEmpty />}
+                    contentContainerStyle={{ paddingHorizontal: 6, paddingBottom: 120 }}
                     />
                 )}
             </View>

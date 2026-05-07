@@ -1,4 +1,4 @@
-import { View, Text, TextInput, SafeAreaView, TouchableOpacity, Image, SectionList, StyleSheet, Platform, Keyboard } from 'react-native';
+import { View, Text, TextInput, SafeAreaView, TouchableOpacity, Image, SectionList, StyleSheet, Platform, Keyboard, ActivityIndicator } from 'react-native';
 import React, { useCallback, useContext, useEffect, useMemo, useState, useRef } from 'react';
 import useStyles from '../styles/Common';
 import Checkbox from '../components/Checkbox';
@@ -7,6 +7,7 @@ import { useTheme } from '@react-navigation/native';
 import AppHeaderText from '../components/AppHeaderText';
 import { AuthContext, CacheContext } from '../../Contexts';
 import GenerateListModal from '../components/GenerateListModal';
+import Dropdown from '../components/Dropdown';
 
 const getCategoryLabel = (category) => category || 'Uncategorised';
 
@@ -17,6 +18,11 @@ const List = ({ route }) => {
     const [keyboardHeight, setKeyboardHeight] = useState(0);
     const [completedExpanded, setCompletedExpanded] = useState(false);
     const [editingItemId, setEditingItemId] = useState(null);
+    const [currentList, setCurrentList] = useState(null);
+    const [availableLists, setAvailableLists] = useState([]);
+    const [selectedListId, setSelectedListId] = useState(null);
+    const [loadingLists, setLoadingLists] = useState(true);
+    const [loadingItems, setLoadingItems] = useState(false);
     const sectionListRef = useRef(null);
     const session = useContext(AuthContext);
     const cacheContext = useContext(CacheContext);
@@ -38,8 +44,9 @@ const List = ({ route }) => {
             paddingBottom: 8,
             paddingTop: Platform.OS === 'android' ? 8 : 0,
             flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center'
+            justifyContent: 'flex-start',
+            alignItems: 'center',
+            gap: 8
         },
         headerButton: {
             width: 36,
@@ -153,29 +160,187 @@ const List = ({ route }) => {
     });
 
     const getListItems = useCallback(async () => {
-        if (!session?.user?.id) {
+        if (!session?.user?.id || !currentList?.id) {
             return;
         }
 
+        setLoadingItems(true);
         const { data, error } = await supabase
             .from('list_items')
             .select('*')
-            .eq('user_id', session.user.id)
+            .eq('list_id', currentList.id)
             .order('category', { ascending: true })
             .order('checked', { ascending: true })
             .order('created_at', { ascending: true });
 
         if (error) {
             console.log(error);
+            setLoadingItems(false);
             return;
         }
 
         setItems(data || []);
+        setLoadingItems(false);
+    }, [session?.user?.id, currentList?.id]);
+
+    const getOrCreatePersonalList = useCallback(async () => {
+        if (!session?.user?.id) {
+            return;
+        }
+
+        // Try to get existing Personal list
+        const { data: existingList, error: getError } = await supabase
+            .from('lists')
+            .select('*')
+            .eq('owner_id', session.user.id)
+            .eq('name', 'Personal')
+            .single();
+
+        if (existingList) {
+            setCurrentList(existingList);
+            setSelectedListId(existingList.id);
+            return existingList;
+        }
+
+        // Create Personal list if it doesn't exist
+        const { data: newList, error: createError } = await supabase
+            .from('lists')
+            .insert([{
+                owner_id: session.user.id,
+                name: 'Personal'
+            }])
+            .select()
+            .single();
+
+        if (createError) {
+            console.log('Error creating Personal list:', createError);
+            return;
+        }
+
+        setCurrentList(newList);
+        setSelectedListId(newList.id);
+        return newList;
+    }, [session?.user?.id]);
+
+    const getAllAvailableLists = useCallback(async () => {
+        if (!session?.user?.id) {
+            return;
+        }
+
+        setLoadingLists(true);
+        // Get lists where user is owner
+        const { data: ownedLists, error: ownedError } = await supabase
+            .from('lists')
+            .select('*')
+            .eq('owner_id', session.user.id);
+
+        if (ownedError) {
+            console.log('Error fetching owned lists:', ownedError);
+        }
+
+        // Get list IDs where user is a member
+        const { data: memberRecords, error: memberError } = await supabase
+            .from('list_members')
+            .select('list_id')
+            .eq('user_id', session.user.id);
+
+        if (memberError) {
+            console.log('Error fetching member list IDs:', memberError);
+        }
+
+        // Get the full list objects for those list IDs
+        let memberLists = [];
+        if (memberRecords && memberRecords.length > 0) {
+            const listIds = memberRecords.map(record => record.list_id);
+            const { data: lists, error: listsError } = await supabase
+                .from('lists')
+                .select('*')
+                .in('id', listIds);
+
+            if (listsError) {
+                console.log('Error fetching member lists:', listsError);
+            } else {
+                memberLists = lists || [];
+            }
+        }
+
+        // Combine and deduplicate lists
+        const allLists = [...(ownedLists || [])];
+        memberLists.forEach(list => {
+            if (!allLists.find(l => l.id === list.id)) {
+                allLists.push(list);
+            }
+        });
+
+        setAvailableLists(allLists);
+        setLoadingLists(false);
     }, [session?.user?.id]);
 
     useEffect(() => {
-        getListItems();
-    }, [getListItems, route.params?.action, cache]);
+        getOrCreatePersonalList();
+        getAllAvailableLists();
+    }, [getOrCreatePersonalList, getAllAvailableLists, route.params?.action, cache]);
+
+    useEffect(() => {
+        if (selectedListId) {
+            const list = availableLists.find(l => l.id === selectedListId);
+            if (list) {
+                setCurrentList(list);
+            }
+        }
+    }, [selectedListId, availableLists]);
+
+    useEffect(() => {
+        if (currentList?.id) {
+            getListItems();
+        }
+    }, [currentList?.id, getListItems]);
+
+    useEffect(() => {
+        if (!currentList?.id) {
+            return;
+        }
+
+        // Subscribe to real-time changes for list items
+        const channel = supabase
+            .channel(`list_items:${currentList.id}`)
+            .on(
+                'postgres_changes',
+                {
+                    event: '*',
+                    schema: 'public',
+                    table: 'list_items',
+                    filter: `list_id=eq.${currentList.id}`
+                },
+                (payload) => {
+                    if (payload.eventType === 'INSERT') {
+                        setItems((currentItems) => {
+                            // Avoid duplicates - check if item already exists
+                            if (currentItems.some(item => item.id === payload.new.id)) {
+                                return currentItems;
+                            }
+                            return [...currentItems, payload.new];
+                        });
+                    } else if (payload.eventType === 'UPDATE') {
+                        setItems((currentItems) =>
+                            currentItems.map((item) =>
+                                item.id === payload.new.id ? payload.new : item
+                            )
+                        );
+                    } else if (payload.eventType === 'DELETE') {
+                        setItems((currentItems) =>
+                            currentItems.filter((item) => item.id !== payload.old.id)
+                        );
+                    }
+                }
+            )
+            .subscribe();
+
+        // Cleanup subscription
+        return () => {
+            supabase.removeChannel(channel);
+        };
+    }, [currentList?.id]);
 
     useEffect(() => {
         const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
@@ -195,21 +360,19 @@ const List = ({ route }) => {
     }, []);
 
     const persistItemUpdate = async (id, values, rollbackItems) => {
-        if (!session?.user?.id) {
-            return;
-        }
-
+        console.log('Updating item:', id, values);
         const { error } = await supabase
             .from('list_items')
             .update(values)
-            .eq('id', id)
-            .eq('user_id', session.user.id);
+            .eq('id', id);
 
         if (error) {
-            console.log(error);
+            console.log('Update error:', error);
             if (rollbackItems) {
                 setItems(rollbackItems);
             }
+        } else {
+            console.log('Update successful');
         }
     };
 
@@ -234,12 +397,11 @@ const List = ({ route }) => {
     };
 
     const onAddItem = async () => {
-        console.log('a');
         const itemName = newListItem.trim();
-        if (!itemName || !session?.user?.id) {
+        if (!itemName || !session?.user?.id || !currentList?.id) {
             return;
         }
-        console.log('b');
+
         const tempId = `temp-${Date.now()}`;
         const optimisticItem = {
             id: tempId,
@@ -248,20 +410,19 @@ const List = ({ route }) => {
             quantity: 1,
             checked: false,
             user_id: session.user.id,
+            list_id: currentList.id,
             created_at: new Date().toISOString()
         };
 
         setItems((currentItems) => [...currentItems, optimisticItem]);
         setNewListItem('');
-        console.log('c');
-
+console.log(currentList.id);
         const { data, error } = await supabase.rpc('add_list_item', {
             p_item: itemName,
             p_quantity: 1,
-            p_user_id: session.user.id
+            p_user_id: session.user.id,
+            p_list_id: currentList.id
         });
-        console.log('d');
-        console.log('RPC response:', { data, error });
 
         if (error) {
             console.log(error);
@@ -299,11 +460,10 @@ const List = ({ route }) => {
         }
 
         const nextCheckedValue = !currentItem.checked;
-        const checkedAtTime = new Date().toISOString();
         setItems((currentItems) => currentItems.map((listItem) => (
-            listItem.id === id ? { ...listItem, checked: nextCheckedValue, checked_at: checkedAtTime } : listItem
+            listItem.id === id ? { ...listItem, checked: nextCheckedValue } : listItem
         )));
-        void persistItemUpdate(id, { checked: nextCheckedValue, checked_at: checkedAtTime }, rollbackItems);
+        void persistItemUpdate(id, { checked: nextCheckedValue }, rollbackItems);
     };
 
     const onQuantityChange = (id, delta) => {
@@ -355,7 +515,7 @@ const List = ({ route }) => {
         if (checkedItems.length > 0) {
             uncheckedSections.push({
                 title: 'Completed',
-                data: completedExpanded ? checkedItems.sort((a, b) => new Date(b.checked_at) - new Date(a.checked_at)) : [],
+                data: completedExpanded ? checkedItems.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)) : [],
                 isCollapsible: true
             });
         }
@@ -429,7 +589,16 @@ const List = ({ route }) => {
             <View style={listStyles.screen}>
                 <View style={listStyles.content}>
                     <View style={listStyles.header}>
-                        <AppHeaderText>Your list</AppHeaderText>
+                        <AppHeaderText>List</AppHeaderText>
+                        <View style={{ maxWidth: 120, marginLeft: 'auto' }}>
+                            <Dropdown
+                                data={availableLists.map((list) => ({ id: list.id, label: list.name }))}
+                                onSelect={(selected) => setSelectedListId(selected.id)}
+                                value={availableLists.findIndex((list) => list.id === selectedListId)}
+                                compact={true}
+                                loading={loadingLists}
+                            />
+                        </View>
                         <TouchableOpacity onPress={() => setGenModalOpen(true)}>
                             <Image
                                 source={assets.list_gen}
@@ -437,23 +606,30 @@ const List = ({ route }) => {
                             />
                         </TouchableOpacity>
                     </View>
-                    <SectionList
-                        ref={sectionListRef}
-                        style={listStyles.list}
-                        sections={sections}
-                        renderItem={renderListItem}
-                        extraData={items}
-                        renderSectionHeader={renderSectionHeader}
-                        keyExtractor={(item) => String(item.id)}
-                        contentContainerStyle={{ paddingBottom: keyboardHeight > 0 ? keyboardHeight + 120 : 88 }}
-                        ListEmptyComponent={(
-                            <View style={listStyles.emptyState}>
-                                <Text style={styles.lowImpactText}>Add some items.</Text>
-                            </View>
-                        )}
-                        keyboardShouldPersistTaps="handled"
-                        showsVerticalScrollIndicator={false}
-                    />
+                    {loadingItems ? (
+                        <View style={[listStyles.emptyState, { paddingTop: 80 }]}>
+                            <ActivityIndicator size="large" color={colours.text} />
+                            <Text style={[styles.lowImpactText, { marginTop: 12 }]}>Loading items...</Text>
+                        </View>
+                    ) : (
+                        <SectionList
+                            ref={sectionListRef}
+                            style={listStyles.list}
+                            sections={sections}
+                            renderItem={renderListItem}
+                            extraData={items}
+                            renderSectionHeader={renderSectionHeader}
+                            keyExtractor={(item) => String(item.id)}
+                            contentContainerStyle={{ paddingBottom: keyboardHeight > 0 ? keyboardHeight + 120 : 88 }}
+                            ListEmptyComponent={(
+                                <View style={listStyles.emptyState}>
+                                    <Text style={styles.lowImpactText}>Add some items.</Text>
+                                </View>
+                            )}
+                            keyboardShouldPersistTaps="handled"
+                            showsVerticalScrollIndicator={false}
+                        />
+                    )}
                 </View>
                 <View style={listStyles.footer}>
                     <View style={listStyles.pillContainer}>

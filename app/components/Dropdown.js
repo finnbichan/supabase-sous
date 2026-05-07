@@ -1,8 +1,8 @@
-import { View, Text, TextInput, FlatList, Pressable, Image, TouchableOpacity, StyleSheet, Modal } from 'react-native';
+import { View, Text, TextInput, FlatList, Pressable, Image, TouchableOpacity, StyleSheet, Modal, ActivityIndicator } from 'react-native';
 import React, { useState, useRef, useEffect } from 'react';
 import { useTheme } from '@react-navigation/native';
 
-const Dropdown = ({ value, label, data, onSelect, compact = false, style }) => {
+const Dropdown = ({ value, label, data, onSelect, compact = false, style, loading = false }) => {
   const { colours, assets } = useTheme();
   const dropdownStyles = StyleSheet.create({
         input: {
@@ -118,10 +118,16 @@ const Dropdown = ({ value, label, data, onSelect, compact = false, style }) => {
                     onPress={() => setVisible(false)}
                     >
                      <View style={[dropdownStyles.dropdown, {top: dropdownTop}]}>
-                        <FlatList
-                        data={data}
-                        renderItem={renderItem}
-                        />
+                        {loading ? (
+                            <View style={{ padding: 16, alignItems: 'center', justifyContent: 'center' }}>
+                                <ActivityIndicator size="small" color={colours.text} />
+                            </View>
+                        ) : (
+                            <FlatList
+                            data={data}
+                            renderItem={renderItem}
+                            />
+                        )}
                      </View>
                     </Pressable>
                 </Modal>
@@ -134,13 +140,20 @@ const Dropdown = ({ value, label, data, onSelect, compact = false, style }) => {
         ref={DropdownButton}
         onPress={toggleDropdown}
         style={[dropdownStyles.input, compact && dropdownStyles.compactInput, style]}
+        disabled={loading}
         >
             {renderDropdown()}
-            <Text style={[dropdownStyles.labelText, compact && dropdownStyles.compactLabelText, {color: selected ? colours.text : colours.secondaryText}]}>{(selected && selected.label) || label}</Text>
-            <Image
-            style={dropdownStyles.icons}
-            source={assets.dropdown_arrow}
-            />
+            {loading ? (
+                <ActivityIndicator size="small" color={colours.text} />
+            ) : (
+                <>
+                    <Text style={[dropdownStyles.labelText, compact && dropdownStyles.compactLabelText, {color: selected ? colours.text : colours.secondaryText}]}>{(selected && selected.label) || label}</Text>
+                    <Image
+                    style={dropdownStyles.icons}
+                    source={assets.dropdown_arrow}
+                    />
+                </>
+            )}
         </TouchableOpacity>
     )
     
