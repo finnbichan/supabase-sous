@@ -1,4 +1,4 @@
-import { View, Text, TextInput, FlatList, Pressable, Image, TouchableOpacity, StyleSheet, Modal, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, Pressable, Image, TouchableOpacity, StyleSheet, Modal, ActivityIndicator } from 'react-native';
 import React, { useState, useRef, useEffect } from 'react';
 import { useTheme } from '@react-navigation/native';
 
@@ -8,14 +8,14 @@ const Dropdown = ({ value, label, data, onSelect, compact = false, style, loadin
         input: {
             backgroundColor: colours.card,
             marginHorizontal: 8,
-            borderRadius: 4,
-            padding: 2,
-            flexDirection: "row",
+            borderRadius: 16,
+            paddingHorizontal: 12,
+            paddingVertical: 8,
+            flexDirection: 'row',
             alignItems: "center",
-            color: '#fff',
             width: '95%',
             marginTop: 20,
-            height: 40
+            minHeight: 40
         },
         compactInput: {
             width: 'auto',
@@ -23,66 +23,116 @@ const Dropdown = ({ value, label, data, onSelect, compact = false, style, loadin
             minWidth: 0,
             marginHorizontal: 0,
             marginTop: 0,
-            paddingHorizontal: 12,
+            paddingHorizontal: 14,
             borderRadius: 999
         },
-          overlay: {
-            height: '100%',
-            width: "100%"
-          },
-          dropdown: {
+        overlay: {
+            flex: 1,
+            backgroundColor: 'rgba(12, 16, 24, 0.18)'
+        },
+        dropdown: {
             position: 'absolute',
-            borderColor: '#fff',
-            width: '93%',
-            shadowColor: '#000000',
-            shadowRadius: 4,
-            shadowOffset: { height: 4, width: 0 },
-            shadowOpacity: 0.5,
-            marginHorizontal: 8,
-            color: '#fff',
+            left: 12,
+            right: 12,
             backgroundColor: colours.background,
-            alignSelf: 'center',
-            marginTop: '0',
-            marginBottom: '-2',
-            borderBottomLeftRadius: 8,
-            borderBottomRightRadius: 8,
-            paddingTop: 2,
-            left: 7
-          },
-          item: {
-            paddingHorizontal: 5,
-            paddingVertical: 5,
-            color: '#fff',
+            borderRadius: 24,
+            padding: 10,
+            shadowColor: '#000000',
+            shadowRadius: 18,
+            shadowOffset: { height: 10, width: 0 },
+            shadowOpacity: 0.18,
+            elevation: 12
+        },
+        listContent: {
+            paddingTop: 4
+        },
+        item: {
+            paddingHorizontal: 14,
+            paddingVertical: 14,
             backgroundColor: colours.card,
-            borderRadius: 4,
-            marginBottom: 4,
-
-          },
-          icons: {
+            borderRadius: 16,
+            marginBottom: 8,
+            flexDirection: 'row',
+            alignItems: 'center'
+        },
+        selectedItem: {
+            backgroundColor: colours.layer
+        },
+        disabledItem: {
+            opacity: 0.45
+        },
+        itemText: {
+            color: colours.text,
+            fontSize: 16
+        },
+        selectedItemText: {
+            color: colours.text
+        },
+        itemMeta: {
+            marginLeft: 'auto',
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 8
+        },
+        selectedBadge: {
+            paddingHorizontal: 10,
+            paddingVertical: 5,
+            borderRadius: 999,
+            backgroundColor: colours.background
+        },
+        selectedBadgeText: {
+            color: colours.secondaryText,
+            fontSize: 11,
+            fontWeight: '700',
+            textTransform: 'uppercase',
+            letterSpacing: 0.6
+        },
+        disabledBadge: {
+            paddingHorizontal: 10,
+            paddingVertical: 5,
+            borderRadius: 999,
+            backgroundColor: colours.background
+        },
+        disabledBadgeText: {
+            color: colours.secondaryText,
+            fontSize: 11,
+            fontWeight: '700',
+            textTransform: 'uppercase',
+            letterSpacing: 0.6
+        },
+        headerRow: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            paddingHorizontal: 6,
+            paddingBottom: 10
+        },
+        icons: {
             maxWidth: 37.5,
             maxHeight: 37.5,
-            marginLeft: "auto"
-          },
-          labelText: {
-            marginLeft:4
-          },
-          compactLabelText: {
+            marginLeft: 'auto'
+        },
+        chevronOpen: {
+            transform: [{ rotate: '180deg' }]
+        },
+        labelText: {
+            marginLeft: 4,
+            fontSize: 15
+        },
+        compactLabelText: {
             marginLeft: 0,
             marginRight: 8
-          }
+        }
     });
     const [visible, setVisible] = useState(false);
-
     const DropdownButton = useRef();
     const [dropdownTop, setDropdownTop] = useState(0);
 
-    
-
     const openDropdown = () => {
-        DropdownButton.current.measure((_fx, _fy, _w, h, _px, py) => {
-          setDropdownTop(py + h - 50);
+        DropdownButton.current?.measureInWindow((_x, y, _w, h) => {
+            setDropdownTop(y + h + 2);
+            setVisible(true);
         });
-        setVisible(true);
     };
 
     const toggleDropdown = () => {
@@ -96,15 +146,42 @@ const Dropdown = ({ value, label, data, onSelect, compact = false, style, loadin
     }, [data, value]);
 
     const onItemPress = (item) => {
+        if (item.disabled) {
+            return;
+        }
         setSelected(item);
         onSelect(item);
         setVisible(false);
       };
 
     const renderItem = ({item}) => {
+        const isSelected = selected?.id === item.id;
+
         return (
-            <TouchableOpacity style={[dropdownStyles.item]} onPress={() => onItemPress(item)}>
-                <Text style={{color: colours.text}}>{item.label}</Text>
+            <TouchableOpacity
+                style={[
+                    dropdownStyles.item,
+                    isSelected && dropdownStyles.selectedItem,
+                    item.disabled && dropdownStyles.disabledItem
+                ]}
+                onPress={() => onItemPress(item)}
+                disabled={item.disabled}
+            >
+                <Text style={[dropdownStyles.itemText, isSelected && dropdownStyles.selectedItemText]}>
+                    {item.label}
+                </Text>
+                <View style={dropdownStyles.itemMeta}>
+                    {isSelected ? (
+                        <View style={dropdownStyles.selectedBadge}>
+                            <Text style={dropdownStyles.selectedBadgeText}>Selected</Text>
+                        </View>
+                    ) : null}
+                    {item.disabled ? (
+                        <View style={dropdownStyles.disabledBadge}>
+                            <Text style={dropdownStyles.disabledBadgeText}>Premium</Text>
+                        </View>
+                    ) : null}
+                </View>
             </TouchableOpacity>
         )
     }
@@ -113,23 +190,26 @@ const Dropdown = ({ value, label, data, onSelect, compact = false, style, loadin
         if (visible) {
             return (
                 <Modal visible={visible} transparent animationType='none'>
-                    <Pressable
-                    style={dropdownStyles.overlay}
-                    onPress={() => setVisible(false)}
-                    >
-                     <View style={[dropdownStyles.dropdown, {top: dropdownTop}]}>
+                    <View style={dropdownStyles.overlay}>
+                        <Pressable
+                            style={StyleSheet.absoluteFill}
+                            onPress={() => setVisible(false)}
+                        />
+                        <View style={[dropdownStyles.dropdown, { top: dropdownTop }]}>
                         {loading ? (
                             <View style={{ padding: 16, alignItems: 'center', justifyContent: 'center' }}>
                                 <ActivityIndicator size="small" color={colours.text} />
                             </View>
                         ) : (
                             <FlatList
-                            data={data}
-                            renderItem={renderItem}
+                                data={data}
+                                renderItem={renderItem}
+                                contentContainerStyle={dropdownStyles.listContent}
+                                showsVerticalScrollIndicator={false}
                             />
                         )}
-                     </View>
-                    </Pressable>
+                        </View>
+                    </View>
                 </Modal>
             );
         }
@@ -149,8 +229,8 @@ const Dropdown = ({ value, label, data, onSelect, compact = false, style, loadin
                 <>
                     <Text style={[dropdownStyles.labelText, compact && dropdownStyles.compactLabelText, {color: selected ? colours.text : colours.secondaryText}]}>{(selected && selected.label) || label}</Text>
                     <Image
-                    style={dropdownStyles.icons}
-                    source={assets.dropdown_arrow}
+                        style={[dropdownStyles.icons, visible && dropdownStyles.chevronOpen]}
+                        source={assets.dropdown_arrow}
                     />
                 </>
             )}

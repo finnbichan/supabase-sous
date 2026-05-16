@@ -19,9 +19,9 @@ const List = ({ route }) => {
     const [completedExpanded, setCompletedExpanded] = useState(false);
     const [editingItemId, setEditingItemId] = useState(null);
     const [currentList, setCurrentList] = useState(null);
-    const [availableLists, setAvailableLists] = useState([]);
-    const [selectedListId, setSelectedListId] = useState(null);
-    const [loadingLists, setLoadingLists] = useState(true);
+    const [listsByType, setListsByType] = useState({});
+    const [selectedListType, setSelectedListType] = useState('Personal');
+    const [isPremium, setIsPremium] = useState(false);
     const [loadingItems, setLoadingItems] = useState(false);
     const sectionListRef = useRef(null);
     const session = useContext(AuthContext);
@@ -183,112 +183,107 @@ const List = ({ route }) => {
         setLoadingItems(false);
     }, [session?.user?.id, currentList?.id]);
 
-    const getOrCreatePersonalList = useCallback(async () => {
+    const listOptions = useMemo(() => ([
+        { id: 'Personal', label: 'Personal' },
+        { id: 'Shared', label: 'Shared', disabled: !isPremium }
+    ]), [isPremium]);
+
+    const getPremiumStatus = useCallback(async () => {
         if (!session?.user?.id) {
-            return;
+            return false;
         }
 
-        // Try to get existing Personal list
+        const { data, error } = await supabase
+            .from('profiles')
+            .select('premium')
+            .eq('id', session.user.id)
+            .single();
+
+        if (error) {
+            console.log('Error fetching premium status:', error);
+            setIsPremium(false);
+            return false;
+        }
+
+        const premiumStatus = Boolean(data?.premium);
+        setIsPremium(premiumStatus);
+        return premiumStatus;
+    }, [session?.user?.id]);
+
+    const getOrCreateList = useCallback(async (name) => {
+        if (!session?.user?.id) {
+            return null;
+        }
+
+        // Try to get existing list first.
         const { data: existingList, error: getError } = await supabase
             .from('lists')
             .select('*')
             .eq('owner_id', session.user.id)
-            .eq('name', 'Personal')
+            .eq('name', name)
             .single();
 
         if (existingList) {
-            setCurrentList(existingList);
-            setSelectedListId(existingList.id);
             return existingList;
         }
 
-        // Create Personal list if it doesn't exist
+        if (getError && getError.code !== 'PGRST116') {
+            console.log(`Error fetching ${name} list:`, getError);
+            return null;
+        }
+
+        // Create list if it doesn't exist.
         const { data: newList, error: createError } = await supabase
             .from('lists')
             .insert([{
                 owner_id: session.user.id,
-                name: 'Personal'
+                name
             }])
             .select()
             .single();
 
         if (createError) {
-            console.log('Error creating Personal list:', createError);
-            return;
+            console.log(`Error creating ${name} list:`, createError);
+            return null;
         }
 
-        setCurrentList(newList);
-        setSelectedListId(newList.id);
         return newList;
     }, [session?.user?.id]);
 
-    const getAllAvailableLists = useCallback(async () => {
+    const loadLists = useCallback(async () => {
         if (!session?.user?.id) {
             return;
         }
 
-        setLoadingLists(true);
-        // Get lists where user is owner
-        const { data: ownedLists, error: ownedError } = await supabase
-            .from('lists')
-            .select('*')
-            .eq('owner_id', session.user.id);
+        void getPremiumStatus();
 
-        if (ownedError) {
-            console.log('Error fetching owned lists:', ownedError);
-        }
+        const [personalList, sharedList] = await Promise.all([
+            getOrCreateList('Personal'),
+            getOrCreateList('Shared')
+        ]);
 
-        // Get list IDs where user is a member
-        const { data: memberRecords, error: memberError } = await supabase
-            .from('list_members')
-            .select('list_id')
-            .eq('user_id', session.user.id);
-
-        if (memberError) {
-            console.log('Error fetching member list IDs:', memberError);
-        }
-
-        // Get the full list objects for those list IDs
-        let memberLists = [];
-        if (memberRecords && memberRecords.length > 0) {
-            const listIds = memberRecords.map(record => record.list_id);
-            const { data: lists, error: listsError } = await supabase
-                .from('lists')
-                .select('*')
-                .in('id', listIds);
-
-            if (listsError) {
-                console.log('Error fetching member lists:', listsError);
-            } else {
-                memberLists = lists || [];
-            }
-        }
-
-        // Combine and deduplicate lists
-        const allLists = [...(ownedLists || [])];
-        memberLists.forEach(list => {
-            if (!allLists.find(l => l.id === list.id)) {
-                allLists.push(list);
-            }
+        setListsByType({
+            Personal: personalList,
+            Shared: sharedList
         });
-
-        setAvailableLists(allLists);
-        setLoadingLists(false);
-    }, [session?.user?.id]);
+    }, [getOrCreateList, getPremiumStatus, session?.user?.id]);
 
     useEffect(() => {
-        getOrCreatePersonalList();
-        getAllAvailableLists();
-    }, [getOrCreatePersonalList, getAllAvailableLists, route.params?.action, cache]);
+        loadLists();
+    }, [loadLists, route.params?.action, cache]);
 
     useEffect(() => {
-        if (selectedListId) {
-            const list = availableLists.find(l => l.id === selectedListId);
-            if (list) {
-                setCurrentList(list);
-            }
+        const list = listsByType[selectedListType];
+        if (list) {
+            setCurrentList(list);
         }
-    }, [selectedListId, availableLists]);
+    }, [listsByType, selectedListType]);
+
+    useEffect(() => {
+        if (!isPremium && selectedListType === 'Shared') {
+            setSelectedListType('Personal');
+        }
+    }, [isPremium, selectedListType]);
 
     useEffect(() => {
         if (currentList?.id) {
@@ -592,11 +587,10 @@ console.log(currentList.id);
                         <AppHeaderText>List</AppHeaderText>
                         <View style={{ maxWidth: 120, marginLeft: 'auto' }}>
                             <Dropdown
-                                data={availableLists.map((list) => ({ id: list.id, label: list.name }))}
-                                onSelect={(selected) => setSelectedListId(selected.id)}
-                                value={availableLists.findIndex((list) => list.id === selectedListId)}
+                                data={listOptions}
+                                onSelect={(selected) => setSelectedListType(selected.id)}
+                                value={listOptions.findIndex((list) => list.id === selectedListType)}
                                 compact={true}
-                                loading={loadingLists}
                             />
                         </View>
                         <TouchableOpacity onPress={() => setGenModalOpen(true)}>

@@ -11,6 +11,9 @@ import Home from './app/screens/Home';
 import UserRecipes from './app/screens/UserRecipes';
 import Recipe from './app/screens/Recipe';
 import Settings from './app/screens/Settings';
+import Profile from './app/screens/Profile';
+import Sharing from './app/screens/Sharing';
+import MealHistory from './app/screens/MealHistory';
 import AddOrEditUserRecipe from './app/screens/AddOrEditUserRecipe';
 import NewUser from './app/screens/NewUser';
 import ConfirmOTP from './app/screens/ConfirmOTP';
@@ -217,15 +220,11 @@ function LoggedInStack() {
       drawerActiveBackgroundColor: '#00AEFF',
       drawerPosition: 'right'
       }}>
-        <LoggedInDrawer.Screen name="sous" component={TabsStack} options={{headerShown: false}}/>
-        <LoggedInDrawer.Screen name="Settings" component={Settings} options={{
-      headerTitle: () => <LogoTitle />,
-      headerTitleAlign: 'left',
-      headerStyle: {backgroundColor: colours.card},
-      headerShadowVisible: false,
-      headerTintColor: colours.text,
-      headerLeft: () => <LeftButton />
-    }}/>
+        <LoggedInDrawer.Screen name="sous" component={TabsStack} options={{headerShown: false, displayName: 'Home'}}/>
+        <LoggedInDrawer.Screen name="Profile" component={Profile} options={{headerShown: false}}/>
+        <LoggedInDrawer.Screen name="Sharing" component={Sharing} options={{headerShown: false}}/>
+        <LoggedInDrawer.Screen name="Meal History" component={MealHistory} options={{headerShown: false}}/>
+    <LoggedInDrawer.Screen name="Settings" component={Settings} options={{headerShown: false}}/>
       </LoggedInDrawer.Navigator>
       </CacheContext.Provider>
   )

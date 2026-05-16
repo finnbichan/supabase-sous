@@ -1,45 +1,44 @@
-import { Animated, TextInput, Text, StyleSheet } from 'react-native';
-import React, { useState, useRef, useLayoutEffect } from 'react';
+import { Animated, TextInput, StyleSheet, View } from 'react-native';
+import React, { useState, useRef } from 'react';
 import { useTheme } from '@react-navigation/native';
 
 
 const FLTextInput = ( {id, label, defaultValue, onChangeTextProp, editable=true, rerenderTrigger} ) => {
     const { colours } = useTheme();
     const FLInputStyles = StyleSheet.create({
-      input: {
+        container: {
           width: '95%',
-          backgroundColor: colours.card,
-          borderRadius: 4,
-          color: colours.text,
-          marginBottom: 8,
+          marginHorizontal: 8,
           marginTop: 20,
-          marginLeft: 8,
-          paddingRight: 30,
-          paddingLeft: 6,
-          height: 40,
+          marginBottom: 8,
+          position: 'relative'
+        },
+        input: {
+          width: '100%',
+          backgroundColor: colours.card,
+          borderRadius: 16,
+          color: colours.text,
+          paddingHorizontal: 14,
+          paddingTop: 18,
+          paddingBottom: 10,
+          minHeight: 46,
+          fontSize: 16
         },
         animatedStyle: {
           zIndex: 1,
           position: 'absolute',
-          left: 15
-        }   
-    })
+          left: 14,
+          top: 16
+        },
+        labelText: {
+          color: colours.secondaryText,
+          fontSize: 16
+        }
+    });
     const [value, setValue] = useState(defaultValue);
     const [isUp, setIsUp] = useState(defaultValue ? true : false);
 
-    
-
     const moveText = useRef(new Animated.Value(defaultValue ? 1 : 0)).current;
-    const inputRef = useRef();
-
-    useLayoutEffect(() => {
-      inputRef.current.measure((_fx, _fy, _w, h, _px, py) => {
-        setTextPosition(_fy + h - 35);
-      });
-    }, [rerenderTrigger]);
-
-    const [textPosition, setTextPosition] = useState(0);
-
 
     const handleBlur = () => {
         if (!value) {
@@ -68,24 +67,39 @@ const FLTextInput = ( {id, label, defaultValue, onChangeTextProp, editable=true,
 
     const yVal = moveText.interpolate({
         inputRange: [0, 1],
-        outputRange: [4, -25],
+        outputRange: [0, -18],
       });
+
+    const xVal = moveText.interpolate({
+        inputRange: [0, 1],
+        outputRange: [0, -4],
+      });
+
+    const scaleVal = moveText.interpolate({
+        inputRange: [0, 1],
+        outputRange: [1, 12 / 14],
+    });
     
       const animStyle = {
         transform: [
           {
             translateY: yVal,
           },
+          {
+            translateX: xVal,
+          },
+          {
+            scale: scaleVal,
+          },
         ],
       };
 
     return (
-        <>
-            <Animated.View style={[FLInputStyles.animatedStyle, animStyle, {top: textPosition}]}>
-                <Text style={{color: colours.secondaryText}}>{label}</Text>
+        <View style={FLInputStyles.container}>
+            <Animated.View style={[FLInputStyles.animatedStyle, animStyle]}>
+                <Animated.Text style={FLInputStyles.labelText}>{label}</Animated.Text>
             </Animated.View>
             <TextInput
-            ref={inputRef}
             id={id}
             style={[FLInputStyles.input]}
             value={value}
@@ -95,7 +109,7 @@ const FLTextInput = ( {id, label, defaultValue, onChangeTextProp, editable=true,
             multiline={true}
             editable={editable}
             />
-        </>
+        </View>
     )
 }
 
