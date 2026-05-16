@@ -37,6 +37,7 @@ const Dropdown = ({ value, label, data, onSelect, compact = false, style, loadin
             backgroundColor: colours.background,
             borderRadius: 24,
             padding: 10,
+            maxHeight: 320,
             shadowColor: '#000000',
             shadowRadius: 18,
             shadowOffset: { height: 10, width: 0 },
@@ -206,6 +207,7 @@ const Dropdown = ({ value, label, data, onSelect, compact = false, style, loadin
                                 renderItem={renderItem}
                                 contentContainerStyle={dropdownStyles.listContent}
                                 showsVerticalScrollIndicator={false}
+                                nestedScrollEnabled={true}
                             />
                         )}
                         </View>

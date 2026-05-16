@@ -1,4 +1,4 @@
-import {TouchableOpacity, Image, View, TextInput } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, Image, View, TextInput } from 'react-native';
 import React from 'react';
 import useStyles from '../styles/Common';
 import { useTheme } from '@react-navigation/native';
@@ -40,29 +40,57 @@ const Ingredient = ({number, totalNumber, value, onChangeText, onRemove, editabl
     const { assets, colours } = useTheme();
     const styles = useStyles();
     const placeholder = number === 0 ? 'Add some ingredients...': 'Add some more...';
+    const ingredientStyles = StyleSheet.create({
+        container: {
+            width: '100%',
+            position: 'relative',
+            marginTop: 8,
+            marginBottom: 8
+        },
+        input: {
+            width: '95%',
+            backgroundColor: colours.card,
+            borderRadius: 16,
+            color: colours.text,
+            marginHorizontal: 8,
+            paddingHorizontal: 14,
+            paddingTop: 16,
+            paddingBottom: 16,
+            paddingRight: totalNumber > 1 && editable ? 48 : 14,
+            minHeight: 46,
+            fontSize: 16
+        },
+        removeButton: {
+            zIndex: 1,
+            position: 'absolute',
+            right: 8,
+            top: 3
+        }
+    });
 
     return ( 
-        <View style={{flexDirection: 'row'}}>
+        <View style={ingredientStyles.container}>
             <TextInput
-            style={styles.input}
-            value={value}
-            onChangeText={(text) => onChangeText(number, text)}
-            placeholder={placeholder}
-            placeholderTextColor={colours.secondaryText}
-            editable={editable}
+                style={ingredientStyles.input}
+                value={value}
+                onChangeText={(text) => onChangeText(number, text)}
+                placeholder={placeholder}
+                placeholderTextColor={colours.secondaryText}
+                editable={editable}
+                multiline={true}
             />
 
             {totalNumber > 1 && editable ? (
                 <TouchableOpacity
-                style={[styles.stepButton, {zIndex: 1, position: 'absolute', right: 0, top: 0}]}
-                onPress={() => onRemove(number)}
+                    style={[styles.stepButton, ingredientStyles.removeButton]}
+                    onPress={() => onRemove(number)}
                 >
                     <Image
                         style={styles.icon}
                         source={assets.cross}
-                        />
+                    />
                 </TouchableOpacity>
-            ):(<></>)}
+            ) : null}
         </View>
     )
 }

@@ -7,10 +7,10 @@ import { useTheme } from '@react-navigation/native';
 
 const multiselectStyles = StyleSheet.create({
     itemContainer: {
-        padding: 10,
-        borderRadius: 4,
+        padding: 16,
         marginVertical: 4,
-        marginHorizontal: 8
+        marginHorizontal: 8,
+        borderRadius: 16
     },
     multiselect: {
         flexDirection: 'row',
@@ -46,13 +46,13 @@ const MultiselectItem = ({ item, onPress, editable }) => {
                 style={[multiselectStyles.itemContainer, {backgroundColor: item.selected ? '#00AEFF' : colours.card}]}
                 onPress={()=>onPress(item.id)}
             >
-                <Text style={styles.text}>{item.name}</Text>
+                <Text style={[styles.text, {fontSize: 16}]}>{item.name}</Text>
             </TouchableOpacity>
         ):(
             <View
             style={[multiselectStyles.itemContainer, {backgroundColor: item.selected ? '#00AEFF' : colours.card}]}
         >
-            <Text style={styles.text}>{item.name}</Text>
+            <Text style={[styles.text, {fontSize: 16}]}>{item.name}</Text>
         </View>
         )}
         </>

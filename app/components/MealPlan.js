@@ -12,7 +12,8 @@ const MealPlanStyles = (props) => StyleSheet.create({
         backgroundColor: props.colours.card,
         borderRadius: 8,
         paddingHorizontal: 10,
-        marginTop: 4
+        marginTop: 4,
+        paddingVertical: 6
     },
     header: {
         backgroundColor: props.colours.card,
@@ -43,11 +44,12 @@ const MealPlanStyles = (props) => StyleSheet.create({
     noPlanText: {
         color: props.colours.text,
         fontSize: 18,
-        paddingLeft: 4,
+        paddingLeft: 0,
         paddingBottom: 4
     },
     lowImpactText: {
-        color: props.colours.secondaryText
+        color: props.colours.secondaryText,
+        marginTop: -4
     },
     yesPlanTopRow: {
         flexDirection: 'row',

@@ -26,17 +26,16 @@ const Calendar = ({navigation}) => {
     const [loading, setLoading] = useState(true);
     const [plannedRecipes, setPlannedRecipes] = useState([]);
     const { cache } = useContext(CacheContext);
-    const [historyOpen, setHistoryOpen] = useState(false);
     const todaysDate = new Date();
     const session = useContext(AuthContext);
-    const {colours, assets} = useTheme();
+    const {colours} = useTheme();
     const styles = useStyles();
 
     const createDateArray = () => {
         let dateArray = [];
-        for(let i = 0; i < 21; i++){
+        for(let i = 0; i < 14; i++){
             let date = new Date() 
-            date.setDate(todaysDate.getDate() - 7 + i)
+            date.setDate(todaysDate.getDate() + i)
             dateArray.push(date.toISOString().slice(0,10))
         }
         return dateArray
@@ -87,11 +86,9 @@ const Calendar = ({navigation}) => {
         const day = daysOfTheWeek[mealdateDateObject.getDay()];
         const date = mealdateDateObject.toDateString().slice(4, 10);
         const isTodaysMeal = mealdate === todaysDate.toISOString().slice(0,10)
-        const onlyShowWhenHistoryOpen = mealdateDateObject < todaysDate && !isTodaysMeal;
         const breakfast = plannedRecipes.find(({date, meal_type}) => date === mealdate && meal_type === 1)
-        const lunch = plannedRecipes.find(({date, meal_type}) => date === mealdate & meal_type === 2)
+        const lunch = plannedRecipes.find(({date, meal_type}) => date === mealdate && meal_type === 2)
         const dinner = plannedRecipes.find(({date, meal_type}) => date === mealdate && meal_type === 3)
-        if (onlyShowWhenHistoryOpen && !historyOpen) return null;
         return (
             <View style={calendarStyles.parentDateContainer}>
                 <CollapsibleSection
@@ -115,7 +112,7 @@ const Calendar = ({navigation}) => {
                         addPlannedRecipe={addPlannedRecipe}
                         deletePlannedRecipe={deletePlannedRecipe}
                         rerollPlannedRecipe={removeAndAddPlannedRecipe}
-                        editable={!onlyShowWhenHistoryOpen}
+                        editable={true}
                         />
                         <MealPlan
                         navigation={navigation}
@@ -126,7 +123,7 @@ const Calendar = ({navigation}) => {
                         addPlannedRecipe={addPlannedRecipe}
                         deletePlannedRecipe={deletePlannedRecipe}
                         rerollPlannedRecipe={removeAndAddPlannedRecipe}
-                        editable={!onlyShowWhenHistoryOpen}
+                        editable={true}
                         />
                         <MealPlan
                         navigation={navigation}
@@ -137,7 +134,7 @@ const Calendar = ({navigation}) => {
                         addPlannedRecipe={addPlannedRecipe}
                         deletePlannedRecipe={deletePlannedRecipe}
                         rerollPlannedRecipe={removeAndAddPlannedRecipe}
-                        editable={!onlyShowWhenHistoryOpen}
+                        editable={true}
                         />
                     </View>
                 }
@@ -165,11 +162,7 @@ const Calendar = ({navigation}) => {
                 data={dateArray}
                 renderItem={({item}) => renderDate(item)}
                 style={{marginBottom: '-5'}}
-                ListHeaderComponent={
-                <CalendarHeader 
-                historyOpen={historyOpen}
-                onHistoryOpen={() => setHistoryOpen(!historyOpen)}/>
-                }
+                ListHeaderComponent={<CalendarHeader />}
                 showsVerticalScrollIndicator={false}
             /> 
             )}

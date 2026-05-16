@@ -1,14 +1,13 @@
-import React, { useState, useContext, use } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { AuthContext } from '../../Contexts';
 import AppHeaderText from './AppHeaderText';
-import AppText from './AppText';
 import useStyles from '../styles/Common';
 import { useTheme } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
 import GeneratePlanModal from './GeneratePlanModal';
 
-const CalendarHeader = ({historyOpen, onHistoryOpen}) => {
+const CalendarHeader = () => {
     const [genModalOpen, setGenModalOpen] = useState(false);
     const styles = useStyles();
     const { colours, assets } = useTheme();
@@ -44,13 +43,6 @@ const CalendarHeader = ({historyOpen, onHistoryOpen}) => {
                         onPress={() => setGenModalOpen(true)}
                         >   
                             <Image style={styles.icon} source={assets.calendar_gen}/>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                        style={{flexDirection: 'row', padding: 10, borderRadius: 8, backgroundColor: historyOpen ? colours.card : colours.background}}
-                        onPress={onHistoryOpen}
-                        >   
-                            <Image style={styles.icon} source={assets.history}/>
-                            <Image style={[styles.icon, {marginLeft: '-8'}]} source={historyOpen ? assets.up : assets.down}/>
                         </TouchableOpacity>
                     </View>
                 </View>

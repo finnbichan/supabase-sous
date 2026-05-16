@@ -27,7 +27,8 @@ const Styles = (props) => StyleSheet.create({
         marginHorizontal: 8
     },
     text: {
-      color: props.colours.text
+      color: props.colours.text,
+      fontSize: 16
     },
     input: {
       width: '95%',
