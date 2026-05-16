@@ -184,7 +184,7 @@ const GenerateModal = ({ genModalOpen, setGenModalOpen, onGenerated }) => {
                        onPress={() => {setGenModalOpen(false)}}
                        />
                        <View style={modalStyles.modal}>
-                        <AppHeaderText>Generate a shopping list</AppHeaderText>
+                        <AppHeaderText>Generate a list</AppHeaderText>
                         
                             <>
                                 <Text style={[styles.lowImpactText, {alignSelf: 'flex-start', marginLeft: 8, marginBottom: '-10'}]}>From</Text>

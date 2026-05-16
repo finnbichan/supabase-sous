@@ -16,6 +16,7 @@ const AppButton = ( {onPress, label, disabled = false} ) => {
             justifyContent: 'center',
             alignContent: 'center',
             marginVertical: 8,
+            marginTop: 16
         },
         buttonDisabled: {
             opacity: 0.5
