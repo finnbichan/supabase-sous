@@ -16,7 +16,6 @@ import MealHistory from './app/screens/MealHistory';
 import AddOrEditUserRecipe from './app/screens/AddOrEditUserRecipe';
 import NewUser from './app/screens/NewUser';
 import ConfirmOTP from './app/screens/ConfirmOTP';
-import Explore from './app/screens/Explore';
 import EditButton from './app/components/EditButton';
 import ShoppingLists from './app/screens/ShoppingLists';
 import './globals';
@@ -167,25 +166,6 @@ function TabsStack() {
           )
         }
       }}/>
-      <MainAppTabs.Screen name="Explore" component={Explore}
-      options={{
-        tabBarIcon: ({focused}) => {
-          return (
-            focused ? (
-            <Image 
-            style={{width: 25, height: 25}}
-            source={assets.chef_hat}
-            />
-          ) : (
-            <Image 
-            style={{width: 25, height: 25}}
-            source={assets.chef_hat_inactive}
-            />
-          )
-          )
-        }
-      }}
-      />
     </MainAppTabs.Navigator>
   );
 }
