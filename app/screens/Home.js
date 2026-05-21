@@ -11,18 +11,8 @@ const Home = ({navigation}) => {
     const styles = useStyles();
     const session = useContext(AuthContext);
 
-    useEffect(()=> {
-      const getUserName = async () => {
-        const nameData = await supabase
-        .from('profiles')
-        .select('display_name')
-        .eq('id', session.user.id);
-        setName(nameData.data[0].display_name);
-        console.log(name);
-      }
-      getUserName();
-    })
-    
+    console.log("home session", session)
+
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.content}>

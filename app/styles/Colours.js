@@ -12,6 +12,7 @@ export const LightTheme = {
     },
     //definitely a better way to do this
     assets: {
+        account: require("../../assets/light/account.png"),
         add_box: require("../../assets/light/add_box.png"),
         add: require("../../assets/light/add.png"),
         back: require("../../assets/light/back.png"),
@@ -62,6 +63,7 @@ export const CustomDarkTheme = {
         secondaryText: "#b3b3b3"
     },
     assets: {
+        account: require("../../assets/dark/account.png"),
         add_box: require("../../assets/dark/add_box.png"),
         add: require("../../assets/dark/add.png"),
         back: require("../../assets/dark/back.png"),

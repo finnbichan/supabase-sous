@@ -132,7 +132,13 @@ const GeneratePlanModal = ({genModalOpen, setGenModalOpen}) => {
                                 value={0}
                                 label="Start date"
                                 data={dateArray.map((date, idx) => {
-                                    return {id: idx, label: String(date)}
+                                    const dateObj = new Date(date + 'T00:00:00');
+                                    const formatted = dateObj.toLocaleDateString('en-GB', { 
+                                        weekday: 'long',
+                                        month: 'short', 
+                                        day: 'numeric' 
+                                    });
+                                    return {id: idx, label: formatted}
                                 })}
                                 onSelect={(item) => setStartDate(dateArray[item.id])}
                                 />
@@ -141,7 +147,13 @@ const GeneratePlanModal = ({genModalOpen, setGenModalOpen}) => {
                                 value={5}
                                 label="End date"
                                 data={dateArray.map((date, idx) => {
-                                    return {id: idx, label: String(date)}
+                                    const dateObj = new Date(date + 'T00:00:00');
+                                    const formatted = dateObj.toLocaleDateString('en-GB', { 
+                                        weekday: 'long',
+                                        month: 'short',
+                                        day: 'numeric'
+                                    });
+                                    return {id: idx, label: formatted}
                                 })}
                                 onSelect={(item) => setEndDate(dateArray[item.id])}
                                 />

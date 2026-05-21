@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
-import { AuthContext } from '../../Contexts';
+import { ProfileContext } from '../../Contexts';
 import AppHeaderText from './AppHeaderText';
 import useStyles from '../styles/Common';
 import { useTheme } from '@react-navigation/native';
@@ -11,7 +11,7 @@ const CalendarHeader = () => {
     const [genModalOpen, setGenModalOpen] = useState(false);
     const styles = useStyles();
     const { colours, assets } = useTheme();
-    const session = useContext(AuthContext);
+    const { profile } = useContext(ProfileContext);
     const navigation = useNavigation();
     const time = Number((new Date).getHours());
     var greeting = "Hey";
@@ -19,17 +19,21 @@ const CalendarHeader = () => {
     else if (time >= 18) {greeting = "Evening"}
     else {greeting = "Afternoon"};
     
+    console.log("profile in header", profile.avatar_url)
+
+
     return (
             <View style={headerStyles.container}>
-                <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 4}}>
-                    <AppHeaderText>{greeting}, {session.user.user_metadata.display_name}</AppHeaderText>
+                <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 4, marginBottom: 8}}>
+                    <AppHeaderText>{profile?.display_name ? `${greeting}, ${profile.display_name}` : greeting}</AppHeaderText>
                     <TouchableOpacity
-                    style={{flexDirection: 'row', padding: 10, borderRadius: 8}}
+                    style={headerStyles.accountButton}
                     onPress={() => navigation.openDrawer()}
                     >
                         <Image
-                        style={styles.icon}
-                        source={assets.settings}
+                        style={headerStyles.accountImage}
+                        source={profile?.avatar_url ? {uri: profile.avatar_url} : assets.account}
+                        resizeMode="cover"
                         />
                     </TouchableOpacity>
                 </View>
@@ -58,6 +62,15 @@ const headerStyles = StyleSheet.create({
     container: {
         marginTop: 4,
         marginRight: 4
+    },
+    accountButton: {
+        padding: 6,
+        borderRadius: 999
+    },
+    accountImage: {
+        width: 40,
+        height: 40,
+        borderRadius: 16
     },
     greeting: {
         fontSize: 20,

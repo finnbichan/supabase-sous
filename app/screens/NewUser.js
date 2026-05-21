@@ -1,4 +1,4 @@
-import { View, Text, Pressable, TextInput, ActivityIndicator, SafeAreaView, TouchableOpacity} from 'react-native';
+import { View, Text, Pressable, TextInput, ActivityIndicator, SafeAreaView, TouchableOpacity, StyleSheet} from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../../supabase';
 import '../../globals';
@@ -13,13 +13,9 @@ import useStyles from '../styles/Common';
 
 const NewUser = ( {navigation} ) => {
   const [email, setEmail] = useState('');
-  const [name, setName] = useState('');
-  const [country, setCountry] = useState('');
   const [loading, setLoading] = useState(false);
   const { colours } = useTheme();
   const styles = useStyles();
-
-  console.log(colours)
 
   const signUp = async () => {
     setLoading(true);
@@ -27,8 +23,7 @@ const NewUser = ( {navigation} ) => {
       email: email,
       options: {
         data: {
-          display_name: name,
-          region: country.id
+          should_create_user: true
         }
       }
     })
@@ -40,11 +35,29 @@ const NewUser = ( {navigation} ) => {
     .catch((error) => {console.log(error);})
     .finally(() => {setLoading(false)}) 
   }
+
+  const newUserStyles = StyleSheet.create({
+    alreadyHaveAccount: {
+      marginBottom: 16,
+      alignItems: 'flex-start'
+    },
+    accountText: {
+      color: colours.secondaryText,
+      fontSize: 14
+    },
+    loginLink: {
+      color: colours.text,
+      textDecorationLine: 'underline'
+    }
+  });
+
     return (
     <SafeAreaView style={[styles.container, {backgroundColor: colours.background}]}>
       <View style={styles.content}>
         <AppHeaderText>Welcome to sous.</AppHeaderText>
-        <AppText>We need a few details from you to get started.</AppText>
+        <AppText>Enter your email address below to get cooking.</AppText>
+        <AppText>We'll send you a code to verify your account.</AppText>
+        {/* Email and Sign Up */}
         <FLTextInput
         id="email"
         label="Email"
@@ -52,26 +65,12 @@ const NewUser = ( {navigation} ) => {
         onChangeTextProp={setEmail}
         editable={true}
         />
-        <FLTextInput
-        id="name"
-        label="Display Name"
-        defaultValue={name}
-        onChangeTextProp={setName}
-        editable={true}
-        />
-        <Dropdown
-          data={countries}
-          label="Region"
-          onSelect={setCountry}
-        />
-        <AppText>We don't use passwords here - when you click sign up, we'll send a one time password to your email address.</AppText>
         {loading ? <ActivityIndicator /> : (
           <AppButton
           onPress={signUp}
-          label="Sign Up"
+          label="Continue"
           />
         )}
-        <AppText>Already have an account? <Text style={{color: colours.text, textDecorationLine: 'underline'}} onPress={() => navigation.navigate('Login')}>Log in</Text></AppText>
   </View>
 </SafeAreaView>
 )

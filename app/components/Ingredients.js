@@ -3,7 +3,15 @@ import React from 'react';
 import useStyles from '../styles/Common';
 import { useTheme } from '@react-navigation/native';
 
-const Ingredients = ({ingredients, onAddition, onChangeText, onRemove, editable=true}) => {
+const Ingredients = ({
+    ingredients,
+    onAddition,
+    onChangeText,
+    onRemove,
+    editable=true,
+    firstPlaceholder='Add some ingredients...',
+    nextPlaceholder='Add some more...'
+}) => {
     const { assets } = useTheme();
     const styles = useStyles();
     
@@ -18,6 +26,8 @@ const Ingredients = ({ingredients, onAddition, onChangeText, onRemove, editable=
                         onChangeText={onChangeText}
                         onRemove={onRemove}
                         editable={editable}
+                        firstPlaceholder={firstPlaceholder}
+                        nextPlaceholder={nextPlaceholder}
                         />
                     )
                 })}
@@ -36,10 +46,10 @@ const Ingredients = ({ingredients, onAddition, onChangeText, onRemove, editable=
 }
 
 
-const Ingredient = ({number, totalNumber, value, onChangeText, onRemove, editable}) => {
+const Ingredient = ({number, totalNumber, value, onChangeText, onRemove, editable, firstPlaceholder, nextPlaceholder}) => {
     const { assets, colours } = useTheme();
     const styles = useStyles();
-    const placeholder = number === 0 ? 'Add some ingredients...': 'Add some more...';
+    const placeholder = number === 0 ? firstPlaceholder : nextPlaceholder;
     const ingredientStyles = StyleSheet.create({
         container: {
             width: '100%',

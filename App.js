@@ -6,13 +6,12 @@ import { HeaderBackButton } from '@react-navigation/elements';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Image, useColorScheme } from 'react-native';
 import { useState, useEffect, createContext, useContext } from 'react';
-import Login from './app/screens/Login';
 import Home from './app/screens/Home';
+import Onboarding from './app/screens/Onboarding';
 import UserRecipes from './app/screens/UserRecipes';
 import Recipe from './app/screens/Recipe';
 import Settings from './app/screens/Settings';
 import Profile from './app/screens/Profile';
-import Sharing from './app/screens/Sharing';
 import MealHistory from './app/screens/MealHistory';
 import AddOrEditUserRecipe from './app/screens/AddOrEditUserRecipe';
 import NewUser from './app/screens/NewUser';
@@ -21,7 +20,7 @@ import Explore from './app/screens/Explore';
 import EditButton from './app/components/EditButton';
 import ShoppingLists from './app/screens/ShoppingLists';
 import './globals';
-import { AuthContext, CacheContext } from './Contexts';
+import { AuthContext, CacheContext, ProfileContext } from './Contexts';
 import List from './app/screens/List';
 import RightHeaderButton from './app/components/RightHeaderButton';
 import * as SplashScreen from 'expo-splash-screen';
@@ -191,9 +190,17 @@ function TabsStack() {
   );
 }
 
+function LoggedInStack({ route }) {
+  const isNewUser = route.params?.isNewUser || false;
+  return (
+    <Stack.Navigator screenOptions={{headerShown: false}} initialRouteName={isNewUser ? "Onboarding" : "Main"}>
+        <Stack.Screen name="Onboarding" component={Onboarding} options={{headerShown: false}}/>
+        <Stack.Screen name="Main" component={MainStack} options={{headerShown: false}}/>
+    </Stack.Navigator>
+  )
+};
 
-
-function LoggedInStack() {
+function MainStack() {
   const { assets, colours } = useTheme();
   const [cache, setCache] = useState();
   const route = useRoute();
@@ -213,19 +220,18 @@ function LoggedInStack() {
 
   return (
     <CacheContext.Provider value={{cache, setCache}}>
-      <LoggedInDrawer.Navigator
-      screenOptions={{
-        drawerStyle: {backgroundColor: colours.card},
-      drawerLabelStyle: {color: colours.text},
-      drawerActiveBackgroundColor: '#00AEFF',
-      drawerPosition: 'right'
-      }}>
-        <LoggedInDrawer.Screen name="sous" component={TabsStack} options={{headerShown: false, displayName: 'Home'}}/>
-        <LoggedInDrawer.Screen name="Profile" component={Profile} options={{headerShown: false}}/>
-        <LoggedInDrawer.Screen name="Sharing" component={Sharing} options={{headerShown: false}}/>
-        <LoggedInDrawer.Screen name="Meal History" component={MealHistory} options={{headerShown: false}}/>
-    <LoggedInDrawer.Screen name="Settings" component={Settings} options={{headerShown: false}}/>
-      </LoggedInDrawer.Navigator>
+        <LoggedInDrawer.Navigator
+        screenOptions={{
+          drawerStyle: {backgroundColor: colours.card},
+          drawerLabelStyle: {color: colours.text},
+          drawerActiveBackgroundColor: '#00AEFF',
+          drawerPosition: 'right'
+        }}>
+          <LoggedInDrawer.Screen name="sous" component={TabsStack} options={{headerShown: false, title: 'Home'}}/>
+          <LoggedInDrawer.Screen name="Profile" component={Profile} options={{headerShown: false, title: 'Profile & Preferences'}}/>
+          <LoggedInDrawer.Screen name="Meal History" component={MealHistory} options={{headerShown: false}}/>
+          <LoggedInDrawer.Screen name="Settings" component={Settings} options={{headerShown: false}}/>
+        </LoggedInDrawer.Navigator>
       </CacheContext.Provider>
   )
 };
@@ -244,7 +250,6 @@ function AnonStack() {
       }}
       >
       <LoggedOutStack.Screen name="Sign up" component={NewUser}/>
-      <LoggedOutStack.Screen name="Login" component={Login}/>
       <LoggedOutStack.Screen name="Confirm OTP" component={ConfirmOTP} />
     </LoggedOutStack.Navigator>
   )
@@ -263,47 +268,66 @@ function LogoTitle() {
 export default function App() {
   const [appIsReady, setAppIsReady] = useState(false);
   const [session, setSession] = useState(null);
+  const [profile, setProfile] = useState(null);
+  const [isNewUser, setIsNewUser] = useState(false);
   const scheme = useColorScheme();
 
   console.log(scheme)
   
   useEffect(() => {
-     supabase.auth.onAuthStateChange((event, session) => {
-      if (event == 'SIGNED_OUT') {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_OUT') {
         setSession(null)
-        setAppIsReady(true)
-      } else { 
+        setProfile(null)
+        setIsNewUser(false)
+      } else if (session) {
+        const { data: profile } = await supabase
+        .from('profiles')
+        .select('display_name, avatar_url, dietary, allergies, dislikes, portion_size')
+        .eq('id', session.user.id)
+        .single()
+
+        if (!profile?.display_name) {
+          setIsNewUser(true)
+        } else {
+          setIsNewUser(false)
+        }
+
+        setProfile(profile)
         setSession(session)
-        setAppIsReady(true);
       }
+
+      setAppIsReady(true)
     })
+
+    return () => subscription.unsubscribe()
   }, [])
 
-  if(appIsReady) {
-    SplashScreen.hide();
-  }
+  useEffect(() => {
+    if (appIsReady) SplashScreen.hide() 
+  }, [appIsReady])
 
-  if(!appIsReady) {
-    return(null)
-  }
+  if (!appIsReady) return null;
 
   return (
     <AuthContext.Provider value={session}>
-      <NavigationContainer theme={scheme === 'dark' ? CustomDarkTheme : LightTheme}>
-        <Stack.Navigator 
-        options={{headerShown: false}}
-        >
-          {session ? (
-            <Stack.Screen name="LoggedIn" component={LoggedInStack} options={{headerShown: false}}/>
-          ) : (
-            <Stack.Screen 
-              name='AnonUser'
-              component={AnonStack}
-              options={{headerShown: false}}
-              />
-          )}
-        </Stack.Navigator>
-      </NavigationContainer>
+      <ProfileContext.Provider value={{profile, setProfile}}>
+        <NavigationContainer theme={scheme === 'dark' ? CustomDarkTheme : LightTheme}>
+          <Stack.Navigator 
+          options={{headerShown: false}}
+          >
+            {session ? (
+              <Stack.Screen name="LoggedIn" component={LoggedInStack} initialParams={{ isNewUser }} options={{headerShown: false}}/>
+            ) : (
+              <Stack.Screen 
+                name='AnonUser'
+                component={AnonStack}
+                options={{headerShown: false}}
+                />
+            )}
+          </Stack.Navigator>
+        </NavigationContainer>
+      </ProfileContext.Provider>
     </AuthContext.Provider>
   );
 }

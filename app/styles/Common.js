@@ -104,8 +104,8 @@ const Styles = (props) => StyleSheet.create({
       maxHeight: 37.5
     },
     icon: {
-      width: 32,
-      height: 32
+      width: 36,
+      height: 36
     },
     recipeList: {
       minWidth: "90%",
